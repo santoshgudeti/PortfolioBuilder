@@ -31,7 +31,8 @@ else:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_credentials=True if "*" not in allowed_origins else False, # allow_credentials must be False if using ["*"]
+    allow_origin_regex=r"https://.*\.vercel\.app", # Support all Vercel subdomains
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
