@@ -39,9 +39,14 @@ app.include_router(admin.router)
 
 @app.on_event("startup")
 async def startup_event():
-    logger.info("Starting up — initializing database...")
-    await init_db()
-    logger.info("Database initialized successfully ✅")
+    logger.info("Starting up — checking database connection...")
+    try:
+        await init_db()
+        logger.info("Database initialized successfully ✅")
+    except Exception as e:
+        logger.error(f"Database initialization failed: {str(e)}")
+        # In production, we might want to continue even if DB is down initially
+        # so the health check endpoint still works.
 
 
 @app.on_event("shutdown")
