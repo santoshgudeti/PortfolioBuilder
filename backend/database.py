@@ -4,10 +4,28 @@ from config import get_settings
 
 settings = get_settings()
 
+# Handle SSL for PostgreSQL (especially Neon.tech)
+db_url = settings.database_url
+connect_args = {}
+
+if "postgresql" in db_url:
+    # asyncpg doesn't like 'sslmode' in the URL, it wants 'ssl' in connect_args
+    if "sslmode=" in db_url:
+        import urllib.parse
+        url_parts = list(urllib.parse.urlparse(db_url))
+        query = urllib.parse.parse_qs(url_parts[4])
+        query.pop('sslmode', None)
+        url_parts[4] = urllib.parse.urlencode(query, doseq=True)
+        db_url = urllib.parse.urlunparse(url_parts)
+    
+    connect_args = {"ssl": True}
+elif "sqlite" in db_url:
+    connect_args = {"check_same_thread": False}
+
 engine = create_async_engine(
-    settings.database_url,
+    db_url,
     echo=False,
-    connect_args={"check_same_thread": False} if "sqlite" in settings.database_url else {},
+    connect_args=connect_args,
 )
 
 AsyncSessionLocal = async_sessionmaker(
