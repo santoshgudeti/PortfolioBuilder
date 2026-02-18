@@ -15,17 +15,23 @@ app = FastAPI(
 
 # CORS — supports multiple origins via comma-separated FRONTEND_URL
 _raw_origins = settings.frontend_url or "http://localhost:5173"
-allowed_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
-# Always include localhost for local dev
-if "http://localhost:5173" not in allowed_origins:
-    allowed_origins.append("http://localhost:5173")
-if "http://localhost:3000" not in allowed_origins:
-    allowed_origins.append("http://localhost:3000")
+# Strip trailing slashes and whitespace
+allowed_origins = [o.strip().rstrip("/") for o in _raw_origins.split(",") if o.strip()]
+
+# If '*' is anywhere, use only '*' for allow_origins
+if "*" in allowed_origins:
+    allowed_origins = ["*"]
+else:
+    # Always include localhost for local dev
+    if "http://localhost:5173" not in allowed_origins:
+        allowed_origins.append("http://localhost:5173")
+    if "http://localhost:3000" not in allowed_origins:
+        allowed_origins.append("http://localhost:3000")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_credentials=True,
+    allow_credentials=True if "*" not in allowed_origins else False, # allow_credentials must be False if using ["*"]
     allow_methods=["*"],
     allow_headers=["*"],
 )
