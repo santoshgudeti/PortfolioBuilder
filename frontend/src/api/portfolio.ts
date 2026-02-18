@@ -1,0 +1,13 @@
+import apiClient from './client'
+
+export const portfolioApi = {
+    getMyPortfolio: () => apiClient.get('/portfolio/me'),
+    updateMyPortfolio: (data: object) => apiClient.put('/portfolio/me', data),
+    publish: () => apiClient.post('/portfolio/me/publish'),
+    unpublish: () => apiClient.post('/portfolio/me/unpublish'),
+    preview: () => apiClient.get('/portfolio/preview'),
+    getPublic: (slug: string) => apiClient.get(`/portfolio/public/${slug}`),
+    regenerate: (field: string, current_value: string, context?: string) =>
+        apiClient.post('/portfolio/me/regenerate', { field, current_value, context: context || '' }),
+}
+
