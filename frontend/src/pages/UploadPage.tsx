@@ -1,20 +1,63 @@
 import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useNavigate } from 'react-router-dom'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { resumeApi } from '@/api/resume'
+import { portfolioApi } from '@/api/portfolio'
 import { usePortfolioStore } from '@/store/portfolioStore'
-import { Upload, FileText, CheckCircle, Loader2, X, AlertCircle } from 'lucide-react'
+import { Upload, FileText, CheckCircle, Loader2, X, AlertCircle, RefreshCw, GitMerge } from 'lucide-react'
+import PageTransition from '@/components/PageTransition'
+import AIProcessingOverlay from '@/components/AIProcessingOverlay'
+import ToneSelector from '@/components/ToneSelector'
 
 export default function UploadPage() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const { setParsedData, setPortfolio } = usePortfolioStore()
     const [file, setFile] = useState<File | null>(null)
+    const [tone, setTone] = useState('professional')
+    const [mode, setMode] = useState<'replace' | 'merge'>('replace')
+
+    const { data: existingPortfolio, isLoading } = useQuery({
+        queryKey: ['portfolio'],
+        queryFn: () => portfolioApi.getMyPortfolio().then(r => r.data),
+        retry: false,
+    })
+    const hasPortfolio = !!existingPortfolio
+
+    if (isLoading) {
+        return (
+            <div className="flex h-[50vh] items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
+            </div>
+        )
+    }
+
+    if (hasPortfolio) {
+        return (
+            <PageTransition className="max-w-2xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center">
+                <div className="w-24 h-24 rounded-full bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center mb-6">
+                    <CheckCircle className="w-12 h-12 text-brand-600 dark:text-brand-400" />
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">Portfolio Already Created</h1>
+                <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-lg">
+                    For now, you can only create one portfolio per account. Your generated portfolio is already set up and ready to be customized!
+                </p>
+                <div className="flex gap-4">
+                    <button onClick={() => navigate('/editor')} className="btn-primary px-8 py-3 text-lg shadow-lg shadow-brand-500/20">
+                        Go To Editor
+                    </button>
+                    <button onClick={() => navigate('/dashboard')} className="px-8 py-3 text-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
+                        Dashboard
+                    </button>
+                </div>
+            </PageTransition>
+        )
+    }
 
     const mutation = useMutation({
-        mutationFn: (f: File) => resumeApi.upload(f).then(r => r.data),
+        mutationFn: (f: File) => resumeApi.upload(f, tone, mode).then(r => r.data),
         onSuccess: (data) => {
             setParsedData(data.parsed_data)
             setPortfolio({ portfolioId: data.portfolio_id, slug: data.slug })
@@ -48,7 +91,8 @@ export default function UploadPage() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto animate-fade-in">
+        <PageTransition className="max-w-2xl mx-auto">
+            {mutation.isPending && <AIProcessingOverlay />}
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Upload Your Resume</h1>
                 <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -103,6 +147,56 @@ export default function UploadPage() {
                 </div>
             )}
 
+            {/* Tone Selection */}
+            {file && (
+                <div className="mt-6">
+                    <ToneSelector selected={tone} onChange={setTone} />
+                </div>
+            )}
+
+            {/* Mode Selection — only for re-uploads */}
+            {file && hasPortfolio && (
+                <div className="mt-4 card">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mb-3">You already have a portfolio. How should we handle this?</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setMode('merge')}
+                            className={`p-4 rounded-xl border-2 text-left transition-all ${mode === 'merge'
+                                ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20'
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                                }`}
+                        >
+                            <div className="flex items-center gap-2 mb-1">
+                                <GitMerge className="w-4 h-4 text-brand-500" />
+                                <span className="text-sm font-bold text-gray-900 dark:text-white">Merge</span>
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Keep your edits. Only fill in empty fields from the new resume.</p>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setMode('replace')}
+                            className={`p-4 rounded-xl border-2 text-left transition-all ${mode === 'replace'
+                                ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                                }`}
+                        >
+                            <div className="flex items-center gap-2 mb-1">
+                                <RefreshCw className="w-4 h-4 text-red-500" />
+                                <span className="text-sm font-bold text-gray-900 dark:text-white">Replace</span>
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Start fresh. Overwrites all current portfolio content.</p>
+                        </button>
+                    </div>
+                    {mode === 'replace' && (
+                        <div className="mt-3 flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800">
+                            <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                            <p className="text-xs text-red-600 dark:text-red-400">⚠️ This will <strong>overwrite</strong> your current portfolio content including any manual edits.</p>
+                        </div>
+                    )}
+                </div>
+            )}
+
             {/* Upload button */}
             {file && (
                 <button
@@ -146,6 +240,6 @@ export default function UploadPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </PageTransition>
     )
 }

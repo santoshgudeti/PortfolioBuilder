@@ -1,16 +1,30 @@
 import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { usePortfolioStore } from '@/store/portfolioStore'
+import { authApi } from '@/api/auth'
 import toast from 'react-hot-toast'
-import { User, Trash2, AlertTriangle } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { User, Trash2, AlertTriangle, ArrowRight, Loader2 } from 'lucide-react'
 
 export default function SettingsPage() {
     const { user, logout } = useAuthStore()
     const { reset } = usePortfolioStore()
     const [showDanger, setShowDanger] = useState(false)
+    const [deleting, setDeleting] = useState(false)
 
-    const handleDeleteAccount = () => {
-        toast.error('Account deletion requires backend implementation.')
+    const handleDeleteAccount = async () => {
+        setDeleting(true)
+        try {
+            await authApi.deleteAccount()
+            toast.success('Account deleted successfully.')
+            reset()
+            logout()
+        } catch (err: any) {
+            toast.error(err.response?.data?.detail || 'Failed to delete account')
+        } finally {
+            setDeleting(false)
+            setShowDanger(false)
+        }
     }
 
     return (
@@ -26,9 +40,13 @@ export default function SettingsPage() {
                     <User className="w-4 h-4" /> Profile
                 </h2>
                 <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 rounded-full bg-brand-500 flex items-center justify-center text-white text-xl font-bold">
-                        {user?.name?.[0]?.toUpperCase() || 'U'}
-                    </div>
+                    {user?.avatar_url ? (
+                        <img src={user.avatar_url} alt={user.name} className="w-14 h-14 rounded-full object-cover ring-2 ring-brand-500/30" />
+                    ) : (
+                        <div className="w-14 h-14 rounded-full bg-brand-500 flex items-center justify-center text-white text-xl font-bold">
+                            {user?.name?.[0]?.toUpperCase() || 'U'}
+                        </div>
+                    )}
                     <div>
                         <p className="font-semibold text-gray-900 dark:text-white">{user?.name}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
@@ -37,9 +55,12 @@ export default function SettingsPage() {
                         )}
                     </div>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                    To update your name or email, contact support. Password change coming soon.
-                </p>
+                <Link
+                    to="/profile"
+                    className="text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1 hover:underline"
+                >
+                    Edit profile, change password, or update photo <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
             </div>
 
             {/* Danger Zone */}
@@ -78,11 +99,14 @@ export default function SettingsPage() {
                     <div className="card max-w-sm w-full mx-4">
                         <h3 className="font-bold text-gray-900 dark:text-white mb-2">Are you sure?</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                            This will permanently delete your account and all portfolio data. This cannot be undone.
+                            This will permanently delete your account, portfolio, and all analytics data. This cannot be undone.
                         </p>
                         <div className="flex gap-2">
-                            <button onClick={() => setShowDanger(false)} className="btn-secondary flex-1">Cancel</button>
-                            <button onClick={handleDeleteAccount} className="btn-primary flex-1 bg-red-500 hover:bg-red-600">Delete</button>
+                            <button onClick={() => setShowDanger(false)} disabled={deleting} className="btn-secondary flex-1">Cancel</button>
+                            <button onClick={handleDeleteAccount} disabled={deleting} className="btn-primary flex-1 bg-red-500 hover:bg-red-600">
+                                {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                {deleting ? 'Deleting...' : 'Delete Forever'}
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -41,13 +41,18 @@ export interface ParsedData {
 interface PortfolioState {
     portfolioId: string | null
     slug: string | null
+    customDomain: string | null
     parsedData: ParsedData | null
     theme: string
+    templateId: string
+    mode: string
     primaryColor: string
     isPublished: boolean
     setPortfolio: (data: Partial<PortfolioState>) => void
     setParsedData: (data: ParsedData) => void
     setTheme: (theme: string) => void
+    setTemplateId: (templateId: string) => void
+    setMode: (mode: string) => void
     setPrimaryColor: (color: string) => void
     reset: () => void
 }
@@ -55,20 +60,28 @@ interface PortfolioState {
 export const usePortfolioStore = create<PortfolioState>((set) => ({
     portfolioId: null,
     slug: null,
+    customDomain: null,
     parsedData: null,
     theme: 'minimal',
+    templateId: 'standard',
+    mode: 'light',
     primaryColor: '#6366f1',
     isPublished: false,
 
     setPortfolio: (data) => set((state) => ({ ...state, ...data })),
     setParsedData: (data) => set({ parsedData: data }),
     setTheme: (theme) => set({ theme }),
+    setTemplateId: (templateId) => set({ templateId }),
+    setMode: (mode) => set({ mode }),
     setPrimaryColor: (color) => set({ primaryColor: color }),
     reset: () => set({
         portfolioId: null,
         slug: null,
+        customDomain: null,
         parsedData: null,
         theme: 'minimal',
+        templateId: 'standard',
+        mode: 'light',
         primaryColor: '#6366f1',
         isPublished: false,
     }),

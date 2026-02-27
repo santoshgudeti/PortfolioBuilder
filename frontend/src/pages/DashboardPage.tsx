@@ -1,14 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { portfolioApi } from '@/api/portfolio'
+import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/store/authStore'
 import { usePortfolioStore } from '@/store/portfolioStore'
-import { useEffect } from 'react'
-import { Upload, Globe, Edit3, Eye, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Upload, Globe, Edit3, Eye, CheckCircle, AlertCircle, ArrowRight, Mail } from 'lucide-react'
+import PageTransition from '@/components/PageTransition'
+import toast from 'react-hot-toast'
 
 export default function DashboardPage() {
     const { user } = useAuthStore()
     const { setPortfolio } = usePortfolioStore()
+    const [resending, setResending] = useState(false)
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ['portfolio'],
@@ -30,9 +34,42 @@ export default function DashboardPage() {
     }, [data, setPortfolio])
 
     const hasPortfolio = !!data && !isError
+    const showVerificationBanner = user && !user.is_verified && user.auth_provider === 'email'
+
+    const handleResendVerification = async () => {
+        if (!user) return
+        setResending(true)
+        try {
+            await authApi.resendVerification(user.email)
+            toast.success('Verification email sent! Check your inbox.')
+        } catch {
+            toast.error('Failed to send verification email.')
+        } finally {
+            setResending(false)
+        }
+    }
 
     return (
-        <div className="max-w-4xl mx-auto animate-fade-in">
+        <PageTransition className="max-w-4xl mx-auto">
+            {/* Email Verification Banner */}
+            {showVerificationBanner && (
+                <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <Mail className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                        <p className="text-sm text-amber-700 dark:text-amber-300">
+                            <strong>Verify your email</strong> to generate portfolios. Check your inbox for the verification link.
+                        </p>
+                    </div>
+                    <button
+                        onClick={handleResendVerification}
+                        disabled={resending}
+                        className="text-sm font-medium text-amber-700 dark:text-amber-300 hover:text-amber-800 dark:hover:text-amber-200 whitespace-nowrap underline"
+                    >
+                        {resending ? 'Sending...' : 'Resend'}
+                    </button>
+                </div>
+            )}
+
             {/* Header */}
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -76,18 +113,31 @@ export default function DashboardPage() {
 
             {/* Quick actions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <Link to="/upload" className="card hover:shadow-md transition-all hover:border-brand-200 dark:hover:border-brand-800 group">
-                    <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <Upload className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Upload Resume</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Upload PDF or DOCX to generate your portfolio</p>
-                    <div className="flex items-center gap-1 text-brand-600 dark:text-brand-400 text-sm font-medium mt-3">
-                        Upload <ArrowRight className="w-3.5 h-3.5" />
-                    </div>
-                </Link>
+                {!hasPortfolio ? (
+                    <Link to="/upload" className="card hover:shadow-glow transition-all hover:border-brand-300 dark:hover:border-brand-700 group">
+                        <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <Upload className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Create Portfolio</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Upload PDF or DOCX to generate your portfolio</p>
+                        <div className="flex items-center gap-1 text-brand-600 dark:text-brand-400 text-sm font-medium mt-3">
+                            Start <ArrowRight className="w-3.5 h-3.5" />
+                        </div>
+                    </Link>
+                ) : (
+                    <Link to="/settings" className="card hover:shadow-glow transition-all hover:border-blue-300 dark:hover:border-blue-700 group">
+                        <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Portfolio Active</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Manage your connected account settings</p>
+                        <div className="flex items-center gap-1 text-brand-600 dark:text-brand-400 text-sm font-medium mt-3">
+                            Settings <ArrowRight className="w-3.5 h-3.5" />
+                        </div>
+                    </Link>
+                )}
 
-                <Link to="/editor" className="card hover:shadow-md transition-all hover:border-brand-200 dark:hover:border-brand-800 group">
+                <Link to="/editor" className="card hover:shadow-glow-purple transition-all hover:border-purple-300 dark:hover:border-purple-700 group">
                     <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                         <Edit3 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     </div>
@@ -99,7 +149,7 @@ export default function DashboardPage() {
                 </Link>
 
                 {hasPortfolio && (
-                    <a href={`/u/${data?.slug}`} target="_blank" rel="noopener noreferrer" className="card hover:shadow-md transition-all hover:border-brand-200 dark:hover:border-brand-800 group">
+                    <a href={`/u/${data?.slug}`} target="_blank" rel="noopener noreferrer" className="card hover:shadow-glow transition-all hover:border-green-300 dark:hover:border-green-700 group">
                         <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                             <Eye className="w-5 h-5 text-green-600 dark:text-green-400" />
                         </div>
@@ -144,6 +194,6 @@ export default function DashboardPage() {
                     </div>
                 )
             })()}
-        </div>
+        </PageTransition>
     )
 }

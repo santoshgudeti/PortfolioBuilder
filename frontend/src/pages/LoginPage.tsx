@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/store/authStore'
-import { Briefcase, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Briefcase, Eye, EyeOff, Loader2, MailWarning, RefreshCw } from 'lucide-react'
+import GoogleSignInBox from '@/components/GoogleSignInBox'
 
 interface FormData { email: string; password: string }
 
@@ -13,21 +14,50 @@ export default function LoginPage() {
     const { setAuth } = useAuthStore()
     const [showPass, setShowPass] = useState(false)
     const [loading, setLoading] = useState(false)
-    const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
+    const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null)
+    const [resending, setResending] = useState(false)
+    const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>()
 
     const onSubmit = async (data: FormData) => {
         setLoading(true)
+        setUnverifiedEmail(null)
         try {
             const res = await authApi.login(data)
             setAuth(res.data.access_token, res.data.user)
-            toast.success(`Welcome back, ${res.data.user.name}!`)
+            toast.success(`Welcome back, ${res.data.user.name}! 👋`)
             navigate('/dashboard')
         } catch (err: any) {
-            toast.error(err.response?.data?.detail || 'Login failed')
+            const detail = err.response?.data?.detail || 'Login failed'
+            // Detect unverified email error
+            if (detail.includes('verify your email')) {
+                setUnverifiedEmail(data.email)
+            } else if (detail.includes('sign up')) {
+                toast.error(detail, {
+                    icon: '👤',
+                    duration: 4000,
+                })
+            } else {
+                toast.error(detail)
+            }
         } finally {
             setLoading(false)
         }
     }
+
+    const handleResend = async () => {
+        if (!unverifiedEmail) return
+        setResending(true)
+        try {
+            await authApi.resendVerification(unverifiedEmail)
+            toast.success('Verification email resent! Check your inbox.')
+        } catch {
+            toast.error('Failed to resend. Please try again.')
+        } finally {
+            setResending(false)
+        }
+    }
+
+    const email = watch('email')
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4">
@@ -43,6 +73,38 @@ export default function LoginPage() {
                 </div>
 
                 <div className="card">
+                    <GoogleSignInBox />
+
+                    <div className="relative my-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-200 dark:border-gray-800"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-2 bg-white dark:bg-gray-900 text-gray-500">Or continue with email</span>
+                        </div>
+                    </div>
+
+                    {/* Unverified email inline alert */}
+                    {unverifiedEmail && (
+                        <div className="mb-4 p-4 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 flex items-start gap-3">
+                            <MailWarning className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">Email not verified</p>
+                                <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
+                                    Please check <span className="font-medium">{unverifiedEmail}</span> and click the verification link.
+                                </p>
+                                <button
+                                    onClick={handleResend}
+                                    disabled={resending}
+                                    className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors"
+                                >
+                                    {resending ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                                    {resending ? 'Sending...' : 'Resend verification email'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div>
                             <label className="label mb-1.5">Email</label>
@@ -73,6 +135,11 @@ export default function LoginPage() {
                                 </button>
                             </div>
                             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+                            <div className="text-right mt-1">
+                                <Link to="/forgot-password" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
+                                    Forgot password?
+                                </Link>
+                            </div>
                         </div>
 
                         <button type="submit" disabled={loading} className="btn-primary w-full mt-2">

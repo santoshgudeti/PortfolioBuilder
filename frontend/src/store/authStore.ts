@@ -6,6 +6,9 @@ interface User {
     name: string
     email: string
     is_admin: boolean
+    is_verified: boolean
+    avatar_url: string | null
+    auth_provider: string
 }
 
 interface AuthState {
