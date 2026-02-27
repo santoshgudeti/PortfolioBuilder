@@ -52,14 +52,24 @@ Rules:
 """
 
 
-async def parse_resume_with_groq(resume_text: str) -> dict:
+TONE_INSTRUCTIONS = {
+    "professional": "Write in a polished, corporate tone. Use formal language, industry-standard terminology, and focus on measurable achievements.",
+    "creative": "Write in a bold, expressive tone. Use vivid language, creative metaphors, and showcase personality. Make the reader feel the passion.",
+    "startup": "Write in a fast-paced, modern tech tone. Use action-oriented language, focus on impact and innovation. Sound like a Y Combinator pitch.",
+}
+
+
+async def parse_resume_with_groq(resume_text: str, tone: str = "professional") -> dict:
     """Send resume text to Groq and return structured JSON."""
     client = Groq(api_key=settings.groq_api_key)
+
+    tone_instruction = TONE_INSTRUCTIONS.get(tone, TONE_INSTRUCTIONS["professional"])
+    enhanced_prompt = SYSTEM_PROMPT + f"\n\nTone: {tone_instruction}"
 
     completion = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": enhanced_prompt},
             {"role": "user", "content": f"Parse this resume:\n\n{resume_text}"},
         ],
         temperature=0.3,

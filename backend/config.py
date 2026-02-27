@@ -9,6 +9,12 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
     frontend_url: str = "http://localhost:5173"
+    google_client_id: str = ""
+    admin_email: str = ""
+    # Email settings (for Phase 3)
+    mail_username: str = ""
+    mail_password: str = ""
+    mail_from: str = ""
     # Local file storage — no cloud needed (resumes are parsed then discarded)
     upload_dir: str = "./uploads"
 

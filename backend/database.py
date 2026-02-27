@@ -9,16 +9,23 @@ db_url = settings.database_url
 connect_args = {}
 
 if "postgresql" in db_url:
-    # asyncpg doesn't like 'sslmode' in the URL, it wants 'ssl' in connect_args
-    if "sslmode=" in db_url:
+    # Check if SSL is explicitly disabled (for self-hosted servers)
+    if "ssl=disable" in db_url:
+        # Remove ssl=disable from URL and set ssl to False
+        db_url = db_url.replace("?ssl=disable", "").replace("&ssl=disable", "")
+        connect_args = {"ssl": False}
+    elif "sslmode=" in db_url:
+        # asyncpg doesn't like 'sslmode' in the URL, it wants 'ssl' in connect_args
         import urllib.parse
         url_parts = list(urllib.parse.urlparse(db_url))
         query = urllib.parse.parse_qs(url_parts[4])
         query.pop('sslmode', None)
         url_parts[4] = urllib.parse.urlencode(query, doseq=True)
         db_url = urllib.parse.urlunparse(url_parts)
-    
-    connect_args = {"ssl": True}
+        connect_args = {"ssl": True}
+    else:
+        # Default: try without SSL for self-hosted, with SSL for cloud
+        connect_args = {}
 elif "sqlite" in db_url:
     connect_args = {"check_same_thread": False}
 

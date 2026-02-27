@@ -44,23 +44,31 @@ class ParsedResumeData(BaseModel):
 class PortfolioCreate(BaseModel):
     parsed_data: ParsedResumeData
     theme: str = "minimal"
+    template_id: str = "standard"
+    mode: str = "light"
     primary_color: str = "#6366f1"
 
 
 class PortfolioUpdate(BaseModel):
     parsed_data: Optional[ParsedResumeData] = None
     theme: Optional[str] = None
+    template_id: Optional[str] = None
+    mode: Optional[str] = None
     primary_color: Optional[str] = None
     is_published: Optional[bool] = None
     hidden_sections: Optional[str] = None
+    custom_domain: Optional[str] = None
 
 
 class PortfolioOut(BaseModel):
     id: str
     user_id: str
     slug: str
+    custom_domain: Optional[str]
     parsed_data: str  # JSON string
     theme: str
+    template_id: str
+    mode: str
     primary_color: str
     is_published: bool
     resume_filename: Optional[str]
