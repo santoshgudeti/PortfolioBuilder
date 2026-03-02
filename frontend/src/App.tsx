@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useEffect } from 'react'
+import { authApi } from '@/api/auth'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { HelmetProvider } from 'react-helmet-async'
 import LandingPage from '@/pages/LandingPage'
@@ -39,12 +40,20 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-    const { initTheme } = useAuthStore()
+    const { initTheme, token, setAuth } = useAuthStore()
     const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"
 
     useEffect(() => {
         initTheme()
-    }, [initTheme])
+
+        // Silently refresh user data on mount if we have a token
+        // to catch DB changes like is_admin or verification status
+        if (token) {
+            authApi.me()
+                .then((res: any) => setAuth(token, res.data))
+                .catch((err: any) => console.error("Failed to refresh user auth state:", err))
+        }
+    }, [initTheme, token, setAuth])
 
     const hostname = window.location.hostname
     const isCustomDomain = hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.includes('vercel.app') && hostname !== (import.meta.env.VITE_APP_DOMAIN || '')

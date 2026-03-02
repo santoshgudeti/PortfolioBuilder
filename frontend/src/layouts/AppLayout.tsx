@@ -2,7 +2,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import {
     LayoutDashboard, Upload, Palette, Settings, LogOut,
-    Moon, Sun, Menu, Briefcase, TrendingUp, User, ChevronLeft, ChevronRight
+    Moon, Sun, Menu, Briefcase, TrendingUp, User, ChevronLeft, ChevronRight,
+    Shield
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -61,6 +62,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
                     {/* Nav */}
                     <nav className="flex-1 px-2 py-4 space-y-1">
+                        {user?.is_admin && (
+                            <div className="mb-4">
+                                <Link
+                                    to="/admin"
+                                    onClick={() => setMobileOpen(false)}
+                                    title={collapsed ? "Admin Dashboard" : undefined}
+                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm ${collapsed ? 'justify-center' : ''} ${location.pathname === '/admin'
+                                        ? 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800/30'
+                                        : 'bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/10 dark:text-indigo-400 dark:hover:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/30'
+                                        }`}
+                                >
+                                    <Shield className="w-4 h-4 flex-shrink-0" />
+                                    {!collapsed && "Admin"}
+                                </Link>
+                            </div>
+                        )}
                         {navItems.map(({ to, icon: Icon, label }) => {
                             const active = location.pathname === to
                             return (

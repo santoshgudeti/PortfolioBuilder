@@ -1,13 +1,33 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import apiClient from '@/api/client'
+import toast from 'react-hot-toast'
 import {
     Users, Globe, Eye, TrendingUp, Search, CheckCircle2,
-    Shield, ExternalLink, Loader2, BarChart3
+    Shield, ExternalLink, Loader2, BarChart3, Ban, CheckCircle, Trash2, PowerOff
 } from 'lucide-react'
+import ConfirmModal from '@/components/ConfirmModal'
 
 export default function AdminPage() {
     const [search, setSearch] = useState('')
+    const [confirmState, setConfirmState] = useState<{
+        isOpen: boolean,
+        title: string,
+        message: string,
+        confirmText: string,
+        isDestructive: boolean,
+        onConfirm: () => void
+    }>({
+        isOpen: false, title: '', message: '', confirmText: 'Confirm', isDestructive: true, onConfirm: () => { }
+    })
+
+    const openConfirm = (title: string, message: string, confirmText: string, isDestructive: boolean, onConfirm: () => void) => {
+        setConfirmState({ isOpen: true, title, message, confirmText, isDestructive, onConfirm })
+    }
+
+    const closeConfirm = () => {
+        setConfirmState(prev => ({ ...prev, isOpen: false }))
+    }
 
     const { data: stats, isLoading: statsLoading } = useQuery({
         queryKey: ['admin-stats'],
@@ -22,6 +42,51 @@ export default function AdminPage() {
     const { data: portfolios } = useQuery({
         queryKey: ['admin-portfolios'],
         queryFn: () => apiClient.get('/admin/portfolios').then(r => r.data),
+    })
+
+    const queryClient = useQueryClient()
+
+    const toggleUserMutation = useMutation({
+        mutationFn: (userId: string) => apiClient.patch(`/admin/users/${userId}/toggle-active`),
+        onSuccess: () => {
+            toast.success('User status updated')
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+        }
+    })
+
+    const verifyUserMutation = useMutation({
+        mutationFn: (userId: string) => apiClient.patch(`/admin/users/${userId}/verify`),
+        onSuccess: () => {
+            toast.success('User verified manually')
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+        }
+    })
+
+    const deleteUserMutation = useMutation({
+        mutationFn: (userId: string) => apiClient.delete(`/admin/users/${userId}`),
+        onSuccess: () => {
+            toast.success('User deleted permanently')
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+            queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
+            queryClient.invalidateQueries({ queryKey: ['admin-portfolios'] })
+        }
+    })
+
+    const unpublishPortfolioMutation = useMutation({
+        mutationFn: (id: string) => apiClient.patch(`/admin/portfolios/${id}/unpublish`),
+        onSuccess: () => {
+            toast.success('Portfolio unpublished')
+            queryClient.invalidateQueries({ queryKey: ['admin-portfolios'] })
+        }
+    })
+
+    const deletePortfolioMutation = useMutation({
+        mutationFn: (id: string) => apiClient.delete(`/admin/portfolios/${id}`),
+        onSuccess: () => {
+            toast.success('Portfolio deleted permanently')
+            queryClient.invalidateQueries({ queryKey: ['admin-portfolios'] })
+            queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
+        }
     })
 
     if (statsLoading) {
@@ -142,6 +207,7 @@ export default function AdminPage() {
                                 <th className="text-left py-2.5 px-5 text-xs font-semibold text-gray-500 uppercase">Provider</th>
                                 <th className="text-left py-2.5 px-5 text-xs font-semibold text-gray-500 uppercase">Status</th>
                                 <th className="text-left py-2.5 px-5 text-xs font-semibold text-gray-500 uppercase">Joined</th>
+                                <th className="text-right py-2.5 px-5 text-xs font-semibold text-gray-500 uppercase">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -182,6 +248,25 @@ export default function AdminPage() {
                                         <td className="py-3 px-5 text-xs text-gray-400 whitespace-nowrap">
                                             {new Date(u.created_at).toLocaleDateString()}
                                         </td>
+                                        <td className="py-3 px-5">
+                                            <div className="flex items-center justify-end gap-1">
+                                                {!u.is_verified && (
+                                                    <button onClick={() => verifyUserMutation.mutate(u.id)} disabled={verifyUserMutation.isPending} title="Verify Email" className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors disabled:opacity-50">
+                                                        <CheckCircle className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                                {!u.is_admin && (
+                                                    <button onClick={() => toggleUserMutation.mutate(u.id)} disabled={toggleUserMutation.isPending} title={u.is_active ? "Suspend User" : "Activate User"} className="p-1.5 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded transition-colors disabled:opacity-50">
+                                                        {u.is_active ? <Ban className="w-4 h-4" /> : <PowerOff className="w-4 h-4" />}
+                                                    </button>
+                                                )}
+                                                {!u.is_admin && (
+                                                    <button onClick={() => openConfirm('Delete User', 'Are you sure you want to permanently delete this user and all their data? This action cannot be undone.', 'Delete User', true, () => { deleteUserMutation.mutate(u.id); closeConfirm() })} disabled={deleteUserMutation.isPending} title="Delete User" className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors disabled:opacity-50">
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))
                             )}
@@ -204,6 +289,7 @@ export default function AdminPage() {
                                 <th className="text-left py-2.5 px-5 text-xs font-semibold text-gray-500 uppercase">Status</th>
                                 <th className="text-left py-2.5 px-5 text-xs font-semibold text-gray-500 uppercase">Views</th>
                                 <th className="text-left py-2.5 px-5 text-xs font-semibold text-gray-500 uppercase">Created</th>
+                                <th className="text-right py-2.5 px-5 text-xs font-semibold text-gray-500 uppercase">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -227,12 +313,29 @@ export default function AdminPage() {
                                     </td>
                                     <td className="py-3 px-5 text-gray-400">{p.view_count}</td>
                                     <td className="py-3 px-5 text-xs text-gray-400 whitespace-nowrap">{new Date(p.created_at).toLocaleDateString()}</td>
+                                    <td className="py-3 px-5">
+                                        <div className="flex items-center justify-end gap-1">
+                                            {p.is_published && (
+                                                <button onClick={() => openConfirm('Unpublish Portfolio', 'Are you sure you want to force unpublish this portfolio? It will be immediately hidden from the public.', 'Unpublish', false, () => { unpublishPortfolioMutation.mutate(p.id); closeConfirm() })} disabled={unpublishPortfolioMutation.isPending} title="Unpublish Portfolio" className="p-1.5 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded transition-colors disabled:opacity-50">
+                                                    <Ban className="w-4 h-4" />
+                                                </button>
+                                            )}
+                                            <button onClick={() => openConfirm('Delete Portfolio', 'Are you sure you want to permanently delete this portfolio? This cannot be undone.', 'Delete', true, () => { deletePortfolioMutation.mutate(p.id); closeConfirm() })} disabled={deletePortfolioMutation.isPending} title="Delete Portfolio" className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors disabled:opacity-50">
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            <ConfirmModal
+                {...confirmState}
+                onClose={closeConfirm}
+            />
         </div>
     )
 }

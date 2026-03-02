@@ -26,36 +26,6 @@ export default function UploadPage() {
     })
     const hasPortfolio = !!existingPortfolio
 
-    if (isLoading) {
-        return (
-            <div className="flex h-[50vh] items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
-            </div>
-        )
-    }
-
-    if (hasPortfolio) {
-        return (
-            <PageTransition className="max-w-2xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center">
-                <div className="w-24 h-24 rounded-full bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center mb-6">
-                    <CheckCircle className="w-12 h-12 text-brand-600 dark:text-brand-400" />
-                </div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">Portfolio Already Created</h1>
-                <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-lg">
-                    For now, you can only create one portfolio per account. Your generated portfolio is already set up and ready to be customized!
-                </p>
-                <div className="flex gap-4">
-                    <button onClick={() => navigate('/editor')} className="btn-primary px-8 py-3 text-lg shadow-lg shadow-brand-500/20">
-                        Go To Editor
-                    </button>
-                    <button onClick={() => navigate('/dashboard')} className="px-8 py-3 text-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
-                        Dashboard
-                    </button>
-                </div>
-            </PageTransition>
-        )
-    }
-
     const mutation = useMutation({
         mutationFn: (f: File) => resumeApi.upload(f, tone, mode).then(r => r.data),
         onSuccess: (data) => {
@@ -85,6 +55,36 @@ export default function UploadPage() {
             else toast.error('Only PDF and DOCX files are accepted')
         },
     })
+
+    if (isLoading) {
+        return (
+            <div className="flex h-[50vh] items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
+            </div>
+        )
+    }
+
+    if (hasPortfolio) {
+        return (
+            <PageTransition className="max-w-2xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center">
+                <div className="w-24 h-24 rounded-full bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center mb-6">
+                    <CheckCircle className="w-12 h-12 text-brand-600 dark:text-brand-400" />
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">Portfolio Already Created</h1>
+                <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-lg">
+                    For now, you can only create one portfolio per account. Your generated portfolio is already set up and ready to be customized!
+                </p>
+                <div className="flex gap-4">
+                    <button onClick={() => navigate('/editor')} className="btn-primary px-8 py-3 text-lg shadow-lg shadow-brand-500/20">
+                        Go To Editor
+                    </button>
+                    <button onClick={() => navigate('/dashboard')} className="px-8 py-3 text-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
+                        Dashboard
+                    </button>
+                </div>
+            </PageTransition>
+        )
+    }
 
     const handleUpload = () => {
         if (file) mutation.mutate(file)
