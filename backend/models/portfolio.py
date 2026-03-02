@@ -19,6 +19,7 @@ class Portfolio(Base):
     primary_color: Mapped[str] = mapped_column(String, default="#6366f1")
     is_published: Mapped[bool] = mapped_column(Boolean, default=False)
     resume_filename: Mapped[str] = mapped_column(String, nullable=True)
+    resume_object_key: Mapped[str] = mapped_column(String, nullable=True)
     view_count: Mapped[int] = mapped_column(Integer, default=0)
     hidden_sections: Mapped[str] = mapped_column(String, default="")  # comma-separated section names
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

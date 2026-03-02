@@ -112,3 +112,102 @@ async def list_portfolios(
         }
         for p in portfolios
     ]
+
+
+@router.patch("/users/{user_id}/verify")
+async def verify_user(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user),
+):
+    """Manually verify a user's email."""
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="User not found")
+    user.is_verified = True
+    await db.commit()
+    return {"message": f"User {user.email} verified."}
+
+
+@router.patch("/users/{user_id}/toggle-active")
+async def toggle_user_active(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user),
+):
+    """Suspend or activate a user account."""
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="User not found")
+    user.is_active = not user.is_active
+    await db.commit()
+    return {"message": f"User {user.email} is now {'active' if user.is_active else 'deactivated'}."}
+
+
+@router.delete("/users/{user_id}")
+async def delete_user_admin(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user),
+):
+    """Hard delete a user and cascade delete their portfolio and page views."""
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    from sqlalchemy import delete
+    # Delete page views for user's portfolios
+    portfolio_result = await db.execute(select(Portfolio.id).where(Portfolio.user_id == user_id))
+    portfolio_ids = [row[0] for row in portfolio_result.all()]
+    if portfolio_ids:
+        await db.execute(delete(PageView).where(PageView.portfolio_id.in_(portfolio_ids)))
+
+    # Delete portfolios
+    await db.execute(delete(Portfolio).where(Portfolio.user_id == user_id))
+    
+    await db.delete(user)
+    await db.commit()
+    return {"message": f"User {user.email} completely deleted."}
+
+
+@router.patch("/portfolios/{portfolio_id}/unpublish")
+async def unpublish_portfolio(
+    portfolio_id: str,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user),
+):
+    """Forcefully unpublish a portfolio."""
+    result = await db.execute(select(Portfolio).where(Portfolio.id == portfolio_id))
+    portfolio = result.scalar_one_or_none()
+    if not portfolio:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    portfolio.is_published = False
+    await db.commit()
+    return {"message": f"Portfolio '{portfolio.slug}' unpublished."}
+
+
+@router.delete("/portfolios/{portfolio_id}")
+async def delete_portfolio_admin(
+    portfolio_id: str,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user),
+):
+    """Hard delete a portfolio."""
+    result = await db.execute(select(Portfolio).where(Portfolio.id == portfolio_id))
+    portfolio = result.scalar_one_or_none()
+    if not portfolio:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    
+    from sqlalchemy import delete
+    await db.execute(delete(PageView).where(PageView.portfolio_id == portfolio_id))
+    await db.delete(portfolio)
+    await db.commit()
+    return {"message": f"Portfolio '{portfolio.slug}' deleted."}

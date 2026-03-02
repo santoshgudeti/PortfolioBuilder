@@ -9,6 +9,7 @@ from schemas.portfolio import PortfolioOut
 from services.parser import extract_text
 from services.groq_service import parse_resume_with_groq
 from services.portfolio_service import create_portfolio, update_portfolio
+from services.rustfs_service import rustfs_service
 from utils.auth import get_current_user
 
 router = APIRouter(prefix="/resume", tags=["Resume"])
@@ -38,6 +39,15 @@ async def upload_resume(
     file_bytes = await file.read()
     if len(file_bytes) > MAX_FILE_SIZE:
         raise HTTPException(status_code=400, detail="File size exceeds 5MB limit")
+
+    # Upload to RustFS
+    resume_object_key = None
+    if rustfs_service.s3_client:
+        try:
+            resume_object_key = await rustfs_service.upload_file(file_bytes, file.filename, current_user.id)
+        except Exception as e:
+            print(f"Failed to upload to RustFS: {e}")
+            # Optionally fail the request, but we'll print and continue so parsing still works even if storage fails.
 
     # Extract text
     try:
@@ -76,7 +86,11 @@ async def upload_resume(
             portfolio = await update_portfolio(
                 db,
                 existing_portfolio,
-                {"parsed_data": json.dumps(merged) if isinstance(merged, dict) else merged, "resume_filename": file.filename},
+                {
+                    "parsed_data": json.dumps(merged) if isinstance(merged, dict) else merged, 
+                    "resume_filename": file.filename,
+                    "resume_object_key": resume_object_key if resume_object_key else existing_portfolio.resume_object_key
+                },
             )
             parsed_data = merged
         else:
@@ -84,7 +98,11 @@ async def upload_resume(
             portfolio = await update_portfolio(
                 db,
                 existing_portfolio,
-                {"parsed_data": parsed_data, "resume_filename": file.filename},
+                {
+                    "parsed_data": parsed_data, 
+                    "resume_filename": file.filename,
+                    "resume_object_key": resume_object_key if resume_object_key else existing_portfolio.resume_object_key
+                },
             )
     else:
         # Create new portfolio
@@ -93,6 +111,7 @@ async def upload_resume(
             user_id=current_user.id,
             parsed_data=parsed_data,
             resume_filename=file.filename,
+            resume_object_key=resume_object_key,
         )
 
     return {

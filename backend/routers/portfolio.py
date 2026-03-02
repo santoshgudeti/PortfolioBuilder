@@ -70,6 +70,26 @@ async def unpublish_portfolio(
     return portfolio
 
 
+@router.get("/me/resume-url")
+async def get_my_resume_url(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Generate a secure, temporary download link for the original uploaded resume."""
+    result = await db.execute(select(Portfolio).where(Portfolio.user_id == current_user.id))
+    portfolio = result.scalar_one_or_none()
+    
+    if not portfolio or not portfolio.resume_object_key:
+        raise HTTPException(status_code=404, detail="No resume file associated with this portfolio")
+
+    from services.rustfs_service import rustfs_service
+    url = rustfs_service.get_presigned_url(portfolio.resume_object_key)
+    if not url:
+        raise HTTPException(status_code=500, detail="Failed to generate secure download link. Is RustFS configured?")
+        
+    return {"url": url, "filename": portfolio.resume_filename}
+
+
 class RegenerateRequest(BaseModel):
     field: str          # "summary", "tagline", "project_description", etc.
     current_value: str  # Current text to improve

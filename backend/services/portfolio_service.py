@@ -22,6 +22,7 @@ async def create_portfolio(
     theme: str = "minimal",
     primary_color: str = "#6366f1",
     resume_filename: str = None,
+    resume_object_key: str = None,
 ) -> Portfolio:
     """Create a new portfolio record."""
     name = parsed_data.get("name", "user")
@@ -39,6 +40,7 @@ async def create_portfolio(
         theme=theme,
         primary_color=primary_color,
         resume_filename=resume_filename,
+        resume_object_key=resume_object_key,
     )
     db.add(portfolio)
     await db.commit()

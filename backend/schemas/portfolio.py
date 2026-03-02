@@ -72,6 +72,7 @@ class PortfolioOut(BaseModel):
     primary_color: str
     is_published: bool
     resume_filename: Optional[str]
+    resume_object_key: Optional[str] = None
     view_count: int = 0
     hidden_sections: str = ""
     created_at: datetime

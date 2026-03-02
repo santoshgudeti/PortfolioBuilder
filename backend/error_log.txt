@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "C:\Users\santo\Downloads\Current Project\Portfolio builder\backend\test_rustfs.py", line 2, in <module>
+    from services.rustfs_service import rustfs_service
+  File "C:\Users\santo\Downloads\Current Project\Portfolio builder\backend\services\rustfs_service.py", line 9, in <module>
+    settings = get_settings()
+  File "C:\Users\santo\Downloads\Current Project\Portfolio builder\backend\config.py", line 26, in get_settings
+    return Settings()
+  File "C:\Users\santo\AppData\Local\Programs\Python\Python310\lib\site-packages\pydantic_settings\main.py", line 242, in __init__
+    super().__init__(**__pydantic_self__.__class__._settings_build_values(sources, init_kwargs))
+  File "C:\Users\santo\AppData\Local\Programs\Python\Python310\lib\site-packages\pydantic\main.py", line 250, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 3 validation errors for Settings
+mail_username
+  Extra inputs are not permitted [type=extra_forbidden, input_value='hamathopc@gmail.com', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+mail_password
+  Extra inputs are not permitted [type=extra_forbidden, input_value='ffxu kwzy islz fgse', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+mail_from
+  Extra inputs are not permitted [type=extra_forbidden, input_value='hamathopc@gmail.com', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden

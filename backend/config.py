@@ -15,8 +15,12 @@ class Settings(BaseSettings):
     mail_username: str = ""
     mail_password: str = ""
     mail_from: str = ""
-    # Local file storage — no cloud needed (resumes are parsed then discarded)
-    upload_dir: str = "./uploads"
+    
+    # RustFS Storage settings
+    rustfs_endpoint_url: str = "http://localhost:9000"
+    rustfs_access_key: str = ""
+    rustfs_secret_key: str = ""
+    rustfs_bucket_name: str = "user-resumes"
 
     class Config:
         env_file = ".env"
