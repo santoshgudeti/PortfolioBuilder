@@ -13,4 +13,6 @@ alembic
 google-auth
 requests
 groq
-boto3 
+boto3
+loguru
+python-jose[cryptography]
