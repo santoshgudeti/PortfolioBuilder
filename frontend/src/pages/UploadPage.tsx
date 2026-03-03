@@ -40,46 +40,36 @@ export default function UploadPage() {
         },
     })
 
-    const onDrop = useCallback((accepted: File[], rejected: any[]) => {
-        if (accepted[0]) {
-            setFile(accepted[0])
-        } else if (rejected[0]) {
-            // Mobile browsers sometimes send weird mime types like empty strings or generic octet streams
-            // We'll manually check the extension if react-dropzone rejects it for mime type
-            const file = rejected[0].file
-            const name = file.name.toLowerCase()
-            const errCode = rejected[0].errors?.[0]?.code
+    // Validate by extension (works on ALL browsers/devices including mobile)
+    const validateAndSetFile = (f: File) => {
+        const name = f.name.toLowerCase()
+        const isValidType = name.endsWith('.pdf') || name.endsWith('.docx') || name.endsWith('.doc')
+        const isValidSize = f.size <= 5 * 1024 * 1024
+        if (!isValidType) { toast.error('Only PDF and DOCX files are accepted'); return }
+        if (!isValidSize) { toast.error('File exceeds 5MB limit'); return }
+        setFile(f)
+    }
 
-            if (errCode === 'file-too-large') {
-                toast.error('File exceeds 5MB limit')
-                return
-            }
-
-            if (name.endsWith('.pdf') || name.endsWith('.docx') || name.endsWith('.doc')) {
-                if (file.size <= 5 * 1024 * 1024) {
-                    setFile(file)
-                    return
-                } else {
-                    toast.error('File exceeds 5MB limit')
-                    return
-                }
-            }
-            toast.error('Only PDF and DOCX files are accepted')
-        }
+    // onDrop: handles drag-and-drop on desktop - validates all files manually
+    const onDrop = useCallback((accepted: File[]) => {
+        if (accepted[0]) validateAndSetFile(accepted[0])
     }, [])
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
-        accept: {
-            'application/pdf': ['.pdf'],
-            'application/x-pdf': ['.pdf'],
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-            'application/msword': ['.doc']
-        },
+        // NO `accept` here — react-dropzone's MIME filtering silently discards files on mobile
+        // (iOS Safari / Chrome Android often report wrong MIME types for PDF/DOCX)
+        // We do our own validation by extension in validateAndSetFile instead
+        noClick: true, // We handle click via a plain native <input> below for mobile reliability
         maxFiles: 1,
-        maxSize: 5 * 1024 * 1024,
-        // We handle onDropRejected directly inside onDrop now to allow manual fallback
     })
+
+    // Called when user taps "Browse" (native file picker — most reliable on mobile)
+    const handleNativeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const f = e.target.files?.[0]
+        if (f) validateAndSetFile(f)
+        e.target.value = '' // Reset so same file can be re-selected
+    }
 
     if (isLoading) {
         return (
@@ -125,30 +115,48 @@ export default function UploadPage() {
                 </p>
             </div>
 
-            {/* Dropzone */}
+            {/* Dropzone — outer div handles desktop drag-drop; label+input handles mobile taps */}
             <div
                 {...getRootProps()}
                 className={`
-          border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all
+          border-2 border-dashed rounded-xl p-10 text-center transition-all
           ${isDragActive
                         ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/10'
                         : 'border-gray-300 dark:border-gray-700 hover:border-brand-400 hover:bg-gray-50 dark:hover:bg-gray-800/50'
                     }
         `}
             >
+                {/* Hidden native file input — most reliable across all mobile browsers */}
+                <input
+                    id="mobile-file-input"
+                    type="file"
+                    accept=".pdf,.docx,.doc"
+                    className="sr-only"
+                    onChange={handleNativeInput}
+                />
+                {/* react-dropzone's own hidden input (for desktop drag-drop) */}
                 <input {...getInputProps()} />
+
                 <div className="flex flex-col items-center gap-4">
-                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors ${isDragActive ? 'bg-brand-100 dark:bg-brand-900/30' : 'bg-gray-100 dark:bg-gray-800'
-                        }`}>
+                    <label
+                        htmlFor="mobile-file-input"
+                        className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors cursor-pointer ${isDragActive ? 'bg-brand-100 dark:bg-brand-900/30' : 'bg-gray-100 dark:bg-gray-800 hover:bg-brand-50 dark:hover:bg-brand-900/20'
+                            }`}
+                    >
                         <Upload className={`w-8 h-8 ${isDragActive ? 'text-brand-500' : 'text-gray-400'}`} />
-                    </div>
+                    </label>
                     {isDragActive ? (
                         <p className="text-brand-600 dark:text-brand-400 font-medium">Drop your resume here!</p>
                     ) : (
                         <>
                             <div>
                                 <p className="font-medium text-gray-900 dark:text-white">Drag & drop your resume</p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">or click to browse files</p>
+                                <label
+                                    htmlFor="mobile-file-input"
+                                    className="text-sm text-brand-500 dark:text-brand-400 mt-1 cursor-pointer underline underline-offset-2 block hover:text-brand-600 transition-colors"
+                                >
+                                    or tap here to browse files
+                                </label>
                             </div>
                             <p className="text-xs text-gray-400 dark:text-gray-500">PDF or DOCX • Max 5MB</p>
                         </>
