@@ -40,20 +40,45 @@ export default function UploadPage() {
         },
     })
 
-    const onDrop = useCallback((accepted: File[]) => {
-        if (accepted[0]) setFile(accepted[0])
+    const onDrop = useCallback((accepted: File[], rejected: any[]) => {
+        if (accepted[0]) {
+            setFile(accepted[0])
+        } else if (rejected[0]) {
+            // Mobile browsers sometimes send weird mime types like empty strings or generic octet streams
+            // We'll manually check the extension if react-dropzone rejects it for mime type
+            const file = rejected[0].file
+            const name = file.name.toLowerCase()
+            const errCode = rejected[0].errors?.[0]?.code
+
+            if (errCode === 'file-too-large') {
+                toast.error('File exceeds 5MB limit')
+                return
+            }
+
+            if (name.endsWith('.pdf') || name.endsWith('.docx') || name.endsWith('.doc')) {
+                if (file.size <= 5 * 1024 * 1024) {
+                    setFile(file)
+                    return
+                } else {
+                    toast.error('File exceeds 5MB limit')
+                    return
+                }
+            }
+            toast.error('Only PDF and DOCX files are accepted')
+        }
     }, [])
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
-        accept: { 'application/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] },
+        accept: {
+            'application/pdf': ['.pdf'],
+            'application/x-pdf': ['.pdf'],
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+            'application/msword': ['.doc']
+        },
         maxFiles: 1,
         maxSize: 5 * 1024 * 1024,
-        onDropRejected: (files) => {
-            const err = files[0]?.errors[0]
-            if (err?.code === 'file-too-large') toast.error('File exceeds 5MB limit')
-            else toast.error('Only PDF and DOCX files are accepted')
-        },
+        // We handle onDropRejected directly inside onDrop now to allow manual fallback
     })
 
     if (isLoading) {
