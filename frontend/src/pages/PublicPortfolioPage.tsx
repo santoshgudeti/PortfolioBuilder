@@ -7,6 +7,16 @@ import TechGridTemplate from '@/templates/TechGridTemplate'
 import CorporateTemplate from '@/templates/CorporateTemplate'
 import FreelancerTemplate from '@/templates/FreelancerTemplate'
 import AcademicTemplate from '@/templates/AcademicTemplate'
+import SplitTemplate from '@/templates/SplitTemplate'
+import TerminalTemplate from '@/templates/TerminalTemplate'
+import NeobrutalismTemplate from '@/templates/NeobrutalismTemplate'
+import GlassmorphismTemplate from '@/templates/GlassmorphismTemplate'
+import NotionTemplate from '@/templates/NotionTemplate'
+import AppleDesktopTemplate from '@/templates/AppleDesktopTemplate'
+import MaterialAppTemplate from '@/templates/MaterialAppTemplate'
+import CyberpunkTemplate from '@/templates/CyberpunkTemplate'
+import BauhausTemplate from '@/templates/BauhausTemplate'
+import BioLinkTemplate from '@/templates/BioLinkTemplate'
 
 function hexToRgb(hex: string) {
     if (!hex || typeof hex !== 'string' || !hex.startsWith('#') || hex.length < 7) {
@@ -101,6 +111,26 @@ export default function PublicPortfolioPage({ previewData, previewTheme, preview
                 <FreelancerTemplate {...props} />
             ) : templateId === 'student' ? (
                 <AcademicTemplate {...props} />
+            ) : templateId === 'split' ? (
+                <SplitTemplate {...props} />
+            ) : templateId === 'terminal' ? (
+                <TerminalTemplate {...props} />
+            ) : templateId === 'neobrutalism' ? (
+                <NeobrutalismTemplate {...props} />
+            ) : templateId === 'glassmorphism' ? (
+                <GlassmorphismTemplate {...props} />
+            ) : templateId === 'notion' ? (
+                <NotionTemplate {...props} />
+            ) : templateId === 'apple' ? (
+                <AppleDesktopTemplate {...props} />
+            ) : templateId === 'material' ? (
+                <MaterialAppTemplate {...props} />
+            ) : templateId === 'cyberpunk' ? (
+                <CyberpunkTemplate {...props} />
+            ) : templateId === 'bauhaus' ? (
+                <BauhausTemplate {...props} />
+            ) : templateId === 'biolink' ? (
+                <BioLinkTemplate {...props} />
             ) : (
                 <StandardTemplate {...props} />
             )}

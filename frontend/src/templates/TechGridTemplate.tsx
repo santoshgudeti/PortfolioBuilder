@@ -97,7 +97,7 @@ export default function TechGridTemplate({ pd, data, color, rgb, mode, hiddenSec
     }
 
     return (
-        <div className={`min-h-screen transition-colors duration-300 ${mode === 'dark' ? 'dark bg-[#0a0a0a] text-white' : 'bg-gray-100 text-gray-900'}`}>
+        <div className={`min-h-screen font-space transition-colors duration-300 ${mode === 'dark' ? 'dark bg-[#0a0a0a] text-white' : 'bg-gray-100 text-gray-900'}`}>
             {!isPreview && (
                 <Helmet>
                     <title>{pd.name} — Tech Portfolio</title>
@@ -215,26 +215,29 @@ export default function TechGridTemplate({ pd, data, color, rgb, mode, hiddenSec
                     )}
 
                     {/* Projects Bento Cards - map each project into a card */}
-                    {pd.projects?.length > 0 && !hiddenSections.has('projects') && pd.projects.map((proj: any, i: number) => (
-                        <div key={`proj-${i}`} className={`md:col-span-${i % 3 === 0 ? '2' : '1'} rounded-3xl p-6 border border-black/5 dark:border-white/5 shadow-sm flex flex-col relative group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${i % 2 === 0 ? 'bg-white dark:bg-white/5' : 'bg-gray-50 dark:bg-black'}`}>
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="w-10 h-10 rounded-2xl flex items-center justify-center font-bold" style={{ backgroundColor: `rgba(${rgb},0.1)`, color }}>
-                                    {proj.title?.[0]?.toUpperCase()}
+                    {pd.projects?.length > 0 && !hiddenSections.has('projects') && pd.projects.map((proj: any, i: number) => {
+                        const colSpanClass = i % 3 === 0 ? 'md:col-span-2' : 'md:col-span-1';
+                        return (
+                            <div key={`proj-${i}`} className={`${colSpanClass} rounded-3xl p-6 border border-black/5 dark:border-white/5 shadow-sm flex flex-col relative group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${i % 2 === 0 ? 'bg-white dark:bg-white/5' : 'bg-gray-50 dark:bg-black'}`}>
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 rounded-2xl flex items-center justify-center font-bold" style={{ backgroundColor: `rgba(${rgb},0.1)`, color }}>
+                                        {proj.title?.[0]?.toUpperCase()}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {proj.github && <a href={proj.github} target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><Github className="w-4 h-4 text-gray-700 dark:text-gray-300" /></a>}
+                                        {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><ExternalLink className="w-4 h-4 text-gray-700 dark:text-gray-300" /></a>}
+                                    </div>
                                 </div>
-                                <div className="flex gap-2">
-                                    {proj.github && <a href={proj.github} target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><Github className="w-4 h-4 text-gray-700 dark:text-gray-300" /></a>}
-                                    {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><ExternalLink className="w-4 h-4 text-gray-700 dark:text-gray-300" /></a>}
+                                <h3 className="font-bold text-lg dark:text-white mb-2">{proj.title}</h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 flex-1 line-clamp-3">{proj.description}</p>
+                                <div className="flex flex-wrap gap-2 mt-auto">
+                                    {proj.tech?.map((t: string, j: number) => (
+                                        <span key={j} className="text-xs px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 font-mono border border-black/5 dark:border-white/5">{t}</span>
+                                    ))}
                                 </div>
                             </div>
-                            <h3 className="font-bold text-lg dark:text-white mb-2">{proj.title}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 flex-1 line-clamp-3">{proj.description}</p>
-                            <div className="flex flex-wrap gap-2 mt-auto">
-                                {proj.tech?.map((t: string, j: number) => (
-                                    <span key={j} className="text-xs px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 font-mono border border-black/5 dark:border-white/5">{t}</span>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
+                        )
+                    })}
 
                     {/* All Experience List (If more than 1) */}
                     {pd.experience?.length > 1 && !hiddenSections.has('experience') && (

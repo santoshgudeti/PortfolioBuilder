@@ -7,17 +7,17 @@ import { TemplateProps } from './types'
 
 export default function AcademicTemplate({ pd, data, color, rgb, mode, hiddenSections, initials, isPdf, publicUrl, isPreview }: TemplateProps) {
     return (
-        <div className={`min-h-screen font-serif ${mode === 'dark' ? 'dark bg-gray-900 text-gray-300' : 'bg-[#faf9f6] text-gray-900'}`}>
+        <div className={`min-h-screen font-playfair ${mode === 'dark' ? 'dark bg-gray-900 text-gray-300' : 'bg-[#faf9f6] text-gray-900'}`}>
             {!isPreview && (
                 <Helmet>
                     <title>{pd.name || 'Curriculum Vitae'} — Academic CV</title>
                 </Helmet>
             )}
 
-            <div className="max-w-4xl mx-auto p-8 md:p-16 lg:p-24 bg-white dark:bg-gray-900 shadow-2xl dark:shadow-none min-h-screen my-0 md:my-8">
+            <div className="max-w-4xl mx-auto p-6 md:p-12 lg:p-20 bg-white dark:bg-gray-900 shadow-2xl dark:shadow-none min-h-screen my-0 md:my-8 border-t-8 md:border-t-[12px] md:rounded-t-sm" style={{ borderTopColor: color }}>
                 {/* Header */}
                 <header className="border-b-4 pb-8 mb-12 text-center" style={{ borderColor: color }}>
-                    <h1 className="text-4xl md:text-5xl font-bold uppercase tracking-widest text-gray-900 dark:text-white mb-4">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-widest text-gray-900 dark:text-white mb-4">
                         {pd.name}
                     </h1>
                     <p className="text-xl italic text-gray-600 dark:text-gray-400 mb-6">{pd.title}</p>

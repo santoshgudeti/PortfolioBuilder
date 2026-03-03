@@ -12,12 +12,37 @@ import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 import PublicPortfolioPage from './PublicPortfolioPage'
 
-const TEMPLATES = [
-    { id: 'standard', label: 'Standard Layout' },
-    { id: 'corporate', label: 'Corporate / HR' },
-    { id: 'tech', label: 'Tech Grid' },
-    { id: 'freelancer', label: 'Creative Freelancer' },
-    { id: 'student', label: 'Academic / Student' }
+const TEMPLATE_CATEGORIES = [
+    {
+        name: 'Professional & Classic',
+        items: [
+            { id: 'standard', label: 'Standard Layout' },
+            { id: 'corporate', label: 'Corporate / HR' },
+            { id: 'student', label: 'Academic / Student' },
+            { id: 'tech', label: 'Tech Grid' },
+            { id: 'freelancer', label: 'Creative Freelancer' },
+        ]
+    },
+    {
+        name: 'Modern & UI Trends',
+        items: [
+            { id: 'split', label: 'Split Screen' },
+            { id: 'terminal', label: 'Terminal / Retro' },
+            { id: 'neobrutalism', label: 'Neobrutalism' },
+            { id: 'glassmorphism', label: 'Glassmorphism' },
+            { id: 'notion', label: 'Notion Minimalist' },
+        ]
+    },
+    {
+        name: 'Advanced & Immersive',
+        items: [
+            { id: 'apple', label: 'Apple Desktop (macOS)' },
+            { id: 'material', label: 'Material App' },
+            { id: 'cyberpunk', label: 'Cyberpunk / Synthwave' },
+            { id: 'bauhaus', label: 'Swiss / Bauhaus' },
+            { id: 'biolink', label: 'Bio-Link Mobile' },
+        ]
+    }
 ]
 
 const THEMES = [
@@ -735,18 +760,25 @@ export default function EditorPage() {
                                 <h2 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                                     <LayoutTemplate className="w-4 h-4" /> Choose Structural Template
                                 </h2>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {TEMPLATES.map(t => (
-                                        <button
-                                            key={t.id}
-                                            onClick={() => handleSetTemplateId(t.id)}
-                                            className={`p-4 rounded-xl border-2 transition-all text-left ${templateId === t.id
-                                                ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20'
-                                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                                                }`}
-                                        >
-                                            <p className="font-medium text-gray-900 dark:text-white">{t.label}</p>
-                                        </button>
+                                <div className="flex flex-col gap-6">
+                                    {TEMPLATE_CATEGORIES.map(cat => (
+                                        <div key={cat.name}>
+                                            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3 px-1 border-l-2 border-brand-500">{cat.name}</h3>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                {cat.items.map(t => (
+                                                    <button
+                                                        key={t.id}
+                                                        onClick={() => handleSetTemplateId(t.id)}
+                                                        className={`p-4 rounded-xl border-2 transition-all text-left ${templateId === t.id
+                                                            ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20'
+                                                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                                                            }`}
+                                                    >
+                                                        <p className="font-medium text-gray-900 dark:text-white">{t.label}</p>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -857,7 +889,7 @@ export default function EditorPage() {
                 } rounded-2xl bg-gray-100 dark:bg-gray-900 overflow-hidden shadow-inner`}>
 
                 {/* Preview toolbar */}
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm flex-shrink-0">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm flex-shrink-0 relative">
                     {/* Device switcher */}
                     <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
                         {([
@@ -877,6 +909,17 @@ export default function EditorPage() {
                                 <Icon className="w-4 h-4" />
                             </button>
                         ))}
+                    </div>
+
+                    <div className="absolute left-1/2 -translate-x-1/2 flex items-center">
+                        <button
+                            onClick={() => setShowPreview(false)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all border border-gray-200 dark:border-gray-700 shadow-sm"
+                            title="Hide live preview window"
+                        >
+                            <EyeOff className="w-3.5 h-3.5" />
+                            Hide Preview
+                        </button>
                     </div>
 
                     <div className="flex items-center gap-2">

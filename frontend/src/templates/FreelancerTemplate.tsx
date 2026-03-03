@@ -8,7 +8,7 @@ import { TemplateProps } from './types'
 
 export default function FreelancerTemplate({ pd, data, color, rgb, mode, hiddenSections, initials, isPdf, publicUrl, isPreview }: TemplateProps) {
     return (
-        <div className={`min-h-screen font-sans overflow-x-hidden ${mode === 'dark' ? 'dark bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+        <div className={`min-h-screen font-space overflow-x-hidden ${mode === 'dark' ? 'dark bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
             {!isPreview && (
                 <Helmet>
                     <title>{pd.name || 'Portfolio'} — Freelancer</title>

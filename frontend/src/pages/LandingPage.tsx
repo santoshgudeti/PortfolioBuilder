@@ -12,11 +12,32 @@ const features = [
 ]
 
 const TEMPLATES = [
-    { id: 'tech', label: 'Tech Grid', color: '#6366f1', desc: 'Modern Bento Box layout for software engineers.' },
-    { id: 'corporate', label: 'Corporate HR', color: '#0ea5e9', desc: 'Structured two-column CV for business professionals.' },
-    { id: 'freelancer', label: 'Creative Freelancer', color: '#ec4899', desc: 'Bold typography and masonry grids for designers.' },
-    { id: 'student', label: 'Academic / Student', color: '#14b8a6', desc: 'Formal serif document tailored for research and publications.' },
-    { id: 'standard', label: 'Standard Layout', color: '#f59e0b', desc: 'The classic, elegant single-page portfolio layout.' },
+    // Professional & Classic
+    { id: 'standard', label: 'Standard Layout', color: '#f59e0b', desc: 'The classic, elegant single-page portfolio layout.', category: 'Professional & Classic' },
+    { id: 'corporate', label: 'Corporate HR', color: '#0ea5e9', desc: 'Structured two-column CV for business professionals.', category: 'Professional & Classic' },
+    { id: 'student', label: 'Academic / Student', color: '#14b8a6', desc: 'Formal serif document tailored for research and publications.', category: 'Professional & Classic' },
+    { id: 'tech', label: 'Tech Grid', color: '#6366f1', desc: 'Modern Bento Box layout for software engineers.', category: 'Professional & Classic' },
+    { id: 'freelancer', label: 'Creative Freelancer', color: '#ec4899', desc: 'Bold typography and masonry grids for designers.', category: 'Professional & Classic' },
+
+    // Modern & UI Trends
+    { id: 'split', label: 'Split Screen', color: '#8b5cf6', desc: 'Modern dual-pane layout with fixed hero section.', category: 'Modern & UI Trends' },
+    { id: 'terminal', label: 'Terminal / Retro', color: '#22c55e', desc: 'Retro hacker command-line interface.', category: 'Modern & UI Trends' },
+    { id: 'neobrutalism', label: 'Neobrutalism', color: '#ef4444', desc: 'Bold, high-contrast trendy design.', category: 'Modern & UI Trends' },
+    { id: 'glassmorphism', label: 'Glassmorphism', color: '#3b82f6', desc: 'Immersive frosted glass UI.', category: 'Modern & UI Trends' },
+    { id: 'notion', label: 'Notion Minimalist', color: '#1f2937', desc: 'Clean, utilitarian document style.', category: 'Modern & UI Trends' },
+
+    // Advanced & Immersive
+    { id: 'apple', label: 'Apple Desktop', color: '#a8a29e', desc: 'Interactive macOS desktop environment.', category: 'Advanced & Immersive' },
+    { id: 'material', label: 'Material App', color: '#6200ea', desc: 'Google Material app design with floating actions.', category: 'Advanced & Immersive' },
+    { id: 'cyberpunk', label: 'Cyberpunk', color: '#f000ff', desc: 'Retro-futuristic neon grid aesthetics.', category: 'Advanced & Immersive' },
+    { id: 'bauhaus', label: 'Swiss / Bauhaus', color: '#dc2626', desc: 'Extreme minimalist brutalism and strict grids.', category: 'Advanced & Immersive' },
+    { id: 'biolink', label: 'Bio-Link Mobile', color: '#10b981', desc: 'Mobile-first social media link tree.', category: 'Advanced & Immersive' },
+]
+
+const TEMPLATE_CATEGORIES = [
+    { name: 'Professional & Classic', items: TEMPLATES.slice(0, 5), startIndex: 0 },
+    { name: 'Modern & UI Trends', items: TEMPLATES.slice(5, 10), startIndex: 5 },
+    { name: 'Advanced & Immersive', items: TEMPLATES.slice(10, 15), startIndex: 10 },
 ]
 
 export default function LandingPage() {
@@ -260,19 +281,29 @@ export default function LandingPage() {
 
                     {/* Interactive Template Selector */}
                     <div className="flex flex-col lg:flex-row gap-12 items-center">
-                        <div className="w-full lg:w-1/3 flex flex-col gap-2">
-                            {TEMPLATES.map((tmpl, i) => (
-                                <button
-                                    key={tmpl.id}
-                                    onClick={() => setActiveTemplate(i)}
-                                    className={`text-left p-6 rounded-2xl transition-all duration-300 border-2 ${activeTemplate === i ? 'bg-white dark:bg-[#111] shadow-xl border-brand-500 scale-105 z-10' : 'bg-transparent border-transparent hover:bg-gray-50 dark:hover:bg-white/5'}`}
-                                >
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: tmpl.color }} />
-                                        <h3 className={`font-bold text-lg ${activeTemplate === i ? 'text-gray-900 dark:text-white' : 'text-gray-500'}`}>{tmpl.label}</h3>
+                        <div className="w-full lg:w-1/3 flex flex-col gap-6 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                            {TEMPLATE_CATEGORIES.map((cat) => (
+                                <div key={cat.name} className="flex flex-col gap-2">
+                                    <div className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1 px-2 border-l-2 border-brand-500">
+                                        {cat.name}
                                     </div>
-                                    <p className={`text-sm ${activeTemplate === i ? 'text-gray-600 dark:text-gray-400' : 'text-gray-400 dark:text-gray-600'}`}>{tmpl.desc}</p>
-                                </button>
+                                    {cat.items.map((tmpl, localIndex) => {
+                                        const i = cat.startIndex + localIndex;
+                                        return (
+                                            <button
+                                                key={tmpl.id}
+                                                onClick={() => setActiveTemplate(i)}
+                                                className={`text-left p-4 rounded-2xl transition-all duration-300 border-2 ${activeTemplate === i ? 'bg-white dark:bg-[#111] shadow-xl border-brand-500 scale-[1.02] z-10' : 'bg-transparent border-transparent hover:bg-gray-50 dark:hover:bg-white/5'}`}
+                                            >
+                                                <div className="flex items-center gap-3 mb-1.5">
+                                                    <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: tmpl.color }} />
+                                                    <h3 className={`font-bold text-base ${activeTemplate === i ? 'text-gray-900 dark:text-white' : 'text-gray-500'}`}>{tmpl.label}</h3>
+                                                </div>
+                                                <p className={`text-xs ${activeTemplate === i ? 'text-gray-600 dark:text-gray-400' : 'text-gray-400 dark:text-gray-500'}`}>{tmpl.desc}</p>
+                                            </button>
+                                        )
+                                    })}
+                                </div>
                             ))}
                         </div>
 
@@ -391,6 +422,105 @@ export default function LandingPage() {
                                                         <p className="text-[11px] text-gray-700 dark:text-gray-400 italic">"Neural Correlates of Memory Consolidation during REM Sleep."</p>
                                                         <p className="text-[9px] text-gray-500 dark:text-gray-500 mt-0.5 font-sans">Journal of Neuroscience, 2025.</p>
                                                     </div>
+                                                </div>
+                                            )}
+                                            {TEMPLATES[activeTemplate].id === 'split' && (
+                                                <div className="h-full flex rounded-xl overflow-hidden border border-gray-200 dark:border-white/10">
+                                                    <div className="w-1/2 bg-purple-600 flex flex-col items-center justify-center p-4 text-white">
+                                                        <div className="w-12 h-12 bg-white/20 rounded-full mb-2" />
+                                                        <div className="font-bold text-sm">Hero Pane</div>
+                                                    </div>
+                                                    <div className="w-1/2 bg-white dark:bg-[#111] p-4 space-y-2">
+                                                        <div className="w-full h-2 bg-gray-200 dark:bg-gray-800 rounded" />
+                                                        <div className="w-3/4 h-2 bg-gray-200 dark:bg-gray-800 rounded" />
+                                                        <div className="w-full h-8 bg-gray-100 dark:bg-[#222] rounded mt-4" />
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {TEMPLATES[activeTemplate].id === 'terminal' && (
+                                                <div className="h-full bg-black rounded-xl p-4 font-mono text-green-500 text-[10px] border border-gray-800 shadow-inner">
+                                                    <div>user@portfolio:~$ ./start.sh</div>
+                                                    <div className="mt-2 text-green-400">Loading modules... [OK]</div>
+                                                    <div className="mt-2 text-white">NAME: John Doe</div>
+                                                    <div className="text-white">ROLE: Hacker</div>
+                                                    <div className="mt-2 text-green-500 animate-pulse">_</div>
+                                                </div>
+                                            )}
+                                            {TEMPLATES[activeTemplate].id === 'neobrutalism' && (
+                                                <div className="h-full bg-yellow-300 rounded-xl p-4 border-4 border-black font-sans relative overflow-hidden">
+                                                    <div className="absolute top-2 right-2 w-8 h-8 bg-pink-500 border-2 border-black rounded-full" />
+                                                    <h3 className="text-3xl font-black text-black uppercase tracking-tighter shadow-sm mb-2 mt-4">LOUD</h3>
+                                                    <div className="bg-white border-2 border-black p-2 font-bold text-black text-[10px] shadow-[4px_4px_0_0_#000]">FEATURE BOX</div>
+                                                </div>
+                                            )}
+                                            {TEMPLATES[activeTemplate].id === 'glassmorphism' && (
+                                                <div className="h-full rounded-xl p-4 relative overflow-hidden bg-gray-900 border border-white/20">
+                                                    <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] bg-blue-500/50 rounded-full blur-2xl" />
+                                                    <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-purple-500/50 rounded-full blur-2xl" />
+                                                    <div className="relative z-10 w-full h-full bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-4 text-white">
+                                                        <div className="font-bold">Glass UI</div>
+                                                        <div className="text-[10px] text-white/70 mt-1">Immersive gradients</div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {TEMPLATES[activeTemplate].id === 'notion' && (
+                                                <div className="h-full bg-white dark:bg-[#1a1a1a] rounded-xl p-6 border border-gray-200 dark:border-white/10 flex flex-col items-start font-sans">
+                                                    <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Workspace</div>
+                                                    <div className="w-full border-b border-gray-200 dark:border-gray-800 mb-2" />
+                                                    <div className="flex items-center gap-2 text-[10px] text-gray-500">
+                                                        <div className="w-2 h-2 bg-gray-300 dark:bg-gray-600 rounded-sm" /> <span>Experience</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-[10px] text-gray-500 mt-1">
+                                                        <div className="w-2 h-2 bg-gray-300 dark:bg-gray-600 rounded-sm" /> <span>Projects</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {TEMPLATES[activeTemplate].id === 'apple' && (
+                                                <div className="h-full w-full bg-cover bg-center rounded-xl p-0 flex flex-col font-sans overflow-hidden border border-gray-300 dark:border-gray-800" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809')" }}>
+                                                    <div className="h-6 w-full bg-white/50 dark:bg-black/50 backdrop-blur-md flex items-center px-2 border-b border-white/20 dark:border-black/20 text-[8px] font-bold text-gray-900 dark:text-white">
+                                                        <span className="mr-auto"> Apple Desktop</span>
+                                                        <span>100% Sat 9:41 AM</span>
+                                                    </div>
+                                                    <div className="flex-1 p-8">
+                                                        <div className="w-32 h-24 bg-white/80 dark:bg-black/80 backdrop-blur-xl rounded-lg border border-white/40 dark:border-white/10 shadow-xl flex flex-col overflow-hidden">
+                                                            <div className="h-4 w-full bg-gray-200 dark:bg-gray-800 flex items-center gap-1 px-1.5"><div className="w-1.5 h-1.5 rounded-full bg-red-500" /><div className="w-1.5 h-1.5 rounded-full bg-yellow-500" /><div className="w-1.5 h-1.5 rounded-full bg-green-500" /></div>
+                                                            <div className="p-2 text-[8px] font-medium text-gray-800 dark:text-white">Projects.folder</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {TEMPLATES[activeTemplate].id === 'material' && (
+                                                <div className="h-full w-full bg-gray-100 dark:bg-[#121212] rounded-xl p-0 flex flex-col font-sans overflow-hidden border border-gray-300 dark:border-gray-800 relative shadow-2xl">
+                                                    <div className="h-10 w-full bg-[#6200ea] text-white flex items-center px-4 font-bold shadow-md z-10 text-xs">Portfolio</div>
+                                                    <div className="flex-1 p-4 space-y-2">
+                                                        <div className="w-full h-10 bg-white dark:bg-[#1e1e1e] rounded shadow-sm" />
+                                                        <div className="w-full h-10 bg-white dark:bg-[#1e1e1e] rounded shadow-sm" />
+                                                    </div>
+                                                    <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-[#03dac6] shadow-lg flex items-center justify-center text-black font-bold">+</div>
+                                                </div>
+                                            )}
+                                            {TEMPLATES[activeTemplate].id === 'cyberpunk' && (
+                                                <div className="h-full w-full bg-[#020204] rounded-xl p-4 font-mono overflow-hidden border-2 border-[#f000ff] shadow-[0_0_15px_rgba(240,0,255,0.5)] relative">
+                                                    <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.1)_1px,transparent_1px)] bg-[size:10px_10px]" />
+                                                    <h3 className="text-[#00ffff] text-lg font-bold tracking-widest relative z-10" style={{ textShadow: '0 0 5px #00ffff' }}>CYBER_PORT_</h3>
+                                                    <div className="w-16 h-1.5 bg-[#f000ff] mt-2 shadow-[0_0_10px_#f000ff] relative z-10" />
+                                                </div>
+                                            )}
+                                            {TEMPLATES[activeTemplate].id === 'bauhaus' && (
+                                                <div className="h-full w-full bg-[#eaddca] rounded-xl flex font-sans overflow-hidden border-4 border-black">
+                                                    <div className="w-1/3 bg-[#dc2626] border-r-4 border-black flex items-end justify-center pb-4"><div className="text-black font-black text-xl uppercase" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>BAUHAUS</div></div>
+                                                    <div className="flex-1 p-4 flex flex-col justify-between">
+                                                        <div className="w-6 h-6 rounded-full bg-[#2563eb] border-2 border-black" />
+                                                        <div className="text-black font-bold text-[10px] tracking-tighter uppercase leading-[1]">Design<br />Func</div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {TEMPLATES[activeTemplate].id === 'biolink' && (
+                                                <div className="h-full w-full bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-4 flex flex-col items-center justify-center font-sans">
+                                                    <div className="w-10 h-10 rounded-full bg-white mb-2 shadow-lg" />
+                                                    <div className="text-white font-bold text-xs mb-3">@username</div>
+                                                    <div className="w-2/3 h-5 bg-white/20 backdrop-blur rounded-full mb-1.5" />
+                                                    <div className="w-2/3 h-5 bg-white/20 backdrop-blur rounded-full mb-1.5" />
                                                 </div>
                                             )}
                                         </div>

@@ -34,7 +34,7 @@ export default function CorporateTemplate({ pd, data, color, rgb, mode, hiddenSe
     const [showShare, setShowShare] = useState(false)
 
     return (
-        <div className={`min-h-screen font-sans ${mode === 'dark' ? 'dark bg-[#111] text-gray-300' : 'bg-gray-50 text-gray-800'}`}>
+        <div className={`min-h-screen font-outfit ${mode === 'dark' ? 'dark bg-[#111] text-gray-300' : 'bg-gray-50 text-gray-800'}`}>
             {!isPreview && (
                 <Helmet>
                     <title>{pd.name || 'CV'} — Professional Resume</title>

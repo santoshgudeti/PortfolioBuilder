@@ -10,6 +10,9 @@ export default {
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
                 mono: ['JetBrains Mono', 'monospace'],
+                playfair: ['Playfair Display', 'serif'],
+                space: ['Space Grotesk', 'sans-serif'],
+                outfit: ['Outfit', 'sans-serif'],
             },
             colors: {
                 brand: {
