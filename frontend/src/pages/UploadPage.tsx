@@ -19,8 +19,14 @@ export default function UploadPage() {
     const [tone, setTone] = useState('professional')
     const [mode, setMode] = useState<'replace' | 'merge'>('replace')
     const [uploadError, setUploadError] = useState<string | null>(null)
-    const [debugLog, setDebugLog] = useState<string[]>([]) // visible debug for mobile
+    const [debugLog, setDebugLog] = useState<string[]>([])
     const addLog = (msg: string) => setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`])
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
+    const openFilePicker = () => {
+        addLog('openFilePicker called')
+        fileInputRef.current?.click()
+    }
 
     // Wake Lock: prevents mobile screen from dimming/locking during AI processing
     // Without this, switching apps or screen lock cancels the HTTP request on mobile
@@ -185,12 +191,11 @@ export default function UploadPage() {
                 </p>
             </div>
 
-            {/* Hidden native file input — OUTSIDE dropzone so mobile taps work */}
+            {/* Hidden native file input — uses ref instead of label htmlFor for mobile reliability */}
             <input
-                id="mobile-file-input"
+                ref={fileInputRef}
                 type="file"
-                className="sr-only"
-                accept=".pdf,.docx,.doc,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                style={{ display: 'none' }}
                 onChange={handleNativeInput}
             />
 
@@ -205,17 +210,16 @@ export default function UploadPage() {
                     }
         `}
             >
-                {/* react-dropzone's own hidden input (for desktop drag-drop) */}
                 <input {...getInputProps()} />
 
                 <div className="flex flex-col items-center gap-4">
-                    <label
-                        htmlFor="mobile-file-input"
+                    <div
+                        onClick={openFilePicker}
                         className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors cursor-pointer ${isDragActive ? 'bg-brand-100 dark:bg-brand-900/30' : 'bg-gray-100 dark:bg-gray-800 hover:bg-brand-50 dark:hover:bg-brand-900/20'
                             }`}
                     >
                         <Upload className={`w-8 h-8 ${isDragActive ? 'text-brand-500' : 'text-gray-400'}`} />
-                    </label>
+                    </div>
                     {isDragActive ? (
                         <p className="text-brand-600 dark:text-brand-400 font-medium">Drop your resume here!</p>
                     ) : (
@@ -229,14 +233,15 @@ export default function UploadPage() {
                 </div>
             </div>
 
-            {/* Separate tap-to-browse button — works reliably on ALL mobile browsers */}
-            <label
-                htmlFor="mobile-file-input"
+            {/* Tap-to-browse button — uses onClick+ref, NOT label htmlFor (which fails on mobile) */}
+            <button
+                type="button"
+                onClick={openFilePicker}
                 className="mt-3 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 font-medium text-sm cursor-pointer hover:bg-brand-100 dark:hover:bg-brand-900/40 transition-colors"
             >
                 <Upload className="w-4 h-4" />
                 Tap to browse files
-            </label>
+            </button>
 
             {/* Selected file */}
             {file && (
