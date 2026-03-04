@@ -17,12 +17,17 @@ apiClient.interceptors.request.use((config) => {
     return config
 })
 
-// Handle 401 globally
+// Handle 401 globally — but don't redirect if it's during an upload
+// (Vercel timeout can cause weird responses that shouldn't log the user out)
 apiClient.interceptors.response.use(
     (res) => res,
     (error) => {
         if (error.response?.status === 401) {
-            useAuthStore.getState().logout()
+            const isUploadRequest = error.config?.url?.includes('/resume/upload')
+            if (!isUploadRequest) {
+                // Only force logout on 401 for non-upload requests
+                useAuthStore.getState().logout()
+            }
         }
         return Promise.reject(error)
     }

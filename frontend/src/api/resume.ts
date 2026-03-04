@@ -19,6 +19,7 @@ export const resumeApi = {
         formData.append('mode', mode)
         return apiClient.post('/resume/upload', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
+            timeout: 90000, // 90s — ensures onError fires if server drops connection
         })
     },
 }
