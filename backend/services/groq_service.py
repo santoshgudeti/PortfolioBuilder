@@ -1,5 +1,5 @@
 import json
-from groq import Groq
+from groq import AsyncGroq
 from config import get_settings
 
 settings = get_settings()
@@ -61,13 +61,13 @@ TONE_INSTRUCTIONS = {
 
 async def parse_resume_with_groq(resume_text: str, tone: str = "professional") -> dict:
     """Send resume text to Groq and return structured JSON."""
-    client = Groq(api_key=settings.groq_api_key)
+    client = AsyncGroq(api_key=settings.groq_api_key)
 
     tone_instruction = TONE_INSTRUCTIONS.get(tone, TONE_INSTRUCTIONS["professional"])
     enhanced_prompt = SYSTEM_PROMPT + f"\n\nTone: {tone_instruction}"
 
-    completion = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+    completion = await client.chat.completions.create(
+        model="llama-3.1-8b-instant",  # 3-5x faster than 70b, still great for JSON parsing
         messages=[
             {"role": "system", "content": enhanced_prompt},
             {"role": "user", "content": f"Parse this resume:\n\n{resume_text}"},
@@ -118,14 +118,14 @@ REGENERATE_PROMPTS = {
 
 async def regenerate_field_with_groq(field: str, current_value: str, context: str = "") -> str:
     """Use Groq to improve a specific portfolio field."""
-    client = Groq(api_key=settings.groq_api_key)
+    client = AsyncGroq(api_key=settings.groq_api_key)
 
     system_prompt = REGENERATE_PROMPTS.get(field, "Improve the following text professionally. Return ONLY the improved text.")
     user_content = current_value
     if context:
         user_content = f"Context: {context}\n\nText to improve: {current_value}"
 
-    completion = client.chat.completions.create(
+    completion = await client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
             {"role": "system", "content": system_prompt},
