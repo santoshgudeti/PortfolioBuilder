@@ -258,7 +258,15 @@ export default function EditorPage() {
     const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
     const [previewFullscreen, setPreviewFullscreen] = useState(false)
     const [showPreview, setShowPreview] = useState(true)
+    // On mobile, never render the live preview — all 15 templates mounting causes memory crash
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth < 1024)
     const initializedRef = useRef(false)
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 1024)
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
     const { data: portfolioData, isLoading } = useQuery({
         queryKey: ['portfolio'],
@@ -446,10 +454,10 @@ export default function EditorPage() {
                                         <span className="hidden sm:inline">{isExportingPDF ? 'Exporting...' : 'PDF'}</span>
                                     </button>
                                 )}
-                                {/* 3. Tertiary: View live (only when published) */}
+                                {/* View Live — visible on all devices */}
                                 {slug && isPublished && (
                                     <a href={`/u/${slug}`} target="_blank" rel="noopener noreferrer"
-                                        className="btn-secondary text-sm px-3 hidden lg:flex" title="View your live public portfolio">
+                                        className="btn-secondary text-sm px-3 flex" title="View your live public portfolio">
                                         <ExternalLink className="w-4 h-4" /> <span className="hidden sm:inline">View Live</span>
                                     </a>
                                 )}
@@ -893,8 +901,8 @@ export default function EditorPage() {
                 </div>
             </div>
 
-            {/* Preview Side */}
-            <div className={`flex flex-col transition-all duration-500 origin-right ${previewFullscreen
+            {/* Preview Side — only rendered on desktop to avoid loading all 15 templates on mobile */}
+            {!isMobile && <div className={`flex flex-col transition-all duration-500 origin-right ${previewFullscreen
                 ? 'fixed inset-4 z-50 rounded-2xl opacity-100 translate-x-0 border border-gray-200 dark:border-gray-800'
                 : showPreview
                     ? 'hidden lg:flex w-[45%] opacity-100 translate-x-0 border border-gray-200 dark:border-gray-800'
@@ -975,7 +983,7 @@ export default function EditorPage() {
                         />
                     </div>
                 </div>
-            </div>
+            </div>}
 
             {/* Fullscreen backdrop */}
             {previewFullscreen && (
