@@ -53,9 +53,10 @@ class RustFSService:
 
     async def upload_file(self, file_bytes: bytes, filename: str, user_id: str) -> str:
         """
-        Upload a file bytes to RustFS.
+        Upload a file bytes to RustFS (non-blocking).
         Returns the object key to store in the database.
         """
+        import asyncio
         if not self.s3_client:
             raise Exception("RustFS client not initialized. Check your credentials.")
 
@@ -66,15 +67,18 @@ class RustFSService:
         
         content_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
 
-        try:
+        def _do_upload():
             self.s3_client.put_object(
                 Bucket=self.bucket_name,
                 Key=object_key,
                 Body=file_bytes,
                 ContentType=content_type,
-                # Depending on if you want public access natively or via presigned URL
-                # If presigned URL, we keep it private. We'll leave it private by default.
             )
+            return object_key
+
+        try:
+            # Run blocking boto3 call in a thread so it doesn't block the event loop
+            await asyncio.to_thread(_do_upload)
             return object_key
         except ClientError as e:
             raise Exception(f"Failed to upload file to RustFS: {str(e)}")
