@@ -191,11 +191,12 @@ export default function UploadPage() {
                 </p>
             </div>
 
-            {/* Hidden native file input — uses ref instead of label htmlFor for mobile reliability */}
+            {/* File input — opacity:0 instead of display:none because mobile browsers
+                block .click() on display:none elements */}
             <input
                 ref={fileInputRef}
                 type="file"
-                style={{ display: 'none' }}
+                style={{ opacity: 0, position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }}
                 onChange={handleNativeInput}
             />
 
