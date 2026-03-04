@@ -117,7 +117,7 @@ export default function UploadPage() {
     }
 
     return (
-        <PageTransition className="max-w-2xl mx-auto">
+        <PageTransition className="max-w-2xl mx-auto pb-24 px-4 sm:px-0">
             {mutation.isPending && <AIProcessingOverlay />}
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Upload Your Resume</h1>
