@@ -40,13 +40,28 @@ export default function UploadPage() {
         },
     })
 
-    // Validate by extension (works on ALL browsers/devices including mobile)
+    // Validate by extension OR MIME type (crucial for mobile where extensions might be stripped)
     const validateAndSetFile = (f: File) => {
         const name = f.name.toLowerCase()
-        const isValidType = name.endsWith('.pdf') || name.endsWith('.docx') || name.endsWith('.doc')
+        const mime = f.type || ''
+
+        const isValidExt = name.endsWith('.pdf') || name.endsWith('.docx') || name.endsWith('.doc')
+        const isValidMime = mime === 'application/pdf' ||
+            mime === 'application/msword' ||
+            mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+
+        const isValidType = isValidExt || isValidMime
         const isValidSize = f.size <= 5 * 1024 * 1024
-        if (!isValidType) { toast.error('Only PDF and DOCX files are accepted'); return }
-        if (!isValidSize) { toast.error('File exceeds 5MB limit'); return }
+
+        if (!isValidType) {
+            console.warn('Rejected invalid file:', { name: f.name, type: f.type, size: f.size })
+            toast.error('Only PDF and DOCX files are accepted')
+            return
+        }
+        if (!isValidSize) {
+            toast.error('File exceeds 5MB limit')
+            return
+        }
         setFile(f)
     }
 
