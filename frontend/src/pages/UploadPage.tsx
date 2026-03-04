@@ -130,7 +130,7 @@ export default function UploadPage() {
                 <input
                     id="mobile-file-input"
                     type="file"
-                    accept=".pdf,.docx,.doc"
+                    accept=".pdf,application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     className="sr-only"
                     onChange={handleNativeInput}
                 />

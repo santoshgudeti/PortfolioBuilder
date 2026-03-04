@@ -14,5 +14,13 @@
             "src": "/(.*)",
             "dest": "main.py"
         }
-    ]
+    ],
+    "functions": {
+        "routers/**/*.py": {
+            "maxDuration": 60
+        },
+        "main.py": {
+            "maxDuration": 60
+        }
+    }
 }
