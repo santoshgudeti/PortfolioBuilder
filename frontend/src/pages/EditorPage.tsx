@@ -8,8 +8,8 @@ import {
     Sparkles, ToggleLeft, ToggleRight, CheckCircle2, AlertCircle, Link2, FileDown,
     Smartphone, Tablet, Monitor, Maximize2, Minimize2, LayoutTemplate, SunMoon
 } from 'lucide-react'
-import html2canvas from 'html2canvas'
-import { jsPDF } from 'jspdf'
+// html2canvas and jsPDF are dynamically imported inside handleDownloadPDF
+// to avoid loading ~1.2MB of JS on mobile devices for a rarely-used feature
 import PublicPortfolioPage from './PublicPortfolioPage'
 
 const TEMPLATE_CATEGORIES = [
@@ -345,16 +345,21 @@ export default function EditorPage() {
         setIsExportingPDF(true)
 
         try {
+            // Dynamically import heavy libraries only when PDF export is actually needed
+            const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+                import('html2canvas'),
+                import('jspdf').then(m => ({ jsPDF: m.jsPDF }))
+            ])
+
             const iframe = document.createElement('iframe')
             iframe.style.position = 'fixed'
             iframe.style.top = '-10000px'
-            iframe.style.width = '1200px' // desktop width for good layout
+            iframe.style.width = '1200px'
             iframe.style.height = '1600px'
             iframe.src = `/u/${slug}?pdf=true`
             document.body.appendChild(iframe)
 
             iframe.onload = async () => {
-                // Wait for fonts and images to render
                 await new Promise(r => setTimeout(r, 1500))
                 const doc = iframe.contentDocument || iframe.contentWindow?.document
                 if (!doc) {
