@@ -47,7 +47,7 @@ class RustFSService:
                     self.s3_client.create_bucket(Bucket=self.bucket_name)
                     print(f"Created RustFS bucket: {self.bucket_name}")
                 except Exception as create_err:
-                    print(f"Could not create bucket {self.bucket_name}: {create_err}")
+                   print(f"Could not create bucket {self.bucket_name}: {create_err}")
             else:
                 print(f"Error checking bucket {self.bucket_name}: {e}")
 
