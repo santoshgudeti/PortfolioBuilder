@@ -19,4 +19,15 @@ export default defineConfig({
             },
         },
     },
+    build: {
+        chunkSizeWarningLimit: 1500, // Increased from default 500kB
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
+                    ui: ['lucide-react', 'react-hot-toast', 'framer-motion']
+                }
+            }
+        }
+    }
 })
