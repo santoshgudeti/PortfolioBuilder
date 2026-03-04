@@ -40,28 +40,22 @@ export default function UploadPage() {
         },
     })
 
-    // Validate by extension OR MIME type (crucial for mobile where extensions might be stripped)
+    // Validate files loosely (crucial for mobile where extensions/MIMEs might be stripped)
     const validateAndSetFile = (f: File) => {
-        const name = f.name.toLowerCase()
-        const mime = f.type || ''
+        if (!f) return;
 
-        const isValidExt = name.endsWith('.pdf') || name.endsWith('.docx') || name.endsWith('.doc')
-        const isValidMime = mime === 'application/pdf' ||
-            mime === 'application/msword' ||
-            mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-
-        const isValidType = isValidExt || isValidMime
-        const isValidSize = f.size <= 5 * 1024 * 1024
-
-        if (!isValidType) {
-            console.warn('Rejected invalid file:', { name: f.name, type: f.type, size: f.size })
-            toast.error('Only PDF and DOCX files are accepted')
-            return
-        }
-        if (!isValidSize) {
+        const size = f.size || 0
+        if (size > 5 * 1024 * 1024) {
             toast.error('File exceeds 5MB limit')
             return
         }
+
+        // Avoid images/videos, otherwise accept (mobile browsers often send generic files)
+        if (f.type && (f.type.startsWith('image/') || f.type.startsWith('video/'))) {
+            toast.error('Please upload a document (PDF/DOCX).')
+            return
+        }
+
         setFile(f)
     }
 
@@ -145,7 +139,6 @@ export default function UploadPage() {
                 <input
                     id="mobile-file-input"
                     type="file"
-                    accept=".pdf,application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     className="sr-only"
                     onChange={handleNativeInput}
                 />
