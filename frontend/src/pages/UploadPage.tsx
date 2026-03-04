@@ -19,6 +19,8 @@ export default function UploadPage() {
     const [tone, setTone] = useState('professional')
     const [mode, setMode] = useState<'replace' | 'merge'>('replace')
     const [uploadError, setUploadError] = useState<string | null>(null)
+    const [debugLog, setDebugLog] = useState<string[]>([]) // visible debug for mobile
+    const addLog = (msg: string) => setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`])
 
     // Wake Lock: prevents mobile screen from dimming/locking during AI processing
     // Without this, switching apps or screen lock cancels the HTTP request on mobile
@@ -43,10 +45,18 @@ export default function UploadPage() {
     const hasPortfolio = !!existingPortfolio
 
     const mutation = useMutation({
-        mutationFn: (f: File) => resumeApi.upload(f, tone, mode).then(r => r.data),
+        mutationFn: (f: File) => {
+            addLog(`Sending upload request... file=${f.name} size=${f.size} type=${f.type}`)
+            addLog(`API URL: ${import.meta.env.VITE_API_URL || 'NOT SET (using localhost)'}`)
+            return resumeApi.upload(f, tone, mode).then(r => {
+                addLog(`Upload response received: status=OK`)
+                return r.data
+            })
+        },
         onSuccess: (data) => {
             releaseWakeLock()
             setUploadError(null)
+            addLog(`SUCCESS: portfolio_id=${data.portfolio_id}, slug=${data.slug}`)
             setParsedData(data.parsed_data)
             setPortfolio({ portfolioId: data.portfolio_id, slug: data.slug })
             queryClient.invalidateQueries({ queryKey: ['portfolio'] })
@@ -56,6 +66,9 @@ export default function UploadPage() {
         onError: (err: any) => {
             releaseWakeLock()
             const msg = err.response?.data?.detail || err.message || 'Upload failed. Please try again.'
+            addLog(`ERROR: ${msg}`)
+            addLog(`Error status: ${err.response?.status || 'no status'}`)
+            addLog(`Error code: ${err.code || 'none'}`)
             setUploadError(msg)
             toast.error(msg)
         },
@@ -63,20 +76,24 @@ export default function UploadPage() {
 
     // Validate files loosely (crucial for mobile where extensions/MIMEs might be stripped)
     const validateAndSetFile = (f: File) => {
-        if (!f) return;
+        if (!f) { addLog('validateAndSetFile: no file'); return; }
+
+        addLog(`File picked: name=${f.name} size=${f.size} type=${f.type || 'empty'}`)
 
         const size = f.size || 0
         if (size > 5 * 1024 * 1024) {
+            addLog('REJECTED: file too large')
             toast.error(`File exceeds 5MB limit`)
             return
         }
 
-        // Avoid images/videos, otherwise accept (mobile browsers often send generic files)
         if (f.type && (f.type.startsWith('image/') || f.type.startsWith('video/'))) {
+            addLog(`REJECTED: wrong type ${f.type}`)
             toast.error(`Please upload a document (PDF/DOCX).`)
             return
         }
 
+        addLog('File accepted ✅')
         setFile(f)
     }
 
@@ -96,11 +113,12 @@ export default function UploadPage() {
 
     // Called when user taps "Browse" (native file picker — most reliable on mobile)
     const handleNativeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        addLog('Native input onChange fired')
         const files = e.target.files
-        if (!files || files.length === 0) return
+        if (!files || files.length === 0) { addLog('No files in input'); return; }
         const f = files[0]
         if (f) validateAndSetFile(f)
-        e.target.value = '' // Reset so same file can be re-selected
+        e.target.value = ''
     }
 
     if (isLoading) {
@@ -135,9 +153,13 @@ export default function UploadPage() {
 
     const handleUpload = async () => {
         if (file) {
+            addLog('handleUpload called')
             setUploadError(null)
-            await requestWakeLock() // keep screen on during AI processing
+            await requestWakeLock()
+            addLog('Wake lock acquired, starting mutation...')
             mutation.mutate(file)
+        } else {
+            addLog('handleUpload called but no file selected!')
         }
     }
 
@@ -328,6 +350,21 @@ export default function UploadPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Debug Panel — visible on all devices for troubleshooting */}
+            {debugLog.length > 0 && (
+                <div className="mt-6 p-3 rounded-xl bg-gray-900 text-xs font-mono max-h-48 overflow-y-auto">
+                    <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-400 font-bold">Debug Log</span>
+                        <button onClick={() => setDebugLog([])} className="text-gray-500 text-xs">Clear</button>
+                    </div>
+                    {debugLog.map((log, i) => (
+                        <div key={i} className={`py-0.5 ${log.includes('ERROR') ? 'text-red-400' : log.includes('SUCCESS') ? 'text-green-400' : log.includes('REJECTED') ? 'text-yellow-400' : 'text-gray-300'}`}>
+                            {log}
+                        </div>
+                    ))}
+                </div>
+            )}
         </PageTransition>
     )
 }
