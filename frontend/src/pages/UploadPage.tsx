@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -18,6 +18,22 @@ export default function UploadPage() {
     const [file, setFile] = useState<File | null>(null)
     const [tone, setTone] = useState('professional')
     const [mode, setMode] = useState<'replace' | 'merge'>('replace')
+    const [uploadError, setUploadError] = useState<string | null>(null)
+
+    // Wake Lock: prevents mobile screen from dimming/locking during AI processing
+    // Without this, switching apps or screen lock cancels the HTTP request on mobile
+    const wakeLockRef = useRef<any>(null)
+    const requestWakeLock = async () => {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLockRef.current = await (navigator as any).wakeLock.request('screen')
+            }
+        } catch (_) { /* not supported, ignore */ }
+    }
+    const releaseWakeLock = () => {
+        wakeLockRef.current?.release().catch(() => { })
+        wakeLockRef.current = null
+    }
 
     const { data: existingPortfolio, isLoading } = useQuery({
         queryKey: ['portfolio'],
@@ -29,6 +45,8 @@ export default function UploadPage() {
     const mutation = useMutation({
         mutationFn: (f: File) => resumeApi.upload(f, tone, mode).then(r => r.data),
         onSuccess: (data) => {
+            releaseWakeLock()
+            setUploadError(null)
             setParsedData(data.parsed_data)
             setPortfolio({ portfolioId: data.portfolio_id, slug: data.slug })
             queryClient.invalidateQueries({ queryKey: ['portfolio'] })
@@ -36,7 +54,10 @@ export default function UploadPage() {
             setTimeout(() => navigate('/editor'), 1500)
         },
         onError: (err: any) => {
-            toast.error(err.response?.data?.detail || 'Upload failed. Please try again.')
+            releaseWakeLock()
+            const msg = err.response?.data?.detail || err.message || 'Upload failed. Please try again.'
+            setUploadError(msg)
+            toast.error(msg)
         },
     })
 
@@ -112,13 +133,29 @@ export default function UploadPage() {
         )
     }
 
-    const handleUpload = () => {
-        if (file) mutation.mutate(file)
+    const handleUpload = async () => {
+        if (file) {
+            setUploadError(null)
+            await requestWakeLock() // keep screen on during AI processing
+            mutation.mutate(file)
+        }
     }
 
     return (
         <PageTransition className="max-w-2xl mx-auto pb-24 px-4 sm:px-0">
             {mutation.isPending && <AIProcessingOverlay />}
+
+            {/* Visible error banner — more reliable than toast on mobile */}
+            {uploadError && (
+                <div className="mb-4 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="text-sm font-semibold text-red-700 dark:text-red-400">Upload Failed</p>
+                        <p className="text-sm text-red-600 dark:text-red-300 mt-0.5">{uploadError}</p>
+                        <button onClick={() => setUploadError(null)} className="text-xs text-red-500 underline mt-1">Dismiss</button>
+                    </div>
+                </div>
+            )}
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Upload Your Resume</h1>
                 <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -242,23 +279,31 @@ export default function UploadPage() {
 
             {/* Upload button */}
             {file && (
-                <button
-                    onClick={handleUpload}
-                    disabled={mutation.isPending}
-                    className="btn-primary w-full mt-4 py-3 text-base"
-                >
-                    {mutation.isPending ? (
-                        <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Parsing with AI...
-                        </>
-                    ) : (
-                        <>
-                            <Upload className="w-5 h-5" />
-                            Generate Portfolio
-                        </>
+                <>
+                    {/* Mobile warning — keep screen open */}
+                    {mutation.isPending && (
+                        <p className="text-xs text-amber-600 dark:text-amber-400 text-center mt-2 font-medium">
+                            📱 Keep this screen open while AI is processing...
+                        </p>
                     )}
-                </button>
+                    <button
+                        onClick={handleUpload}
+                        disabled={mutation.isPending}
+                        className="btn-primary w-full mt-4 py-3 text-base"
+                    >
+                        {mutation.isPending ? (
+                            <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                Parsing with AI...
+                            </>
+                        ) : (
+                            <>
+                                <Upload className="w-5 h-5" />
+                                Generate Portfolio
+                            </>
+                        )}
+                    </button>
+                </>
             )}
 
             {/* Success */}
