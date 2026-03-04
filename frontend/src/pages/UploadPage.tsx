@@ -42,26 +42,37 @@ export default function UploadPage() {
 
     // Validate files loosely (crucial for mobile where extensions/MIMEs might be stripped)
     const validateAndSetFile = (f: File) => {
-        if (!f) return;
+        if (!f) {
+            toast.error('Passed file object is null/undefined')
+            return;
+        }
+
+        toast.success(`Checking file: ${f.name} | type: ${f.type} | size: ${f.size}`)
 
         const size = f.size || 0
         if (size > 5 * 1024 * 1024) {
-            toast.error('File exceeds 5MB limit')
+            toast.error(`File exceeds 5MB limit (${size} bytes)`)
             return
         }
 
         // Avoid images/videos, otherwise accept (mobile browsers often send generic files)
         if (f.type && (f.type.startsWith('image/') || f.type.startsWith('video/'))) {
-            toast.error('Please upload a document (PDF/DOCX).')
+            toast.error(`Cannot upload image/video. Sent type: ${f.type}`)
             return
         }
 
+        toast.success(`File accepted: ${f.name}`)
         setFile(f)
     }
 
     // onDrop: handles drag-and-drop on desktop - validates all files manually
-    const onDrop = useCallback((accepted: File[]) => {
+    const onDrop = useCallback((accepted: File[], rejected: any[]) => {
+        toast('Dropzone event triggered')
+        if (rejected.length > 0) {
+            toast.error(`React-Dropzone rejected file: ${rejected[0]?.errors?.[0]?.message || 'Unknown reason'}`)
+        }
         if (accepted[0]) validateAndSetFile(accepted[0])
+        else if (rejected.length === 0) toast.error('No accepted or rejected files found in Dropzone')
     }, [])
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -75,7 +86,14 @@ export default function UploadPage() {
 
     // Called when user taps "Browse" (native file picker — most reliable on mobile)
     const handleNativeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const f = e.target.files?.[0]
+        toast('Native file picker onChange triggered')
+        const files = e.target.files
+        if (!files || files.length === 0) {
+            toast.error('Native input fired, but no files were found in e.target.files')
+            return
+        }
+        toast(`Found ${files.length} files in input`)
+        const f = files[0]
         if (f) validateAndSetFile(f)
         e.target.value = '' // Reset so same file can be re-selected
     }
