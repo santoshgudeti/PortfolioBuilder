@@ -185,7 +185,16 @@ export default function UploadPage() {
                 </p>
             </div>
 
-            {/* Dropzone — outer div handles desktop drag-drop; label+input handles mobile taps */}
+            {/* Hidden native file input — OUTSIDE dropzone so mobile taps work */}
+            <input
+                id="mobile-file-input"
+                type="file"
+                className="sr-only"
+                accept=".pdf,.docx,.doc,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={handleNativeInput}
+            />
+
+            {/* Dropzone — desktop drag-drop only */}
             <div
                 {...getRootProps()}
                 className={`
@@ -196,13 +205,6 @@ export default function UploadPage() {
                     }
         `}
             >
-                {/* Hidden native file input — most reliable across all mobile browsers */}
-                <input
-                    id="mobile-file-input"
-                    type="file"
-                    className="sr-only"
-                    onChange={handleNativeInput}
-                />
                 {/* react-dropzone's own hidden input (for desktop drag-drop) */}
                 <input {...getInputProps()} />
 
@@ -220,18 +222,21 @@ export default function UploadPage() {
                         <>
                             <div>
                                 <p className="font-medium text-gray-900 dark:text-white">Drag & drop your resume</p>
-                                <label
-                                    htmlFor="mobile-file-input"
-                                    className="text-sm text-brand-500 dark:text-brand-400 mt-1 cursor-pointer underline underline-offset-2 block hover:text-brand-600 transition-colors"
-                                >
-                                    or tap here to browse files
-                                </label>
+                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">PDF or DOCX • Max 5MB</p>
                             </div>
-                            <p className="text-xs text-gray-400 dark:text-gray-500">PDF or DOCX • Max 5MB</p>
                         </>
                     )}
                 </div>
             </div>
+
+            {/* Separate tap-to-browse button — works reliably on ALL mobile browsers */}
+            <label
+                htmlFor="mobile-file-input"
+                className="mt-3 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 font-medium text-sm cursor-pointer hover:bg-brand-100 dark:hover:bg-brand-900/40 transition-colors"
+            >
+                <Upload className="w-4 h-4" />
+                Tap to browse files
+            </label>
 
             {/* Selected file */}
             {file && (
