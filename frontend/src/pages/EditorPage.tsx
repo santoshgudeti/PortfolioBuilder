@@ -444,18 +444,26 @@ export default function EditorPage() {
                                 {/* 3. Tertiary: View live (only when published) */}
                                 {slug && isPublished && (
                                     <a href={`/u/${slug}`} target="_blank" rel="noopener noreferrer"
-                                        className="btn-secondary text-sm px-3 hidden xl:flex" title="View your live public portfolio">
+                                        className="btn-secondary text-sm px-3 hidden lg:flex" title="View your live public portfolio">
                                         <ExternalLink className="w-4 h-4" /> <span className="hidden sm:inline">View Live</span>
                                     </a>
                                 )}
-                                {/* New: Toggle Preview Button */}
+                                {/* New: Toggle Preview Button (Now visible on mobile) */}
                                 <button
-                                    onClick={() => setShowPreview(s => !s)}
-                                    className="btn-secondary text-sm px-3 hidden lg:flex"
-                                    title={showPreview ? 'Hide live preview to expand editor' : 'Show live preview side-by-side'}
+                                    onClick={() => {
+                                        if (window.innerWidth < 1024) {
+                                            setPreviewFullscreen(true)
+                                        } else {
+                                            setShowPreview(s => !s)
+                                        }
+                                    }}
+                                    className="btn-secondary text-sm px-3 flex"
+                                    title="Toggle Live Preview"
                                 >
-                                    {showPreview ? <ToggleRight className="w-4 h-4 text-brand-500" /> : <ToggleLeft className="w-4 h-4 text-gray-400" />}
-                                    <span className="hidden sm:inline">{showPreview ? 'Hide Preview' : 'Show Preview'}</span>
+                                    {showPreview ? <ToggleRight className="w-4 h-4 text-brand-500 hidden lg:block" /> : <ToggleLeft className="w-4 h-4 text-gray-400 hidden lg:block" />}
+                                    <Eye className="w-4 h-4 text-brand-500 lg:hidden" />
+                                    <span className="hidden sm:inline lg:hidden ml-1">Preview</span>
+                                    <span className="hidden lg:inline ml-1">{showPreview ? 'Hide Preview' : 'Show Preview'}</span>
                                 </button>
                                 {/* 2. Secondary: Publish/Unpublish */}
                                 <button
@@ -880,12 +888,12 @@ export default function EditorPage() {
                 </div>
             </div>
 
-            {/* Preview Side (Desktop Only) */}
-            <div className={`hidden lg:flex flex-col transition-all duration-500 origin-right ${previewFullscreen
+            {/* Preview Side */}
+            <div className={`flex flex-col transition-all duration-500 origin-right ${previewFullscreen
                 ? 'fixed inset-4 z-50 rounded-2xl opacity-100 translate-x-0 border border-gray-200 dark:border-gray-800'
                 : showPreview
-                    ? 'w-[45%] opacity-100 translate-x-0 border border-gray-200 dark:border-gray-800'
-                    : 'w-0 opacity-0 translate-x-12 border-0'
+                    ? 'hidden lg:flex w-[45%] opacity-100 translate-x-0 border border-gray-200 dark:border-gray-800'
+                    : 'hidden lg:flex w-0 opacity-0 translate-x-12 border-0'
                 } rounded-2xl bg-gray-100 dark:bg-gray-900 overflow-hidden shadow-inner`}>
 
                 {/* Preview toolbar */}
