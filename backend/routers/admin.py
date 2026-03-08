@@ -1,13 +1,13 @@
 import json
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select, func, or_, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, or_
 from database import get_db
 from models.user import User
 from models.portfolio import Portfolio
 from models.page_view import PageView
 from utils.auth import get_admin_user
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -37,7 +37,7 @@ async def get_stats(
     top_portfolios = [{"slug": r.slug, "views": r.view_count or 0} for r in top_result]
 
     # Signups per day (last 7 days)
-    seven_days_ago = datetime.utcnow() - timedelta(days=7)
+    seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
     signup_query = await db.execute(
         select(
             func.date(User.created_at).label("day"),
@@ -124,7 +124,6 @@ async def verify_user(
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     if not user:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="User not found")
     user.is_verified = True
     await db.commit()
@@ -141,7 +140,6 @@ async def toggle_user_active(
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     if not user:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="User not found")
     user.is_active = not user.is_active
     await db.commit()
@@ -158,10 +156,8 @@ async def delete_user_admin(
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     if not user:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="User not found")
     
-    from sqlalchemy import delete
     # Delete page views for user's portfolios
     portfolio_result = await db.execute(select(Portfolio.id).where(Portfolio.user_id == user_id))
     portfolio_ids = [row[0] for row in portfolio_result.all()]
@@ -186,7 +182,6 @@ async def unpublish_portfolio(
     result = await db.execute(select(Portfolio).where(Portfolio.id == portfolio_id))
     portfolio = result.scalar_one_or_none()
     if not portfolio:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Portfolio not found")
     portfolio.is_published = False
     await db.commit()
@@ -203,10 +198,8 @@ async def delete_portfolio_admin(
     result = await db.execute(select(Portfolio).where(Portfolio.id == portfolio_id))
     portfolio = result.scalar_one_or_none()
     if not portfolio:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Portfolio not found")
     
-    from sqlalchemy import delete
     await db.execute(delete(PageView).where(PageView.portfolio_id == portfolio_id))
     await db.delete(portfolio)
     await db.commit()

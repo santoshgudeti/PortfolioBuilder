@@ -27,6 +27,18 @@ export default {
                     800: '#3730a3',
                     900: '#312e81',
                 },
+                background: 'var(--background)',
+                foreground: 'var(--foreground)',
+                card: { DEFAULT: 'var(--card)', foreground: 'var(--card-foreground)' },
+                popover: { DEFAULT: 'var(--popover)', foreground: 'var(--popover-foreground)' },
+                primary: { DEFAULT: 'var(--primary)', foreground: 'var(--primary-foreground)' },
+                secondary: { DEFAULT: 'var(--secondary)', foreground: 'var(--secondary-foreground)' },
+                muted: { DEFAULT: 'var(--muted)', foreground: 'var(--muted-foreground)' },
+                accent: { DEFAULT: 'var(--accent)', foreground: 'var(--accent-foreground)' },
+                destructive: { DEFAULT: 'var(--destructive)', foreground: 'var(--destructive-foreground)' },
+                border: 'var(--border)',
+                input: 'var(--input)',
+                ring: 'var(--ring)',
             },
             boxShadow: {
                 'glow-sm': '0 0 15px -3px rgba(99, 102, 241, 0.3)',
@@ -41,6 +53,7 @@ export default {
                 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 'shimmer': 'shimmer 2s linear infinite',
                 'float': 'float 6s ease-in-out infinite',
+                'shine': 'shine 5s linear infinite',
             },
             keyframes: {
                 fadeIn: {
@@ -58,6 +71,10 @@ export default {
                 float: {
                     '0%, 100%': { transform: 'translateY(0px)' },
                     '50%': { transform: 'translateY(-10px)' },
+                },
+                shine: {
+                    '0%': { 'background-position': '100%' },
+                    '100%': { 'background-position': '-100%' },
                 },
             },
         },

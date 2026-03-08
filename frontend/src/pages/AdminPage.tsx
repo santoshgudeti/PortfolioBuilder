@@ -112,8 +112,8 @@ export default function AdminPage() {
                     <Shield className="w-5 h-5 text-brand-500" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">Platform overview and user management</p>
+                    <h1>Admin Dashboard</h1>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Platform overview and user management</p>
                 </div>
             </div>
 

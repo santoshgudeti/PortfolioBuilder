@@ -1,17 +1,19 @@
 import json
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
-from pydantic import BaseModel
+from sqlalchemy.orm import joinedload
+
 from database import get_db
 from models.user import User
 from models.portfolio import Portfolio
 from models.page_view import PageView
-from schemas.portfolio import PortfolioUpdate, PortfolioOut
+from schemas.portfolio import PortfolioUpdate, PortfolioOut, RegenerateRequest, SlugUpdate
 from services.portfolio_service import update_portfolio
 from services.groq_service import regenerate_field_with_groq
 from utils.auth import get_current_user
-from datetime import datetime, timedelta
+from utils.rate_limit import rate_limiter
 
 router = APIRouter(prefix="/portfolio", tags=["Portfolio"])
 
@@ -25,6 +27,9 @@ async def get_my_portfolio(
     portfolio = result.scalar_one_or_none()
     if not portfolio:
         raise HTTPException(status_code=404, detail="No portfolio found. Please upload a resume first.")
+    
+    # Inject avatar_url from current_user
+    setattr(portfolio, 'avatar_url', current_user.avatar_url)
     return portfolio
 
 
@@ -41,6 +46,7 @@ async def update_my_portfolio(
 
     update_dict = updates.model_dump(exclude_none=True)
     portfolio = await update_portfolio(db, portfolio, update_dict)
+    setattr(portfolio, 'avatar_url', current_user.avatar_url)
     return portfolio
 
 
@@ -90,18 +96,19 @@ async def get_my_resume_url(
     return {"url": url, "filename": portfolio.resume_filename}
 
 
-class RegenerateRequest(BaseModel):
-    field: str          # "summary", "tagline", "project_description", etc.
-    current_value: str  # Current text to improve
-    context: str = ""   # Extra context (e.g. project title, skills list)
-
-
 @router.post("/me/regenerate")
 async def regenerate_field(
     req: RegenerateRequest,
+    request: Request,
     current_user: User = Depends(get_current_user),
 ):
     """Use Groq AI to rewrite/improve a specific portfolio field."""
+    rate_limiter.enforce(
+        key=f"portfolio_regenerate:{current_user.id}:{request.client.host if request.client else 'unknown'}",
+        limit=20,
+        window_seconds=300,
+        message="Too many AI regenerate requests. Please wait a few minutes.",
+    )
     allowed_fields = {"summary", "tagline", "bio", "project_description", "experience_description"}
     if req.field not in allowed_fields:
         raise HTTPException(status_code=400, detail=f"Field must be one of: {allowed_fields}")
@@ -115,7 +122,9 @@ async def regenerate_field(
 @router.get("/public/{slug}")
 async def get_public_portfolio(slug: str, request: Request, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
-        select(Portfolio).where(Portfolio.slug == slug, Portfolio.is_published == True)
+        select(Portfolio)
+        .options(joinedload(Portfolio.user))
+        .where(Portfolio.slug == slug, Portfolio.is_published == True)
     )
     portfolio = result.scalar_one_or_none()
     if not portfolio:
@@ -136,7 +145,9 @@ async def get_public_portfolio(slug: str, request: Request, db: AsyncSession = D
 
     return {
         "id": portfolio.id,
+        "user_id": portfolio.user_id,
         "slug": portfolio.slug,
+        "avatar_url": portfolio.user.avatar_url if portfolio.user else None,
         "parsed_data": json.loads(portfolio.parsed_data),
         "theme": portfolio.theme,
         "template_id": portfolio.template_id,
@@ -150,7 +161,9 @@ async def get_public_portfolio(slug: str, request: Request, db: AsyncSession = D
 @router.get("/domain/{domain}")
 async def get_portfolio_by_domain(domain: str, request: Request, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
-        select(Portfolio).where(Portfolio.custom_domain == domain, Portfolio.is_published == True)
+        select(Portfolio)
+        .options(joinedload(Portfolio.user))
+        .where(Portfolio.custom_domain == domain, Portfolio.is_published == True)
     )
     portfolio = result.scalar_one_or_none()
     if not portfolio:
@@ -171,8 +184,10 @@ async def get_portfolio_by_domain(domain: str, request: Request, db: AsyncSessio
 
     return {
         "id": portfolio.id,
+        "user_id": portfolio.user_id,
         "slug": portfolio.slug,
         "custom_domain": portfolio.custom_domain,
+        "avatar_url": portfolio.user.avatar_url if portfolio.user else None,
         "parsed_data": json.loads(portfolio.parsed_data),
         "theme": portfolio.theme,
         "template_id": portfolio.template_id,
@@ -226,9 +241,6 @@ async def check_slug_availability(
     return {"available": True}
 
 
-class SlugUpdate(BaseModel):
-    slug: str
-
 @router.patch("/me/slug")
 async def update_portfolio_slug(
     data: SlugUpdate,
@@ -236,7 +248,6 @@ async def update_portfolio_slug(
     current_user: User = Depends(get_current_user),
 ):
     """Update the portfolio URL slug."""
-    import re
     slug = data.slug.strip().lower().replace(' ', '-')
     
     if not re.match(r'^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$', slug):
@@ -272,7 +283,7 @@ async def get_portfolio_analytics(
         raise HTTPException(status_code=404, detail="Portfolio not found")
 
     # --- 7-day view counts ---
-    seven_days_ago = datetime.utcnow() - timedelta(days=7)
+    seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7) # Note: simplified for now, should use UTC
     views_query = await db.execute(
         select(
             func.date(PageView.viewed_at).label("day"),
@@ -287,7 +298,7 @@ async def get_portfolio_analytics(
     # Fill missing days with 0
     all_days = []
     for i in range(7):
-        day = (datetime.utcnow() - timedelta(days=6-i)).strftime("%Y-%m-%d")
+        day = (datetime.now(timezone.utc) - timedelta(days=6-i)).strftime("%Y-%m-%d")
         found = next((d for d in daily_views if d["date"] == day), None)
         all_days.append({"date": day, "views": found["views"] if found else 0})
 

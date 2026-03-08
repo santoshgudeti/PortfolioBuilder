@@ -32,7 +32,7 @@ export default function BauhausTemplate({ pd, data, hiddenSections, rgb, mode }:
                         </h1>
 
                         <div className="inline-block border-l-8 md:border-l-[12px] pl-4 md:pl-6 pb-2" style={{ borderColor: primaryColor }}>
-                            <h2 className="text-xl md:text-3xl font-bold uppercase tracking-widest">{pd.headline}</h2>
+                            <h2 className="text-xl md:text-3xl font-bold uppercase tracking-widest">{pd.tagline || pd.title}</h2>
                         </div>
                     </div>
 
@@ -44,10 +44,11 @@ export default function BauhausTemplate({ pd, data, hiddenSections, rgb, mode }:
                         )}
 
                         <div className="flex flex-col gap-2 font-medium text-sm md:text-base uppercase tracking-widest mt-8">
-                            {pd.contact?.email && <a href={`mailto:${pd.contact.email}`} className="hover:underline opacity-80 hover:opacity-100 transition-opacity flex items-center gap-3"><Mail className="w-5 h-5" /> {pd.contact.email}</a>}
-                            {pd.contact?.phone && <span className="opacity-80 flex items-center gap-3"><Phone className="w-5 h-5" /> {pd.contact.phone}</span>}
-                            {pd.contact?.location && <span className="opacity-80 flex items-center gap-3"><MapPin className="w-5 h-5" /> {pd.contact.location}</span>}
-                            {pd.contact?.linkedin && <a href={pd.contact.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline opacity-80 hover:opacity-100 transition-opacity flex items-center gap-3"><Globe className="w-5 h-5" /> LINKEDIN</a>}
+                            {pd.email && <a href={`mailto:${pd.email}`} className="hover:underline opacity-80 hover:opacity-100 transition-opacity flex items-center gap-3"><Mail className="w-5 h-5" /> {pd.email}</a>}
+                            {pd.phone && <span className="opacity-80 flex items-center gap-3"><Phone className="w-5 h-5" /> {pd.phone}</span>}
+                            {pd.location && <span className="opacity-80 flex items-center gap-3"><MapPin className="w-5 h-5" /> {pd.location}</span>}
+                            {pd.linkedin && <a href={pd.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline opacity-80 hover:opacity-100 transition-opacity flex items-center gap-3"><Globe className="w-5 h-5" /> LINKEDIN</a>}
+                            {pd.github && <a href={pd.github} target="_blank" rel="noopener noreferrer" className="hover:underline opacity-80 hover:opacity-100 transition-opacity flex items-center gap-3"><ExternalLink className="w-5 h-5" /> GITHUB</a>}
                         </div>
                     </div>
                 </div>
@@ -116,16 +117,16 @@ export default function BauhausTemplate({ pd, data, hiddenSections, rgb, mode }:
                                         <div className="absolute -left-10 -bottom-10 w-32 h-32 opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none rotate-45" style={{ backgroundColor: primaryColor }} />
 
                                         <div className="flex justify-between items-start mb-6">
-                                            <h4 className="text-3xl md:text-5xl font-black uppercase tracking-tight leading-none break-words relative z-10">{proj.name}</h4>
-                                            {proj.link && (
-                                                <a href={proj.link} target="_blank" rel="noopener noreferrer" className="p-3 bg-black dark:bg-white text-white dark:text-black hover:scale-110 transition-transform relative z-10 group-hover:bg-primary" style={{ backgroundColor: fgColor, color: bgColor }}>
+                                            <h4 className="text-3xl md:text-5xl font-black uppercase tracking-tight leading-none break-words relative z-10">{proj.title}</h4>
+                                            {proj.url && (
+                                                <a href={proj.url} target="_blank" rel="noopener noreferrer" className="p-3 bg-black dark:bg-white text-white dark:text-black hover:scale-110 transition-transform relative z-10 group-hover:bg-primary" style={{ backgroundColor: fgColor, color: bgColor }}>
                                                     <ExternalLink className="w-6 h-6" />
                                                 </a>
                                             )}
                                         </div>
-                                        {proj.technologies && (
+                                        {proj.tech && proj.tech.length > 0 && (
                                             <div className="mb-6 border-b-2 border-dashed pb-4 opacity-50 relative z-10 font-mono text-sm uppercase tracking-widest" style={{ borderColor: fgColor }}>
-                                                {proj.technologies}
+                                                {proj.tech.join(', ')}
                                             </div>
                                         )}
                                         <p className="text-lg leading-relaxed opacity-90 relative z-10">{proj.description}</p>

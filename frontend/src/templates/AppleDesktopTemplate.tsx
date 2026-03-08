@@ -92,33 +92,33 @@ export default function AppleDesktopTemplate({ pd, data, hiddenSections, isPdf, 
                         </div>
                         <h1 className="text-2xl font-bold tracking-tight mb-2 text-gray-900 dark:text-white">{pd.name}</h1>
                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-6 bg-black/5 dark:bg-white/10 px-4 py-1.5 rounded-full inline-block">
-                            {pd.headline || "Professional Portfolio"}
+                            {pd.tagline || pd.title || "Professional Portfolio"}
                         </p>
 
                         {/* Contact info grid */}
                         <div className="w-full grid grid-cols-1 gap-3 text-sm text-left bg-white/50 dark:bg-black/40 p-5 rounded-xl border border-white/40 dark:border-white/5 shadow-inner mb-6">
-                            {pd.contact?.email && (
+                            {pd.email && (
                                 <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
                                     <Mail className="w-4 h-4 text-blue-500" />
-                                    <a href={`mailto:${pd.contact.email}`} className="hover:underline truncate">{pd.contact.email}</a>
+                                    <a href={`mailto:${pd.email}`} className="hover:underline truncate">{pd.email}</a>
                                 </div>
                             )}
-                            {pd.contact?.phone && (
+                            {pd.phone && (
                                 <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
                                     <Phone className="w-4 h-4 text-green-500" />
-                                    <span>{pd.contact.phone}</span>
+                                    <span>{pd.phone}</span>
                                 </div>
                             )}
-                            {pd.contact?.location && (
+                            {pd.location && (
                                 <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
                                     <MapPin className="w-4 h-4 text-red-500" />
-                                    <span>{pd.contact.location}</span>
+                                    <span>{pd.location}</span>
                                 </div>
                             )}
-                            {pd.contact?.linkedin && (
+                            {pd.linkedin && (
                                 <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 mt-2 pt-2 border-t border-black/5 dark:border-white/5">
                                     <Globe className="w-4 h-4 text-indigo-500" />
-                                    <a href={pd.contact.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-600 dark:text-blue-400 truncate">LinkedIn Profile</a>
+                                    <a href={pd.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-600 dark:text-blue-400 truncate">LinkedIn Profile</a>
                                 </div>
                             )}
                         </div>
@@ -191,17 +191,17 @@ export default function AppleDesktopTemplate({ pd, data, hiddenSections, isPdf, 
                         >
                             <div className="p-6 md:p-8 grid grid-cols-1 xl:grid-cols-2 gap-6">
                                 {pd.projects.map((proj: any, i: number) => (
-                                    <a key={i} href={proj.link || '#'} target="_blank" rel="noopener noreferrer" className="group block h-full">
+                                    <a key={i} href={proj.url || '#'} target="_blank" rel="noopener noreferrer" className="group block h-full">
                                         <div className="h-full bg-white dark:bg-[#2d2e30] rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02] flex flex-col">
                                             <div className="flex items-center justify-between mb-4">
                                                 <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-500 flex items-center justify-center">
                                                     <Folder className="w-5 h-5 fill-current opacity-20" />
                                                 </div>
-                                                {proj.link && <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />}
+                                                {proj.url && <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />}
                                             </div>
-                                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{proj.name}</h3>
-                                            {proj.technologies && (
-                                                <p className="text-xs font-mono text-[rgba(var(--template-color))] dark:text-[rgba(var(--template-color))] opacity-80 mb-3">{proj.technologies}</p>
+                                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{proj.title}</h3>
+                                            {proj.tech && proj.tech.length > 0 && (
+                                                <p className="text-xs font-mono text-[rgba(var(--template-color))] dark:text-[rgba(var(--template-color))] opacity-80 mb-3">{proj.tech.join(', ')}</p>
                                             )}
                                             <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 leading-relaxed">{proj.description}</p>
                                         </div>
@@ -227,7 +227,7 @@ export default function AppleDesktopTemplate({ pd, data, hiddenSections, isPdf, 
                                         </div>
                                         <div className="mt-2 md:mt-0 text-left md:text-right">
                                             <span className="inline-block bg-white/50 dark:bg-black/30 px-3 py-1 rounded-full text-xs font-mono font-medium text-gray-600 dark:text-gray-400 shadow-sm border border-black/5 dark:border-white/5">
-                                                {edu.duration}
+                                                {edu.year}
                                             </span>
                                             {edu.score && <p className="text-sm font-semibold text-gray-900 dark:text-white mt-2">Score: {edu.score}</p>}
                                         </div>

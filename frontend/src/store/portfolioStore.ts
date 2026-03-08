@@ -48,6 +48,7 @@ interface PortfolioState {
     mode: string
     primaryColor: string
     isPublished: boolean
+    isGuest: boolean
     setPortfolio: (data: Partial<PortfolioState>) => void
     setParsedData: (data: ParsedData) => void
     setTheme: (theme: string) => void
@@ -67,6 +68,7 @@ export const usePortfolioStore = create<PortfolioState>((set) => ({
     mode: 'light',
     primaryColor: '#6366f1',
     isPublished: false,
+    isGuest: false,
 
     setPortfolio: (data) => set((state) => ({ ...state, ...data })),
     setParsedData: (data) => set({ parsedData: data }),
@@ -84,5 +86,6 @@ export const usePortfolioStore = create<PortfolioState>((set) => ({
         mode: 'light',
         primaryColor: '#6366f1',
         isPublished: false,
+        isGuest: false,
     }),
 }))

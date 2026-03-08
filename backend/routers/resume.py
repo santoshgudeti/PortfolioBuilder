@@ -1,5 +1,5 @@
 import json
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from database import get_db
@@ -10,7 +10,10 @@ from services.parser import extract_text
 from services.groq_service import parse_resume_with_groq
 from services.portfolio_service import create_portfolio, update_portfolio
 from services.rustfs_service import rustfs_service
-from utils.auth import get_current_user
+from utils.auth import get_current_user, get_optional_user
+from utils.rate_limit import rate_limiter
+
+from typing import Optional
 
 router = APIRouter(prefix="/resume", tags=["Resume"])
 
@@ -19,13 +22,24 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 @router.post("/upload", status_code=status.HTTP_201_CREATED)
 async def upload_resume(
+    request: Request,
     file: UploadFile = File(...),
     tone: str = Form("professional"),
     mode: str = Form("replace"),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
-    if current_user.auth_provider == "email" and not current_user.is_verified:
+    ip = request.client.host if request.client else 'unknown'
+    rate_limit_key = f"resume_upload:{current_user.id if current_user else 'guest'}:{ip}"
+    
+    rate_limiter.enforce(
+        key=rate_limit_key,
+        limit=6 if current_user else 3,  # Stricter for guests
+        window_seconds=300,
+        message="Too many upload attempts. Please wait a few minutes and try again.",
+    )
+
+    if current_user and current_user.auth_provider == "email" and not current_user.is_verified:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, 
             detail="Please verify your email before generating a portfolio."
@@ -44,7 +58,7 @@ async def upload_resume(
     resume_object_key = None
     if rustfs_service.s3_client:
         try:
-            resume_object_key = await rustfs_service.upload_file(file_bytes, file.filename, current_user.id)
+            resume_object_key = await rustfs_service.upload_file(file_bytes, file.filename, current_user.id if current_user else "guest")
         except Exception as e:
             print(f"Failed to upload to RustFS: {e}")
             # Optionally fail the request, but we'll print and continue so parsing still works even if storage fails.
@@ -63,6 +77,16 @@ async def upload_resume(
         parsed_data = await parse_resume_with_groq(resume_text, tone=tone)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"AI parsing failed: {str(e)}")
+
+    # If guest, just return the data (no saving to DB)
+    if not current_user:
+        return {
+            "message": "Guest parse successful",
+            "portfolio_id": None,
+            "slug": None,
+            "parsed_data": parsed_data,
+            "is_guest": True
+        }
 
     # Check if user already has a portfolio
     result = await db.execute(select(Portfolio).where(Portfolio.user_id == current_user.id))
@@ -119,4 +143,5 @@ async def upload_resume(
         "portfolio_id": portfolio.id,
         "slug": portfolio.slug,
         "parsed_data": parsed_data,
+        "is_guest": False
     }

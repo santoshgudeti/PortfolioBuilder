@@ -6,7 +6,7 @@ import { authApi } from '@/api/auth'
 import { Briefcase, Eye, EyeOff, Loader2, Mail, CheckCircle2, RefreshCw } from 'lucide-react'
 import GoogleSignInBox from '@/components/GoogleSignInBox'
 
-interface FormData { name: string; email: string; password: string; confirm: string }
+interface FormData { name: string; email: string; password: string; confirm: string; consent: boolean }
 
 export default function RegisterPage() {
     const navigate = useNavigate()
@@ -63,7 +63,7 @@ export default function RegisterPage() {
                             <div className="w-full p-4 rounded-xl bg-brand-50 dark:bg-brand-900/10 border border-brand-200 dark:border-brand-800 text-left space-y-2">
                                 <div className="flex items-start gap-2">
                                     <CheckCircle2 className="w-4 h-4 text-brand-500 flex-shrink-0 mt-0.5" />
-                                    <span className="text-sm text-gray-700 dark:text-gray-300">Open the email from <strong>Resume2Portfolio</strong></span>
+                                    <span className="text-sm text-gray-700 dark:text-gray-300">Open the email from <strong>FolioAI</strong></span>
                                 </div>
                                 <div className="flex items-start gap-2">
                                     <CheckCircle2 className="w-4 h-4 text-brand-500 flex-shrink-0 mt-0.5" />
@@ -103,12 +103,12 @@ export default function RegisterPage() {
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <Link to="/" className="inline-flex items-center gap-2 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center">
-                            <Briefcase className="w-5 h-5 text-white" />
+                        <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg border border-white/10 bg-brand-500">
+                            <img src="/assets/branding/logo.png" alt="FolioAI Logo" className="w-full h-full object-cover" />
                         </div>
                     </Link>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create your account</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Build your portfolio in minutes</p>
+                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">Join FolioAI</h1>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Build your portfolio in under 60 seconds</p>
                 </div>
 
                 <div className="card">
@@ -174,6 +174,24 @@ export default function RegisterPage() {
                                 })}
                             />
                             {errors.confirm && <p className="text-red-500 text-xs mt-1">{errors.confirm.message}</p>}
+                        </div>
+
+                        <div>
+                            <label className="flex items-start gap-4 cursor-pointer select-none group">
+                                <div className="relative flex items-center mt-1">
+                                    <input
+                                        type="checkbox"
+                                        className="peer sr-only"
+                                        {...register('consent', { required: 'You must agree to the terms to continue' })}
+                                    />
+                                    <div className="w-5 h-5 border-2 border-gray-200 dark:border-gray-800 rounded-md bg-white dark:bg-gray-900 peer-checked:bg-brand-500 peer-checked:border-brand-500 transition-all" />
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 transition-opacity" />
+                                </div>
+                                <span className="text-xs text-gray-500 dark:text-gray-400 leading-normal">
+                                    I agree to the <Link to="/terms" className="text-brand-500 hover:underline">Terms of Service</Link> and <Link to="/privacy" className="text-brand-500 hover:underline">Privacy Policy</Link>. I understand that my data will be processed to generate my portfolio.
+                                </span>
+                            </label>
+                            {errors.consent && <p className="text-red-500 text-[10px] mt-1 ml-9">{errors.consent.message}</p>}
                         </div>
 
                         <button type="submit" disabled={loading} className="btn-primary w-full mt-2">

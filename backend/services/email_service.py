@@ -2,6 +2,7 @@
 Email verification & password reset service.
 Uses Gmail SMTP via fastapi-mail.
 """
+from html import escape as html_escape
 from fastapi_mail import FastMail, MessageSchema, MessageType, ConnectionConfig
 from config import get_settings
 from utils.auth import create_access_token
@@ -53,10 +54,11 @@ async def send_verification_email(email: str, user_name: str, token: str):
     settings = get_settings()
     verify_url = f"{settings.frontend_url}/verify-email?token={token}"
 
+    safe_name = html_escape(user_name)
     html = f"""
     <div style="font-family: 'Inter', Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 40px 20px;">
         <h1 style="color: #6366f1; font-size: 24px; margin-bottom: 8px;">Resume2Portfolio AI</h1>
-        <p style="font-size: 16px; color: #333;">Hey {user_name},</p>
+        <p style="font-size: 16px; color: #333;">Hey {safe_name},</p>
         <p style="font-size: 14px; color: #555; line-height: 1.6;">
             Welcome! Please verify your email address to start generating your portfolio.
         </p>
@@ -93,10 +95,11 @@ async def send_reset_email(email: str, user_name: str, token: str):
     settings = get_settings()
     reset_url = f"{settings.frontend_url}/reset-password?token={token}"
 
+    safe_name = html_escape(user_name)
     html = f"""
     <div style="font-family: 'Inter', Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 40px 20px;">
         <h1 style="color: #6366f1; font-size: 24px; margin-bottom: 8px;">Resume2Portfolio AI</h1>
-        <p style="font-size: 16px; color: #333;">Hey {user_name},</p>
+        <p style="font-size: 16px; color: #333;">Hey {safe_name},</p>
         <p style="font-size: 14px; color: #555; line-height: 1.6;">
             You requested a password reset. Click the button below to set a new password.
         </p>

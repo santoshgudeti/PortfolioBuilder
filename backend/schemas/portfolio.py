@@ -65,6 +65,7 @@ class PortfolioOut(BaseModel):
     user_id: str
     slug: str
     custom_domain: Optional[str]
+    avatar_url: Optional[str] = None
     parsed_data: str  # JSON string
     theme: str
     template_id: str
@@ -80,4 +81,14 @@ class PortfolioOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class RegenerateRequest(BaseModel):
+    field: str          # "summary", "tagline", "project_description", etc.
+    current_value: str  # Current text to improve
+    context: str = ""   # Extra context (e.g. project title, skills list)
+
+
+class SlugUpdate(BaseModel):
+    slug: str
 

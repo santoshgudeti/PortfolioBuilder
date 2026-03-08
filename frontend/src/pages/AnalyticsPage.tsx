@@ -43,8 +43,8 @@ export default function AnalyticsPage() {
         <PageTransition className="max-w-5xl mx-auto space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics Overview</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Track your portfolio's performance</p>
+                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase mb-0.5">Market Reach</h1>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">Quantify your professional influence</p>
                 </div>
                 {analytics.is_published && (
                     <div className="flex items-center gap-2">
@@ -69,31 +69,34 @@ export default function AnalyticsPage() {
 
             {/* Top Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="card flex items-center gap-4">
-                    <div className="p-3 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 rounded-xl">
-                        <Users className="w-6 h-6" />
+                <div className="card flex items-center gap-6 overflow-hidden relative">
+                    <div className="absolute -top-6 -right-6 w-24 h-24 bg-brand-500/5 blur-2xl rounded-full" />
+                    <div className="p-4 bg-brand-500/10 text-brand-600 dark:text-brand-400 rounded-2xl relative z-10 shadow-sm">
+                        <Users className="w-8 h-8" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Views</p>
-                        <p className="text-2xl font-bold text-gray-900 dark:text-white">{total_views}</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-2">Total Impact</p>
+                        <p className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">{total_views}</p>
                     </div>
                 </div>
-                <div className="card flex items-center gap-4">
-                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl">
-                        <Monitor className="w-6 h-6" />
+                <div className="card flex items-center gap-6 overflow-hidden relative">
+                    <div className="absolute -top-6 -right-6 w-24 h-24 bg-blue-500/5 blur-2xl rounded-full" />
+                    <div className="p-4 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-2xl relative z-10 shadow-sm">
+                        <Monitor className="w-8 h-8" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Desktop Views</p>
-                        <p className="text-2xl font-bold text-gray-900 dark:text-white">{devices.desktop}</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-2">Professional Reach</p>
+                        <p className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">{devices.desktop}</p>
                     </div>
                 </div>
-                <div className="card flex items-center gap-4">
-                    <div className="p-3 bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-600 dark:text-fuchsia-400 rounded-xl">
-                        <Smartphone className="w-6 h-6" />
+                <div className="card flex items-center gap-6 overflow-hidden relative">
+                    <div className="absolute -top-6 -right-6 w-24 h-24 bg-fuchsia-500/5 blur-2xl rounded-full" />
+                    <div className="p-4 bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400 rounded-2xl relative z-10 shadow-sm">
+                        <Smartphone className="w-8 h-8" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Mobile Views</p>
-                        <p className="text-2xl font-bold text-gray-900 dark:text-white">{devices.mobile}</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-2">Social Reach</p>
+                        <p className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">{devices.mobile}</p>
                     </div>
                 </div>
             </div>
@@ -101,9 +104,9 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Traffic Chart */}
                 <div className="card lg:col-span-2">
-                    <div className="flex items-center gap-2 mb-6 text-gray-900 dark:text-white font-medium">
-                        <TrendingUp className="w-5 h-5 text-gray-400" />
-                        Views (Last 7 Days)
+                    <div className="font-black text-gray-900 dark:text-white uppercase tracking-widest text-xs flex items-center gap-2 mb-8 border-b border-gray-100 dark:border-white/5 pb-4">
+                        <TrendingUp className="w-4 h-4 text-brand-500" />
+                        Aesthetic Engagement (7 Days)
                     </div>
 
                     <div className="h-64 flex items-end gap-2 mt-4 px-2">

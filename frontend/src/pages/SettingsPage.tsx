@@ -4,7 +4,7 @@ import { usePortfolioStore } from '@/store/portfolioStore'
 import { authApi } from '@/api/auth'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
-import { User, Trash2, AlertTriangle, ArrowRight, Loader2 } from 'lucide-react'
+import { User, Trash2, AlertTriangle, ArrowRight, Loader2, Download } from 'lucide-react'
 
 export default function SettingsPage() {
     const { user, logout } = useAuthStore()
@@ -24,6 +24,28 @@ export default function SettingsPage() {
         } finally {
             setDeleting(false)
             setShowDanger(false)
+        }
+    }
+
+    const handleExportData = async () => {
+        try {
+            // Fetch everything we know about the user
+            const profile = await authApi.me()
+            const exportData = {
+                user: profile.data,
+                exported_at: new Date().toISOString(),
+                source: "FolioAI"
+            }
+
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `folioai-data-export-${new Date().getTime()}.json`
+            a.click()
+            toast.success('Your data export has started.')
+        } catch (err: any) {
+            toast.error('Failed to export data.')
         }
     }
 
@@ -76,6 +98,18 @@ export default function SettingsPage() {
                         </div>
                         <button onClick={logout} className="btn-secondary text-sm text-red-500 border-red-200 hover:bg-red-50 dark:hover:bg-red-900/10">
                             Sign Out
+                        </button>
+                    </div>
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-3 flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-gray-900 dark:text-white">Export My Data</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Download a JSON file of all your personal data</p>
+                        </div>
+                        <button
+                            onClick={handleExportData}
+                            className="btn-secondary text-sm flex items-center gap-2"
+                        >
+                            <Download className="w-4 h-4" /> Export
                         </button>
                     </div>
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-3 flex items-center justify-between">

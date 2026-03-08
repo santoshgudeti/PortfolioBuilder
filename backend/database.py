@@ -29,10 +29,20 @@ if "postgresql" in db_url:
 elif "sqlite" in db_url:
     connect_args = {"check_same_thread": False}
 
+# Pooling config for PostgreSQL (important for Neon.tech's serverless Postgres)
+pool_kwargs = {}
+if "postgresql" in db_url:
+    pool_kwargs = {
+        "pool_size": 5,
+        "max_overflow": 10,
+        "pool_pre_ping": True,  # Detect stale connections before using them
+    }
+
 engine = create_async_engine(
     db_url,
     echo=False,
     connect_args=connect_args,
+    **pool_kwargs,
 )
 
 AsyncSessionLocal = async_sessionmaker(

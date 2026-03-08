@@ -5,7 +5,7 @@ from functools import lru_cache
 class Settings(BaseSettings):
     groq_api_key: str = ""
     database_url: str = "sqlite+aiosqlite:///./resume2portfolio.db"
-    secret_key: str = "change-me-in-production-must-be-at-least-32-chars"
+    secret_key: str  # No default — MUST be set in .env to prevent token forgery
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
     frontend_url: str = "http://localhost:5173"

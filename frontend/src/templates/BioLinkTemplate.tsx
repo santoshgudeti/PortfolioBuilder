@@ -31,7 +31,7 @@ export default function BioLinkTemplate({ pd, data, hiddenSections, rgb, mode }:
                         className="absolute right-0 top-0 p-2 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors"
                         onClick={() => {
                             if (navigator.share) {
-                                navigator.share({ title: pd.name, text: pd.headline, url: window.location.href })
+                                navigator.share({ title: pd.name, text: pd.tagline, url: window.location.href })
                             } else {
                                 navigator.clipboard.writeText(window.location.href)
                                 alert('Link copied to clipboard!')
@@ -52,26 +52,26 @@ export default function BioLinkTemplate({ pd, data, hiddenSections, rgb, mode }:
                     )}
 
                     <h1 className="text-2xl font-bold mb-1 tracking-tight">{pd.name}</h1>
-                    <p className="text-sm font-medium opacity-80 mb-4 px-4">{pd.headline}</p>
+                    <p className="text-sm font-medium opacity-80 mb-4 px-4">{pd.tagline || pd.title}</p>
 
                     {/* Social/Contact Row */}
                     <div className="flex flex-wrap justify-center gap-3 mt-2">
-                        {pd.contact?.email && (
-                            <a href={`mailto:${pd.contact.email}`} className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 hover:-translate-y-1 transition-transform" style={{ color: primaryColor }}>
+                        {pd.email && (
+                            <a href={`mailto:${pd.email}`} className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 hover:-translate-y-1 transition-transform" style={{ color: primaryColor }}>
                                 <Mail className="w-5 h-5" />
                             </a>
                         )}
-                        {pd.contact?.phone && (
-                            <a href={`tel:${pd.contact.phone}`} className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 hover:-translate-y-1 transition-transform" style={{ color: primaryColor }}>
+                        {pd.phone && (
+                            <a href={`tel:${pd.phone}`} className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 hover:-translate-y-1 transition-transform" style={{ color: primaryColor }}>
                                 <Phone className="w-5 h-5" />
                             </a>
                         )}
-                        {pd.contact?.linkedin && (
-                            <a href={pd.contact.linkedin} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 hover:-translate-y-1 transition-transform" style={{ color: primaryColor }}>
+                        {pd.linkedin && (
+                            <a href={pd.linkedin} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 hover:-translate-y-1 transition-transform" style={{ color: primaryColor }}>
                                 <Globe className="w-5 h-5" />
                             </a>
                         )}
-                        {pd.contact?.location && (
+                        {pd.location && (
                             <div className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 tooltip">
                                 <MapPin className="w-5 h-5" style={{ color: primaryColor }} />
                             </div>
@@ -122,7 +122,7 @@ export default function BioLinkTemplate({ pd, data, hiddenSections, rgb, mode }:
                             {pd.projects.map((proj: any, i: number) => (
                                 <a
                                     key={i}
-                                    href={proj.link || '#'}
+                                    href={proj.url || '#'}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="block w-full group relative overflow-hidden bg-white dark:bg-[#1a1a1a] rounded-[24px] shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-all duration-300 hover:scale-[1.02]"
@@ -132,7 +132,7 @@ export default function BioLinkTemplate({ pd, data, hiddenSections, rgb, mode }:
 
                                     <div className="p-5 flex items-center justify-between">
                                         <div className="pr-4">
-                                            <h3 className="font-bold text-base mb-1">{proj.name}</h3>
+                                            <h3 className="font-bold text-base mb-1">{proj.title}</h3>
                                             <p className="text-xs opacity-60 line-clamp-2">{proj.description}</p>
                                         </div>
                                         <div className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 group-hover:bg-white dark:group-hover:bg-gray-700 shadow-inner group-hover:rotate-45 transition-all duration-300" style={{ color: primaryColor }}>
@@ -197,7 +197,7 @@ export default function BioLinkTemplate({ pd, data, hiddenSections, rgb, mode }:
                                             <h4 className="font-bold text-sm">{edu.degree}</h4>
                                             <p className="text-xs font-semibold opacity-80 mt-0.5" style={{ color: primaryColor }}>{edu.institution}</p>
                                             <div className="flex justify-between items-end mt-2">
-                                                <p className="text-xs opacity-50">{edu.duration}</p>
+                                                <p className="text-xs opacity-50">{edu.year}</p>
                                                 {edu.score && <p className="text-xs font-bold px-2 py-1 bg-gray-50 dark:bg-gray-800 rounded-md">Score: {edu.score}</p>}
                                             </div>
                                         </div>

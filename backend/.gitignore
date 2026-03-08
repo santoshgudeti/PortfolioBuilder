@@ -27,9 +27,12 @@ env/
 # Uploads
 uploads/
 
-# Logs
+# Logs & debug output
 *.log
 logs/
+err.txt
+error_log.txt
+storage_output.txt
 
 # IDE
 .vscode/

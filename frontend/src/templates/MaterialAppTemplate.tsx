@@ -80,7 +80,7 @@ export default function MaterialAppTemplate({ pd, data, hiddenSections, rgb, mod
                                 )}
                                 <div className={data?.avatar_url ? "-mt-8" : ""}>
                                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{pd.name}</h2>
-                                    <p className="text-base text-gray-600 dark:text-gray-400 mt-1">{pd.headline}</p>
+                                    <p className="text-base text-gray-600 dark:text-gray-400 mt-1">{pd.tagline || pd.title}</p>
                                 </div>
                             </div>
                         </div>
@@ -89,36 +89,36 @@ export default function MaterialAppTemplate({ pd, data, hiddenSections, rgb, mod
                         <div className="bg-white dark:bg-[#1e1e1e] rounded-[16px] shadow-sm p-4 md:p-6 transition-colors duration-300">
                             <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Contact Information</h3>
                             <div className="space-y-4">
-                                {pd.contact?.email && (
+                                {pd.email && (
                                     <div className="flex items-center gap-4 text-gray-800 dark:text-gray-200">
                                         <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                                             <Mail className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                                         </div>
-                                        <a href={`mailto:${pd.contact.email}`} className="hover:underline">{pd.contact.email}</a>
+                                        <a href={`mailto:${pd.email}`} className="hover:underline">{pd.email}</a>
                                     </div>
                                 )}
-                                {pd.contact?.phone && (
+                                {pd.phone && (
                                     <div className="flex items-center gap-4 text-gray-800 dark:text-gray-200">
                                         <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                                             <Phone className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                                         </div>
-                                        <span>{pd.contact.phone}</span>
+                                        <span>{pd.phone}</span>
                                     </div>
                                 )}
-                                {pd.contact?.location && (
+                                {pd.location && (
                                     <div className="flex items-center gap-4 text-gray-800 dark:text-gray-200">
                                         <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                                             <MapPin className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                                         </div>
-                                        <span>{pd.contact.location}</span>
+                                        <span>{pd.location}</span>
                                     </div>
                                 )}
-                                {pd.contact?.linkedin && (
+                                {pd.linkedin && (
                                     <div className="flex items-center gap-4 text-gray-800 dark:text-gray-200">
                                         <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                                             <Globe className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                                         </div>
-                                        <a href={pd.contact.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">LinkedIn</a>
+                                        <a href={pd.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">LinkedIn</a>
                                     </div>
                                 )}
                             </div>
@@ -180,14 +180,14 @@ export default function MaterialAppTemplate({ pd, data, hiddenSections, rgb, mod
                                     <Frame className="w-12 h-12 text-black dark:text-white opacity-20" />
                                 </div>
                                 <div className="p-5 flex-1 flex flex-col">
-                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{proj.name}</h3>
-                                    {proj.technologies && (
-                                        <p className="text-sm font-medium opacity-80 mb-3" style={{ color: primaryColor }}>{proj.technologies}</p>
+                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{proj.title}</h3>
+                                    {proj.tech && proj.tech.length > 0 && (
+                                        <p className="text-sm font-medium opacity-80 mb-3" style={{ color: primaryColor }}>{proj.tech.join(', ')}</p>
                                     )}
                                     <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4 flex-1">{proj.description}</p>
-                                    {proj.link && (
+                                    {proj.url && (
                                         <div className="pt-4 border-t border-gray-100 dark:border-gray-800 mt-auto">
-                                            <a href={proj.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide hover:opacity-80 transition-opacity" style={{ color: primaryColor }}>
+                                            <a href={proj.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide hover:opacity-80 transition-opacity" style={{ color: primaryColor }}>
                                                 View Project <ExternalLink className="w-4 h-4" />
                                             </a>
                                         </div>
@@ -212,7 +212,7 @@ export default function MaterialAppTemplate({ pd, data, hiddenSections, rgb, mod
                                     {edu.score && <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">Score: {edu.score}</p>}
                                 </div>
                                 <div className="text-sm text-gray-500 dark:text-gray-400 font-medium sm:text-right whitespace-nowrap">
-                                    {edu.duration}
+                                    {edu.year}
                                 </div>
                             </div>
                         ))}
@@ -238,9 +238,9 @@ export default function MaterialAppTemplate({ pd, data, hiddenSections, rgb, mod
             </div>
 
             {/* Floating Action Button (FAB) - For Contact */}
-            {pd.contact?.email && (
+            {pd.email && (
                 <a
-                    href={`mailto:${pd.contact.email}`}
+                    href={`mailto:${pd.email}`}
                     className="fixed bottom-20 md:bottom-8 right-4 md:right-8 w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform z-50 group hover:shadow-2xl"
                     style={{ backgroundColor: primaryColor }}
                     title="Send Email"

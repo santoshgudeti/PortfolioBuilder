@@ -1,0 +1,13 @@
+node_modules/
+dist/
+dist-ssr/
+*.local
+.npm/
+.yarn/
+.env
+.env.*
+.DS_Store
+.git/
+.vscode/
+coverage/
+*.log

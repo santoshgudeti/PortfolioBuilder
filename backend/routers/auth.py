@@ -1,17 +1,33 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from database import get_db
 from models.user import User
-from schemas.user import UserCreate, UserLogin, UserOut, Token
+from schemas.user import (
+    UserCreate, UserLogin, UserOut, Token, GoogleAuth,
+    ProfileUpdate, PasswordChange, ResendVerification,
+    ForgotPassword, ResetPassword
+)
 from utils.auth import hash_password, verify_password, create_access_token, get_current_user
+from utils.rate_limit import rate_limiter
 from loguru import logger
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
+def _rate_key(request: Request, action: str, identity: str = "") -> str:
+    ip = request.client.host if request.client else "unknown"
+    return f"{action}:{ip}:{identity}".lower()
+
+
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
+async def register(user_data: UserCreate, request: Request, db: AsyncSession = Depends(get_db)):
+    rate_limiter.enforce(
+        key=_rate_key(request, "auth_register", user_data.email),
+        limit=5,
+        window_seconds=60,
+        message="Too many registration attempts. Please wait a minute.",
+    )
     # Check if email already exists
     result = await db.execute(select(User).where(User.email == user_data.email))
     existing = result.scalar_one_or_none()
@@ -43,29 +59,27 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     return {"message": "Registration successful. Please check your email to verify your account."}
 
 
-import os
-from pydantic import BaseModel
-from typing import Optional
-from google.oauth2 import id_token
-from google.auth.transport import requests as google_requests
+import requests
 from config import get_settings
 
-import requests
-
-class GoogleAuth(BaseModel):
-    credential: str  # Now expecting an access_token, keeping name 'credential' for backward compat
 
 @router.post("/google", response_model=Token)
-async def google_auth(data: GoogleAuth, db: AsyncSession = Depends(get_db)):
+async def google_auth(data: GoogleAuth, request: Request, db: AsyncSession = Depends(get_db)):
+    rate_limiter.enforce(
+        key=_rate_key(request, "auth_google"),
+        limit=20,
+        window_seconds=60,
+        message="Too many Google sign-in attempts. Please try again shortly.",
+    )
     try:
         # Instead of verifying an ID token (JWT), we use the access token provided by useGoogleLogin.
         # We call the Google TokenInfo endpoint to validate the token and get user info.
         logger.debug("Attempting to verify Google access token...")
         response = requests.get(f"https://www.googleapis.com/oauth2/v3/userinfo?access_token={data.credential}")
-        
+
         if response.status_code != 200:
             raise ValueError(f"Invalid Token: {response.text}")
-            
+
         idinfo = response.json()
         logger.debug(f"Google token verified successfully for: {idinfo.get('email')}")
 
@@ -102,7 +116,7 @@ async def google_auth(data: GoogleAuth, db: AsyncSession = Depends(get_db)):
             db.add(user)
             await db.commit()
             await db.refresh(user)
-        
+
         if not user.is_active:
             raise HTTPException(status_code=403, detail="Account is deactivated")
 
@@ -115,23 +129,29 @@ async def google_auth(data: GoogleAuth, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=401, detail=f"Invalid Google token: {str(e)}")
 
 @router.post("/login", response_model=Token)
-async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
+async def login(credentials: UserLogin, request: Request, db: AsyncSession = Depends(get_db)):
+    rate_limiter.enforce(
+        key=_rate_key(request, "auth_login", credentials.email),
+        limit=10,
+        window_seconds=60,
+        message="Too many login attempts. Please wait a minute.",
+    )
     result = await db.execute(select(User).where(User.email == credentials.email))
     user = result.scalar_one_or_none()
-    
+
     if not user:
         raise HTTPException(status_code=401, detail="Account not found. Please sign up if you don't have an account.")
-        
+
     if user.auth_provider == "google" and not user.hashed_password:
         raise HTTPException(status_code=400, detail="Please use 'Continue with Google' to sign in")
-        
+
     if not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
-        
+
     # We do NOT block login for unverified users here.
     # The PRD requires unverified users to access the dashboard and see a warning banner,
     # and we should restrict generation/publishing instead.
-        
+
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is deactivated")
 
@@ -143,14 +163,6 @@ async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
 async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
-
-class ProfileUpdate(BaseModel):
-    name: Optional[str] = None
-    avatar_url: Optional[str] = None
-
-class PasswordChange(BaseModel):
-    current_password: str
-    new_password: str
 
 @router.patch("/me", response_model=UserOut)
 async def update_profile(data: ProfileUpdate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -214,38 +226,41 @@ async def verify_email(token: str, db: AsyncSession = Depends(get_db)):
         payload = decode_token(token)
         if payload.get("type") != "verify":
             raise HTTPException(status_code=400, detail="Invalid verification token")
-        
+
         user_id = payload.get("sub")
         result = await db.execute(select(User).where(User.id == user_id))
         user = result.scalar_one_or_none()
-        
+
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         if user.is_verified:
             return {"message": "Email already verified", "already_verified": True}
-        
+
         user.is_verified = True
         await db.commit()
         return {"message": "Email verified successfully! You can now generate portfolios.", "already_verified": False}
-    
+
     except Exception as e:
         raise HTTPException(status_code=400, detail="Invalid or expired verification link")
 
 
-class ResendVerification(BaseModel):
-    email: str
-
 @router.post("/resend-verification")
-async def resend_verification(data: ResendVerification, db: AsyncSession = Depends(get_db)):
+async def resend_verification(data: ResendVerification, request: Request, db: AsyncSession = Depends(get_db)):
     """Resend verification email."""
+    rate_limiter.enforce(
+        key=_rate_key(request, "auth_resend_verification", data.email),
+        limit=3,
+        window_seconds=300,
+        message="Too many verification email requests. Please try again in a few minutes.",
+    )
     result = await db.execute(select(User).where(User.email == data.email))
     user = result.scalar_one_or_none()
-    
+
     if not user:
         return {"message": "If that email exists, a verification link has been sent."}
     if user.is_verified:
         return {"message": "Email is already verified."}
-    
+
     try:
         from services.email_service import create_verification_token, send_verification_email
         token = create_verification_token(user.id)
@@ -256,19 +271,22 @@ async def resend_verification(data: ResendVerification, db: AsyncSession = Depen
         raise HTTPException(status_code=500, detail="Failed to send verification email")
 
 
-class ForgotPassword(BaseModel):
-    email: str
-
 @router.post("/forgot-password")
-async def forgot_password(data: ForgotPassword, db: AsyncSession = Depends(get_db)):
+async def forgot_password(data: ForgotPassword, request: Request, db: AsyncSession = Depends(get_db)):
     """Send password reset link if the email exists."""
+    rate_limiter.enforce(
+        key=_rate_key(request, "auth_forgot_password", data.email),
+        limit=5,
+        window_seconds=300,
+        message="Too many password reset requests. Please try again later.",
+    )
     result = await db.execute(select(User).where(User.email == data.email))
     user = result.scalar_one_or_none()
-    
+
     # Always return success (don't reveal if email exists)
     if not user or user.auth_provider == "google":
         return {"message": "If that email exists, a password reset link has been sent."}
-    
+
     try:
         from services.email_service import create_reset_token, send_reset_email
         token = create_reset_token(user.id)
@@ -279,13 +297,15 @@ async def forgot_password(data: ForgotPassword, db: AsyncSession = Depends(get_d
         raise HTTPException(status_code=500, detail="Failed to send reset email")
 
 
-class ResetPassword(BaseModel):
-    token: str
-    new_password: str
-
 @router.post("/reset-password")
-async def reset_password(data: ResetPassword, db: AsyncSession = Depends(get_db)):
+async def reset_password(data: ResetPassword, request: Request, db: AsyncSession = Depends(get_db)):
     """Reset password using the token from the email link."""
+    rate_limiter.enforce(
+        key=_rate_key(request, "auth_reset_password"),
+        limit=10,
+        window_seconds=300,
+        message="Too many password reset attempts. Please try again shortly.",
+    )
     from services.email_service import decode_token
     try:
         payload = decode_token(data.token)

@@ -39,15 +39,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <div className={`flex items-center border-b border-gray-200 dark:border-gray-800 ${collapsed ? 'justify-center px-3 py-5' : 'gap-2 px-4 py-5'}`}>
                         {!collapsed && (
                             <>
-                                <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center flex-shrink-0">
-                                    <Briefcase className="w-4 h-4 text-white" />
+                                <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 shadow-lg border border-white/10 bg-brand-500">
+                                    <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-cover" />
                                 </div>
-                                <span className="font-bold text-gray-900 dark:text-white truncate">Resume2Portfolio</span>
                             </>
                         )}
                         {collapsed && (
-                            <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center">
-                                <Briefcase className="w-4 h-4 text-white" />
+                            <div className="w-8 h-8 rounded-lg overflow-hidden shadow-lg border border-white/10 bg-brand-500">
+                                <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-cover" />
                             </div>
                         )}
                         {/* Desktop collapse button */}
@@ -99,53 +98,68 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     </nav>
 
                     {/* Bottom actions */}
-                    <div className={`px-2 py-4 border-t border-gray-200 dark:border-gray-800 space-y-1`}>
+                    <div className="px-2 py-4 border-t border-gray-200 dark:border-white/5 space-y-1">
                         <button
                             onClick={toggleTheme}
                             title={collapsed ? (theme === 'dark' ? 'Light Mode' : 'Dark Mode') : undefined}
-                            className={`btn-ghost w-full ${collapsed ? 'justify-center px-3' : 'justify-start'}`}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all w-full hover:bg-gray-100 dark:hover:bg-white/5 ${collapsed ? 'justify-center px-3' : 'justify-start'}`}
                         >
                             {theme === 'dark' ? <Sun className="w-4 h-4 flex-shrink-0" /> : <Moon className="w-4 h-4 flex-shrink-0" />}
                             {!collapsed && (theme === 'dark' ? 'Light Mode' : 'Dark Mode')}
                         </button>
-                        <button
-                            onClick={logout}
-                            title={collapsed ? 'Sign Out' : undefined}
-                            className={`btn-ghost w-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 ${collapsed ? 'justify-center px-3' : 'justify-start'}`}
-                        >
-                            <LogOut className="w-4 h-4 flex-shrink-0" />
-                            {!collapsed && 'Sign Out'}
-                        </button>
+                        {user ? (
+                            <button
+                                onClick={logout}
+                                title={collapsed ? 'Sign Out' : undefined}
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 ${collapsed ? 'justify-center px-3' : 'justify-start'}`}
+                            >
+                                <LogOut className="w-4 h-4 flex-shrink-0" />
+                                {!collapsed && 'Sign Out'}
+                            </button>
+                        ) : (
+                            <Link
+                                to="/login"
+                                title={collapsed ? 'Sign In' : undefined}
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-black transition-all w-full text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950/20 uppercase tracking-widest ${collapsed ? 'justify-center px-3' : 'justify-start'}`}
+                            >
+                                <LogOut className="w-4 h-4 flex-shrink-0 rotate-180" />
+                                {!collapsed && 'Sign In'}
+                            </Link>
+                        )}
                     </div>
 
-                    {/* User */}
+                    {/* User Profile Hook */}
                     <div
-                        className={`border-t border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${collapsed ? 'px-3 py-3 flex justify-center' : 'px-4 py-3'}`}
-                        onClick={() => { navigate('/profile'); setMobileOpen(false) }}
-                        title={collapsed ? `${user?.name} — My Profile` : 'My Profile'}
+                        className={`border-t border-gray-200 dark:border-white/5 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors ${collapsed ? 'px-3 py-4 flex justify-center' : 'px-4 py-4'}`}
+                        onClick={() => { navigate(user ? '/profile' : '/register'); setMobileOpen(false) }}
                     >
-                        {collapsed ? (
-                            user?.avatar_url ? (
-                                <img src={user.avatar_url} alt={user?.name} className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/30" referrerPolicy="no-referrer" />
-                            ) : (
-                                <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-sm font-semibold">
-                                    {user?.name?.[0]?.toUpperCase() || 'U'}
+                        {!user ? (
+                            <div className="flex items-center gap-3 animate-pulse">
+                                <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
+                                    <User className="w-4 h-4 text-gray-400" />
                                 </div>
-                            )
+                                {!collapsed && (
+                                    <div className="flex-1">
+                                        <p className="text-xs font-black text-brand-500 uppercase tracking-widest">Guest Session</p>
+                                        <p className="text-[10px] text-gray-500 uppercase font-black">Register to Sync</p>
+                                    </div>
+                                )}
+                            </div>
                         ) : (
                             <div className="flex items-center gap-3">
                                 {user?.avatar_url ? (
-                                    <img src={user.avatar_url} alt={user.name} className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/30" referrerPolicy="no-referrer" />
+                                    <img src={user.avatar_url} alt={user.name} className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/20 shadow-sm" referrerPolicy="no-referrer" />
                                 ) : (
-                                    <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-sm font-semibold">
+                                    <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-black shadow-sm">
                                         {user?.name?.[0]?.toUpperCase() || 'U'}
                                     </div>
                                 )}
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.name}</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
-                                </div>
-                                <User className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                                {!collapsed && (
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-black text-gray-900 dark:text-white truncate tracking-tight">{user?.name}</p>
+                                        <p className="text-[10px] text-gray-500 dark:text-gray-500 truncate uppercase font-bold tracking-wider">{user?.email}</p>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -167,7 +181,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <button onClick={() => setMobileOpen(true)} className="btn-ghost p-2">
                         <Menu className="w-5 h-5" />
                     </button>
-                    <span className="font-semibold text-gray-900 dark:text-white">Resume2Portfolio</span>
+                    <div className="w-8 h-8 rounded-lg overflow-hidden shadow-lg border border-white/10 bg-brand-500">
+                        <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                    </div>
                 </header>
 
                 {/* Page content */}

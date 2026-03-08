@@ -71,31 +71,32 @@ export default function DashboardPage() {
             )}
 
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Good morning, {user?.name?.split(' ')[0]} 👋
+            <div className="mb-10">
+                <h1 className="uppercase">
+                    Welcome Back, {user?.name?.split(' ')[0]}
                 </h1>
-                <p className="text-gray-500 dark:text-gray-400 mt-1">
-                    {hasPortfolio ? 'Your portfolio is ready. Keep it updated!' : 'Upload your resume to generate your portfolio.'}
+                <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg font-medium">
+                    {hasPortfolio ? 'Your professional brand is active. Ready to elevate further?' : 'Transform your professional story into a stunning digital home.'}
                 </p>
             </div>
 
             {/* Status card */}
-            <div className={`card mb-6 border-l-4 ${hasPortfolio ? 'border-l-green-500' : 'border-l-yellow-500'}`}>
-                <div className="flex items-center gap-3">
-                    {hasPortfolio ? (
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    ) : (
-                        <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0" />
-                    )}
+            <div className={`card mb-8 border-l-4 overflow-hidden relative ${hasPortfolio ? 'border-l-brand-500' : 'border-l-amber-500'}`}>
+                {hasPortfolio && (
+                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-500/5 blur-3xl rounded-full" />
+                )}
+                <div className="flex items-center gap-4 relative z-10">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${hasPortfolio ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-500 shadow-sm' : 'bg-amber-50 dark:bg-amber-900/10 text-amber-500'}`}>
+                        {hasPortfolio ? <CheckCircle className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
+                    </div>
                     <div className="flex-1">
-                        <p className="font-medium text-gray-900 dark:text-white">
-                            {hasPortfolio ? 'Portfolio Generated' : 'No Portfolio Yet'}
+                        <p className="font-bold text-gray-950 dark:text-white text-lg tracking-tight uppercase">
+                            {hasPortfolio ? 'Digital Presence Active' : 'Setup Required'}
                         </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                             {hasPortfolio
-                                ? `Published at: ${data?.is_published ? `yourapp.com/u/${data.slug}` : 'Not published yet'}`
-                                : 'Upload your resume to get started'}
+                                ? `Live at: folioai.com/u/${data.slug}`
+                                : 'Upload your history to claim your URL'}
                         </p>
                     </div>
                     {hasPortfolio && data?.is_published && (
@@ -103,9 +104,9 @@ export default function DashboardPage() {
                             href={`/u/${data.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn-secondary text-xs"
+                            className="bg-gray-100 dark:bg-white/5 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-sm"
                         >
-                            <Globe className="w-3.5 h-3.5" /> View Live
+                            <Globe className="w-3.5 h-3.5" /> View Portfolio
                         </a>
                     )}
                 </div>
@@ -113,50 +114,40 @@ export default function DashboardPage() {
 
             {/* Quick actions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                {!hasPortfolio ? (
-                    <Link to="/upload" className="card hover:shadow-glow transition-all hover:border-brand-300 dark:hover:border-brand-700 group">
-                        <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                            <Upload className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Create Portfolio</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Upload PDF or DOCX to generate your portfolio</p>
-                        <div className="flex items-center gap-1 text-brand-600 dark:text-brand-400 text-sm font-medium mt-3">
-                            Start <ArrowRight className="w-3.5 h-3.5" />
-                        </div>
-                    </Link>
-                ) : (
-                    <Link to="/settings" className="card hover:shadow-glow transition-all hover:border-blue-300 dark:hover:border-blue-700 group">
-                        <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                            <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Portfolio Active</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Manage your connected account settings</p>
-                        <div className="flex items-center gap-1 text-brand-600 dark:text-brand-400 text-sm font-medium mt-3">
-                            Settings <ArrowRight className="w-3.5 h-3.5" />
-                        </div>
-                    </Link>
-                )}
-
-                <Link to="/editor" className="card hover:shadow-glow-purple transition-all hover:border-purple-300 dark:hover:border-purple-700 group">
-                    <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <Edit3 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <Link to="/upload" className="group relative card p-8 overflow-hidden border-0 bg-white dark:bg-white/[0.03] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:-translate-y-1 transition-all">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-brand-500/10 transition-colors" />
+                    <div className="w-14 h-14 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6 group-hover:bg-brand-500 group-hover:scale-110 transition-all duration-300 shadow-sm">
+                        <Upload className="w-7 h-7 text-brand-600 dark:text-brand-400 group-hover:text-white" />
                     </div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Edit Portfolio</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Customize content, theme, and colors</p>
-                    <div className="flex items-center gap-1 text-brand-600 dark:text-brand-400 text-sm font-medium mt-3">
-                        Edit <ArrowRight className="w-3.5 h-3.5" />
+                    <h3 className="font-black text-gray-900 dark:text-white mb-2 text-xl tracking-tight uppercase">Upload History</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium mb-6">Import your professional story and let AI curate your brand</p>
+                    <div className="flex items-center gap-2 text-brand-600 dark:text-brand-400 text-xs font-black uppercase tracking-widest mt-auto">
+                        New Generation <ArrowRight className="w-4 h-4 translate-x-0 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                </Link>
+
+                <Link to="/editor" className="group relative card p-8 overflow-hidden border-0 bg-white dark:bg-white/[0.03] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:-translate-y-1 transition-all">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-purple-500/10 transition-colors" />
+                    <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:bg-purple-500 group-hover:scale-110 transition-all duration-300 shadow-sm">
+                        <Edit3 className="w-7 h-7 text-purple-600 dark:text-purple-400 group-hover:text-white" />
+                    </div>
+                    <h3 className="font-black text-gray-900 dark:text-white mb-2 text-xl tracking-tight uppercase">Aesthetics</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium mb-6">Fine-tune your narrative, colors, and layout templates</p>
+                    <div className="flex items-center gap-2 text-brand-600 dark:text-brand-400 text-xs font-black uppercase tracking-widest mt-auto">
+                        Launch Designer <ArrowRight className="w-4 h-4 translate-x-0 group-hover:translate-x-1 transition-transform" />
                     </div>
                 </Link>
 
                 {hasPortfolio && (
-                    <a href={`/u/${data?.slug}`} target="_blank" rel="noopener noreferrer" className="card hover:shadow-glow transition-all hover:border-green-300 dark:hover:border-green-700 group">
-                        <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                            <Eye className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    <a href={`/u/${data?.slug}`} target="_blank" rel="noopener noreferrer" className="group relative card p-8 overflow-hidden border-0 bg-white dark:bg-white/[0.03] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:-translate-y-1 transition-all">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-green-500/10 transition-colors" />
+                        <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mb-6 group-hover:bg-green-500 group-hover:scale-110 transition-all duration-300 shadow-sm">
+                            <Eye className="w-7 h-7 text-green-600 dark:text-green-400 group-hover:text-white" />
                         </div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Preview Portfolio</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">See how your portfolio looks to visitors</p>
-                        <div className="flex items-center gap-1 text-brand-600 dark:text-brand-400 text-sm font-medium mt-3">
-                            Preview <ArrowRight className="w-3.5 h-3.5" />
+                        <h3 className="font-black text-gray-900 dark:text-white mb-2 text-xl tracking-tight uppercase">Public View</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium mb-6">Experience your identity exactly as recruiters see it</p>
+                        <div className="flex items-center gap-2 text-brand-600 dark:text-brand-400 text-xs font-black uppercase tracking-widest mt-auto">
+                            Visit Site <ArrowRight className="w-4 h-4 translate-x-0 group-hover:translate-x-1 transition-transform" />
                         </div>
                     </a>
                 )}
@@ -176,18 +167,18 @@ export default function DashboardPage() {
             {hasPortfolio && (() => {
                 const pd = JSON.parse(data.parsed_data || '{}')
                 return (
-                    <div className="card">
-                        <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Portfolio Summary</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="card bg-gray-50/50 dark:bg-[#050505] border-gray-100 dark:border-white/5">
+                        <h2 className="font-black text-gray-900 dark:text-white mb-6 uppercase tracking-widest text-xs border-b border-gray-100 dark:border-white/5 pb-4">Brand Metrics</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                             {[
-                                { label: 'Skills', value: pd.skills?.length || 0 },
-                                { label: 'Projects', value: pd.projects?.length || 0 },
-                                { label: 'Experience', value: pd.experience?.length || 0 },
-                                { label: 'Theme', value: data.theme },
+                                { label: 'Skills Identified', value: pd.skills?.length || 0 },
+                                { label: 'Projects Featured', value: pd.projects?.length || 0 },
+                                { label: 'Experience Nodes', value: pd.experience?.length || 0 },
+                                { label: 'Layout Theme', value: data.theme.toUpperCase() },
                             ].map(({ label, value }) => (
-                                <div key={label} className="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
-                                    <p className="text-2xl font-bold text-brand-600 dark:text-brand-400">{value}</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{label}</p>
+                                <div key={label} className="text-center">
+                                    <p className="text-3xl font-black text-brand-500 dark:text-brand-500 tracking-tighter">{value}</p>
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2 font-black uppercase tracking-widest leading-none">{label}</p>
                                 </div>
                             ))}
                         </div>

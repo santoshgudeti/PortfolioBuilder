@@ -18,7 +18,14 @@ import ResetPasswordPage from '@/pages/ResetPasswordPage'
 import AnalyticsPage from '@/pages/AnalyticsPage'
 import ProfilePage from '@/pages/ProfilePage'
 import AdminPage from '@/pages/AdminPage'
+import NotFoundPage from '@/pages/NotFoundPage'
+import PrivacyPage from '@/pages/PrivacyPage'
+import TermsPage from '@/pages/TermsPage'
 import AppLayout from '@/layouts/AppLayout'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import CookieConsent from '@/components/CookieConsent'
+import ClickSpark from '@/components/reactbits/ClickSpark'
+import SplashCursor from '@/components/reactbits/SplashCursor'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { token } = useAuthStore()
@@ -69,32 +76,47 @@ export default function App() {
     return (
         <HelmetProvider>
             <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                <BrowserRouter>
-                    <Routes>
-                        {/* Public */}
-                        <Route path="/" element={<LandingPage />} />
-                        <Route path="/u/:slug" element={<PublicPortfolioPage />} />
-                        <Route path="/verify-email" element={<VerifyEmailPage />} />
+                <ErrorBoundary>
+                    <BrowserRouter>
+                        <Routes>
+                            {/* Public */}
+                            <Route path="/" element={<LandingPage />} />
+                            <Route path="/u/:slug" element={<PublicPortfolioPage />} />
+                            <Route path="/verify-email" element={<VerifyEmailPage />} />
 
-                        {/* Guest only */}
-                        <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
-                        <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
-                        <Route path="/reset-password" element={<ResetPasswordPage />} />
-                        <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+                            {/* Guest only */}
+                            <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+                            <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
+                            <Route path="/reset-password" element={<ResetPasswordPage />} />
+                            <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
 
-                        {/* Protected */}
-                        <Route path="/dashboard" element={<ProtectedRoute><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
-                        <Route path="/analytics" element={<ProtectedRoute><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
-                        <Route path="/profile" element={<ProtectedRoute><AppLayout><ProfilePage /></AppLayout></ProtectedRoute>} />
-                        <Route path="/upload" element={<ProtectedRoute><AppLayout><UploadPage /></AppLayout></ProtectedRoute>} />
-                        <Route path="/editor" element={<ProtectedRoute><AppLayout><EditorPage /></AppLayout></ProtectedRoute>} />
-                        <Route path="/settings" element={<ProtectedRoute><AppLayout><SettingsPage /></AppLayout></ProtectedRoute>} />
-                        <Route path="/admin" element={<AdminRoute><AppLayout><AdminPage /></AppLayout></AdminRoute>} />
+                            {/* Protected */}
+                            {/* Public - available to guests for "Try before buy" */}
+                            <Route path="/upload" element={<AppLayout><UploadPage /></AppLayout>} />
+                            <Route path="/editor" element={<AppLayout><EditorPage /></AppLayout>} />
 
-                        {/* Fallback */}
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                    </Routes>
-                </BrowserRouter>
+                            {/* Protected - only for logged in users */}
+                            <Route path="/dashboard" element={<ProtectedRoute><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
+                            <Route path="/analytics" element={<ProtectedRoute><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
+                            <Route path="/profile" element={<ProtectedRoute><AppLayout><ProfilePage /></AppLayout></ProtectedRoute>} />
+                            <Route path="/settings" element={<ProtectedRoute><AppLayout><SettingsPage /></AppLayout></ProtectedRoute>} />
+                            <Route path="/admin" element={<AdminRoute><AppLayout><AdminPage /></AppLayout></AdminRoute>} />
+
+                            {/* 404 */}
+                            <Route path="/privacy" element={<PrivacyPage />} />
+                            <Route path="/terms" element={<TermsPage />} />
+                            <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                        <CookieConsent />
+                        <ClickSpark
+                            sparkColor='#6366f1'
+                            sparkSize={6}
+                            sparkCount={12}
+                            duration={0.5}
+                        />
+                        <SplashCursor />
+                    </BrowserRouter>
+                </ErrorBoundary>
             </GoogleOAuthProvider>
         </HelmetProvider>
     )

@@ -64,12 +64,12 @@ export default function LoginPage() {
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <Link to="/" className="inline-flex items-center gap-2 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center">
-                            <Briefcase className="w-5 h-5 text-white" />
+                        <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg border border-white/10 bg-brand-500">
+                            <img src="/assets/branding/logo.png" alt="FolioAI Logo" className="w-full h-full object-cover" />
                         </div>
                     </Link>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome back</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Sign in to your account</p>
+                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">Welcome back</h1>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Sign in to your FolioAI account</p>
                 </div>
 
                 <div className="card">

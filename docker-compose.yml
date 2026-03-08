@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: folioai-web
+    ports:
+      - "8000:8000"
+    environment:
+      # Pass through required configuration over API
+      - FRONTEND_URL=http://localhost:8000
+    # Env file inside backend context overrides above if conflict
+    env_file:
+      - ./.env
+    volumes:
+      - ./backend/uploads:/app/backend/uploads
+    restart: unless-stopped

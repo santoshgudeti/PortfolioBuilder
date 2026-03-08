@@ -2,21 +2,23 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { portfolioApi } from '@/api/portfolio'
 import { Helmet } from 'react-helmet-async'
-import StandardTemplate from '@/templates/StandardTemplate'
-import TechGridTemplate from '@/templates/TechGridTemplate'
-import CorporateTemplate from '@/templates/CorporateTemplate'
-import FreelancerTemplate from '@/templates/FreelancerTemplate'
-import AcademicTemplate from '@/templates/AcademicTemplate'
-import SplitTemplate from '@/templates/SplitTemplate'
-import TerminalTemplate from '@/templates/TerminalTemplate'
-import NeobrutalismTemplate from '@/templates/NeobrutalismTemplate'
-import GlassmorphismTemplate from '@/templates/GlassmorphismTemplate'
-import NotionTemplate from '@/templates/NotionTemplate'
-import AppleDesktopTemplate from '@/templates/AppleDesktopTemplate'
-import MaterialAppTemplate from '@/templates/MaterialAppTemplate'
-import CyberpunkTemplate from '@/templates/CyberpunkTemplate'
-import BauhausTemplate from '@/templates/BauhausTemplate'
-import BioLinkTemplate from '@/templates/BioLinkTemplate'
+import { Suspense, lazy } from 'react'
+
+const StandardTemplate = lazy(() => import('@/templates/StandardTemplate'))
+const TechGridTemplate = lazy(() => import('@/templates/TechGridTemplate'))
+const CorporateTemplate = lazy(() => import('@/templates/CorporateTemplate'))
+const FreelancerTemplate = lazy(() => import('@/templates/FreelancerTemplate'))
+const AcademicTemplate = lazy(() => import('@/templates/AcademicTemplate'))
+const SplitTemplate = lazy(() => import('@/templates/SplitTemplate'))
+const TerminalTemplate = lazy(() => import('@/templates/TerminalTemplate'))
+const NeobrutalismTemplate = lazy(() => import('@/templates/NeobrutalismTemplate'))
+const GlassmorphismTemplate = lazy(() => import('@/templates/GlassmorphismTemplate'))
+const NotionTemplate = lazy(() => import('@/templates/NotionTemplate'))
+const AppleDesktopTemplate = lazy(() => import('@/templates/AppleDesktopTemplate'))
+const MaterialAppTemplate = lazy(() => import('@/templates/MaterialAppTemplate'))
+const CyberpunkTemplate = lazy(() => import('@/templates/CyberpunkTemplate'))
+const BauhausTemplate = lazy(() => import('@/templates/BauhausTemplate'))
+const BioLinkTemplate = lazy(() => import('@/templates/BioLinkTemplate'))
 
 function hexToRgb(hex: string) {
     if (!hex || typeof hex !== 'string' || !hex.startsWith('#') || hex.length < 7) {
@@ -95,6 +97,24 @@ export default function PublicPortfolioPage({ previewData, previewTheme, preview
 
     const props = { pd, data, color, rgb, mode, hiddenSections, initials, isPdf, publicUrl, isPreview }
 
+    const renderTemplate = () => {
+        if (templateId === 'tech') return <TechGridTemplate {...props} />
+        if (templateId === 'corporate') return <CorporateTemplate {...props} />
+        if (templateId === 'freelancer') return <FreelancerTemplate {...props} />
+        if (templateId === 'student') return <AcademicTemplate {...props} />
+        if (templateId === 'split') return <SplitTemplate {...props} />
+        if (templateId === 'terminal') return <TerminalTemplate {...props} />
+        if (templateId === 'neobrutalism') return <NeobrutalismTemplate {...props} />
+        if (templateId === 'glassmorphism') return <GlassmorphismTemplate {...props} />
+        if (templateId === 'notion') return <NotionTemplate {...props} />
+        if (templateId === 'apple') return <AppleDesktopTemplate {...props} />
+        if (templateId === 'material') return <MaterialAppTemplate {...props} />
+        if (templateId === 'cyberpunk') return <CyberpunkTemplate {...props} />
+        if (templateId === 'bauhaus') return <BauhausTemplate {...props} />
+        if (templateId === 'biolink') return <BioLinkTemplate {...props} />
+        return <StandardTemplate {...props} />
+    }
+
     return (
         <>
             {!isPreview && (
@@ -103,37 +123,9 @@ export default function PublicPortfolioPage({ previewData, previewTheme, preview
                     <html className={mode === 'dark' ? 'dark' : ''} />
                 </Helmet>
             )}
-            {templateId === 'tech' ? (
-                <TechGridTemplate {...props} />
-            ) : templateId === 'corporate' ? (
-                <CorporateTemplate {...props} />
-            ) : templateId === 'freelancer' ? (
-                <FreelancerTemplate {...props} />
-            ) : templateId === 'student' ? (
-                <AcademicTemplate {...props} />
-            ) : templateId === 'split' ? (
-                <SplitTemplate {...props} />
-            ) : templateId === 'terminal' ? (
-                <TerminalTemplate {...props} />
-            ) : templateId === 'neobrutalism' ? (
-                <NeobrutalismTemplate {...props} />
-            ) : templateId === 'glassmorphism' ? (
-                <GlassmorphismTemplate {...props} />
-            ) : templateId === 'notion' ? (
-                <NotionTemplate {...props} />
-            ) : templateId === 'apple' ? (
-                <AppleDesktopTemplate {...props} />
-            ) : templateId === 'material' ? (
-                <MaterialAppTemplate {...props} />
-            ) : templateId === 'cyberpunk' ? (
-                <CyberpunkTemplate {...props} />
-            ) : templateId === 'bauhaus' ? (
-                <BauhausTemplate {...props} />
-            ) : templateId === 'biolink' ? (
-                <BioLinkTemplate {...props} />
-            ) : (
-                <StandardTemplate {...props} />
-            )}
+            <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-gray-950" />}>
+                {renderTemplate()}
+            </Suspense>
         </>
     )
 }

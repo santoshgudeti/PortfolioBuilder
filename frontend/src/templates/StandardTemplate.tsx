@@ -211,16 +211,23 @@ export default function StandardTemplate({ pd, data, color, rgb, mode, hiddenSec
 
                 <div className="relative max-w-4xl mx-auto text-center">
                     <div className="relative inline-block mb-6 sm:mb-8">
-                        <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl flex items-center justify-center text-gray-900 dark:text-white text-2xl sm:text-4xl font-black mx-auto shadow-2xl"
-                            style={{ background: `linear-gradient(135deg, rgba(${rgb},1), rgba(${rgb},0.6))`, boxShadow: `0 0 60px rgba(${rgb},0.4)` }}>
-                            {initials}
-                        </div>
+                        {data.avatar_url ? (
+                            <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl overflow-hidden mx-auto shadow-2xl border-4 border-white dark:border-gray-800"
+                                style={{ boxShadow: `0 0 60px rgba(${rgb},0.4)` }}>
+                                <img src={data.avatar_url} alt={pd.name} className="w-full h-full object-cover" />
+                            </div>
+                        ) : (
+                            <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl flex items-center justify-center text-gray-900 dark:text-white text-2xl sm:text-4xl font-black mx-auto shadow-2xl"
+                                style={{ background: `linear-gradient(135deg, rgba(${rgb},1), rgba(${rgb},0.6))`, boxShadow: `0 0 60px rgba(${rgb},0.4)` }}>
+                                {initials}
+                            </div>
+                        )}
                         <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-green-500 border-4 border-gray-950 flex items-center justify-center">
                             <div className="w-2 h-2 rounded-full bg-white" />
                         </div>
                     </div>
 
-                    <h1 className="text-3xl sm:text-5xl md:text-7xl font-black tracking-tight mb-3">
+                    <h1 className="mb-3">
                         <span className="text-gray-900 dark:text-white">{pd.name?.split(' ')[0]} </span>
                         <span style={{ color }}>{pd.name?.split(' ').slice(1).join(' ')}</span>
                     </h1>
@@ -466,7 +473,7 @@ export default function StandardTemplate({ pd, data, color, rgb, mode, hiddenSec
             <footer className="border-t border-black/5 dark:border-white/5 py-8 text-center">
                 <p className="text-xs text-gray-600">
                     Built with{' '}
-                    <a href="/" className="hover:underline transition-colors" style={{ color }}>Resume2Portfolio AI</a>
+                    <a href="/" className="hover:underline transition-colors" style={{ color }}>FolioAI</a>
                 </p>
             </footer>
         </div>
@@ -479,7 +486,7 @@ function SectionHeader({ icon, title, color, rgb }: { icon: React.ReactNode; tit
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `rgba(${rgb},0.15)`, color }}>
                 {icon}
             </div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white">{title}</h2>
+            <h2 className="text-gray-900 dark:text-white">{title}</h2>
             <div className="flex-1 h-px bg-black/5 dark:bg-white/5" />
         </div>
     )
