@@ -21,6 +21,8 @@ import AIProcessingOverlay from '@/components/AIProcessingOverlay'
 import PageTransition from '@/components/PageTransition'
 import ToneSelector from '@/components/ToneSelector'
 
+const MOBILE_FILE_INPUT_ID = 'resume-upload-native'
+
 export default function UploadPage() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
@@ -31,22 +33,19 @@ export default function UploadPage() {
     const [mode, setMode] = useState<'replace' | 'merge'>('replace')
     const [uploadError, setUploadError] = useState<string | null>(null)
     const [debugLog, setDebugLog] = useState<string[]>([])
-    const fileInputRef = useRef<HTMLInputElement>(null)
 
-    const addLog = (msg: string) => setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`])
-
-    const openFilePicker = () => {
-        addLog('openFilePicker called')
-        fileInputRef.current?.click()
-    }
+    const addLog = (msg: string) => setDebugLog(prev => [...prev.slice(-49), `${new Date().toLocaleTimeString()}: ${msg}`])
 
     const wakeLockRef = useRef<any>(null)
     const requestWakeLock = async () => {
         try {
             if ('wakeLock' in navigator) {
                 wakeLockRef.current = await (navigator as any).wakeLock.request('screen')
+                addLog('Wake lock acquired')
             }
-        } catch (_) {}
+        } catch (error: any) {
+            addLog(`Wake lock unavailable: ${error?.message || 'unsupported'}`)
+        }
     }
     const releaseWakeLock = () => {
         wakeLockRef.current?.release().catch(() => {})
@@ -63,69 +62,70 @@ export default function UploadPage() {
 
     const mutation = useMutation({
         mutationFn: (selectedFile: File) => {
-            addLog(`Sending upload request... file=${selectedFile.name} size=${selectedFile.size} type=${selectedFile.type}`)
-            return resumeApi.upload(selectedFile, tone, mode).then(r => {
-                addLog('Upload response received: status=OK')
-                return r.data
-            })
+            addLog(`Uploading: name=${selectedFile.name || 'unnamed'} size=${selectedFile.size} type=${selectedFile.type || 'empty'}`)
+            return resumeApi.upload(selectedFile, tone, mode).then(r => r.data)
         },
         onSuccess: (data) => {
             releaseWakeLock()
             setUploadError(null)
-            addLog(`SUCCESS: portfolio_id=${data.portfolio_id}, slug=${data.slug}`)
+            addLog(`Upload complete: portfolio_id=${data.portfolio_id} guest=${data.is_guest}`)
             setParsedData(data.parsed_data)
             setPortfolio({
                 portfolioId: data.portfolio_id,
                 slug: data.slug,
                 isGuest: data.is_guest,
             })
-            queryClient.invalidateQueries({ queryKey: ['portfolio'] })
+            if (!data.is_guest) {
+                queryClient.invalidateQueries({ queryKey: ['portfolio'] })
+            }
             toast.success('Resume parsed successfully! Redirecting to editor...')
             setTimeout(() => navigate('/editor'), 1500)
         },
         onError: (err: any) => {
             releaseWakeLock()
             const msg = err.response?.data?.detail || err.message || 'Upload failed. Please try again.'
-            addLog(`ERROR: ${msg}`)
+            addLog(`Upload failed: ${msg}`)
             setUploadError(msg)
             toast.error(msg)
         },
     })
 
-    const validateAndSetFile = (selectedFile: File) => {
+    const validateAndSetFile = (selectedFile: File | null | undefined) => {
         if (!selectedFile) {
-            addLog('validateAndSetFile: no file')
+            addLog('Selection returned no file')
             return
         }
 
-        addLog(`File picked: name=${selectedFile.name} size=${selectedFile.size} type=${selectedFile.type || 'empty'}`)
+        addLog(`File selected: name=${selectedFile.name || 'unnamed'} size=${selectedFile.size} type=${selectedFile.type || 'empty'}`)
 
         if (/\.doc$/i.test(selectedFile.name) || selectedFile.type.includes('msword')) {
-            addLog('REJECTED: legacy .doc file')
+            addLog('Rejected legacy .doc file')
             toast.error('Legacy .doc files are not supported. Please convert the file to PDF or DOCX.')
             return
         }
 
         if (selectedFile.size > 5 * 1024 * 1024) {
-            addLog('REJECTED: file too large')
+            addLog('Rejected file larger than 5MB')
             toast.error('File exceeds 5MB limit')
             return
         }
 
-        if (selectedFile.type && (selectedFile.type.startsWith('image/') || selectedFile.type.startsWith('video/'))) {
-            addLog(`REJECTED: wrong type ${selectedFile.type}`)
+        if (
+            selectedFile.type &&
+            (selectedFile.type.startsWith('image/') || selectedFile.type.startsWith('video/'))
+        ) {
+            addLog(`Rejected non-document type ${selectedFile.type}`)
             toast.error('Please upload a document (PDF/DOCX).')
             return
         }
 
-        addLog('File accepted')
         setFile(selectedFile)
+        setUploadError(null)
+        addLog('File accepted and rendered in UI')
     }
 
     const onDrop = useCallback((accepted: File[]) => {
-        if (accepted[0]) {
-            validateAndSetFile(accepted[0])
-        }
+        validateAndSetFile(accepted[0])
     }, [])
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -135,25 +135,20 @@ export default function UploadPage() {
     })
 
     const handleNativeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        addLog('Native input onChange fired')
-        const files = e.target.files
-        if (!files || files.length === 0) {
-            addLog('No files in input')
-            return
-        }
-        validateAndSetFile(files[0])
+        addLog('Native file input changed')
+        const selectedFile = e.target.files?.[0]
+        validateAndSetFile(selectedFile)
         e.target.value = ''
     }
 
     const handleUpload = async () => {
         if (!file) {
-            addLog('handleUpload called but no file selected')
+            addLog('Upload requested without a selected file')
             return
         }
 
         setUploadError(null)
         await requestWakeLock()
-        addLog('Wake lock acquired, starting mutation...')
         mutation.mutate(file)
     }
 
@@ -210,9 +205,10 @@ export default function UploadPage() {
             )}
 
             <input
-                ref={fileInputRef}
+                id={MOBILE_FILE_INPUT_ID}
                 type="file"
-                style={{ opacity: 0, position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }}
+                accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                className="sr-only"
                 onChange={handleNativeInput}
             />
 
@@ -229,8 +225,8 @@ export default function UploadPage() {
                 <input {...getInputProps()} />
 
                 <div className="flex flex-col items-center gap-4">
-                    <div
-                        onClick={openFilePicker}
+                    <label
+                        htmlFor={MOBILE_FILE_INPUT_ID}
                         className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors cursor-pointer ${
                             isDragActive
                                 ? 'bg-brand-100 dark:bg-brand-900/30'
@@ -238,26 +234,25 @@ export default function UploadPage() {
                         }`}
                     >
                         <Upload className={`w-8 h-8 ${isDragActive ? 'text-brand-500' : 'text-gray-400'}`} />
-                    </div>
+                    </label>
                     {isDragActive ? (
                         <p className="text-brand-600 dark:text-brand-400 font-medium">Drop your resume here</p>
                     ) : (
                         <div>
                             <p className="font-medium text-gray-900 dark:text-white">Drag and drop your resume</p>
-                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">PDF or DOCX • Max 5MB</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">PDF or DOCX - Max 5MB</p>
                         </div>
                     )}
                 </div>
             </div>
 
-            <button
-                type="button"
-                onClick={openFilePicker}
+            <label
+                htmlFor={MOBILE_FILE_INPUT_ID}
                 className="mt-3 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 font-medium text-sm cursor-pointer hover:bg-brand-100 dark:hover:bg-brand-900/40 transition-colors"
             >
                 <Upload className="w-4 h-4" />
                 Tap to browse files
-            </button>
+            </label>
 
             {file && (
                 <div className="mt-4 card flex items-center gap-3">
@@ -265,7 +260,7 @@ export default function UploadPage() {
                         <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{file.name}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{file.name || 'Selected file'}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">{(file.size / 1024).toFixed(1)} KB</p>
                     </div>
                     <button onClick={() => setFile(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
@@ -382,13 +377,11 @@ export default function UploadPage() {
                         <div
                             key={i}
                             className={`py-0.5 ${
-                                log.includes('ERROR')
+                                log.includes('failed') || log.includes('Rejected')
                                     ? 'text-red-400'
-                                    : log.includes('SUCCESS')
+                                    : log.includes('accepted') || log.includes('complete')
                                       ? 'text-green-400'
-                                      : log.includes('REJECTED')
-                                        ? 'text-yellow-400'
-                                        : 'text-gray-300'
+                                      : 'text-gray-300'
                             }`}
                         >
                             {log}
