@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef } from 'react'
+import { useCallback, useState, useRef, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -29,8 +29,16 @@ export default function UploadPage() {
     const addLog = (msg: string) => {
         const entry = `${new Date().toLocaleTimeString()}: ${msg}`
         console.log(`[UploadDebug] ${msg}`)
-        setDebugLog(prev => [...prev, entry])
+        setDebugLog(prev => [...prev.slice(-49), entry])
     }
+
+    // Capture global errors for mobile debugging
+    useEffect(() => {
+        const handleError = (e: ErrorEvent) => addLog(`RUNTIME ERROR: ${e.message}`)
+        window.addEventListener('error', handleError)
+        addLog('Debug initialized. Build: ' + (import.meta.env.VITE_APP_DOMAIN || 'local'))
+        return () => window.removeEventListener('error', handleError)
+    }, [])
 
     // Wake Lock: prevents mobile screen from dimming/locking during AI processing
     const wakeLockRef = useRef<any>(null)
@@ -95,7 +103,7 @@ export default function UploadPage() {
 
     const validateAndSetFile = (f: File) => {
         if (!f) return
-        addLog(`FILE_PICKED: name=${f.name}, type=${f.type || 'unknown'}, size=${(f.size / 1024).toFixed(1)}KB`)
+        addLog(`FILE_SELECTED: name=${f.name}, type=${f.type || 'unknown'}, size=${(f.size / 1024).toFixed(1)}KB`)
 
         const fileName = f.name.toLowerCase()
         const isAllowedExt = fileName.endsWith('.pdf') || fileName.endsWith('.docx') || fileName.endsWith('.doc')
@@ -107,14 +115,14 @@ export default function UploadPage() {
         )
 
         if (!isAllowedExt && !isAllowedType) {
-            addLog(`REJECTED: Invalid type/ext`)
+            addLog(`REJECTED: Invalid type/ext. type=${f.type}`)
             toast.error(`Please upload a document (PDF/DOCX).`)
             return
         }
 
-        if (f.size > 10 * 1024 * 1024) { // Increase to 10MB just in case
+        if (f.size > 15 * 1024 * 1024) { // 15MB
             addLog(`REJECTED: File size too large`)
-            toast.error(`File exceeds 10MB limit`)
+            toast.error(`File exceeds 15MB limit`)
             return
         }
 
@@ -125,9 +133,9 @@ export default function UploadPage() {
     const { getRootProps, getInputProps, isDragActive, open: openPicker } = useDropzone({
         onDrop: (accepted) => {
             if (accepted?.[0]) validateAndSetFile(accepted[0])
-            else addLog('DROPZONE: No accepted files')
+            else addLog('DROPZONE: No accepted files in drop')
         },
-        noClick: true, // We want to control the click on specific buttons for better UX
+        noClick: false, // Standard behavior for mobile
         maxFiles: 1,
         accept: {
             'application/pdf': ['.pdf'],
@@ -204,7 +212,6 @@ export default function UploadPage() {
                     border-2 border-dashed rounded-[2rem] p-12 text-center transition-all duration-500 cursor-pointer
                     ${isDragActive ? 'border-brand-500 bg-brand-500/5' : 'border-gray-300 dark:border-white/20 hover:border-brand-500/60 bg-gray-50/50 dark:bg-white/[0.02]'}
                 `}
-                onClick={openPicker}
             >
                 <input {...getInputProps()} />
                 <div className="flex flex-col items-center gap-6">
