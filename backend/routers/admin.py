@@ -6,6 +6,7 @@ from database import get_db
 from models.user import User
 from models.portfolio import Portfolio
 from models.page_view import PageView
+from services.rustfs_service import rustfs_service
 from utils.auth import get_admin_user
 from datetime import datetime, timedelta, timezone
 
@@ -161,6 +162,19 @@ async def delete_user_admin(
     # Delete page views for user's portfolios
     portfolio_result = await db.execute(select(Portfolio.id).where(Portfolio.user_id == user_id))
     portfolio_ids = [row[0] for row in portfolio_result.all()]
+    portfolio_objects_result = await db.execute(
+        select(Portfolio.resume_object_key).where(Portfolio.user_id == user_id)
+    )
+    resume_object_keys = [row[0] for row in portfolio_objects_result.all() if row[0]]
+
+    failed_deletions = await rustfs_service.delete_files(resume_object_keys)
+    if failed_deletions:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=500,
+            detail="Could not delete stored resume files for this user.",
+        )
+
     if portfolio_ids:
         await db.execute(delete(PageView).where(PageView.portfolio_id.in_(portfolio_ids)))
 
@@ -199,7 +213,14 @@ async def delete_portfolio_admin(
     portfolio = result.scalar_one_or_none()
     if not portfolio:
         raise HTTPException(status_code=404, detail="Portfolio not found")
-    
+
+    if portfolio.resume_object_key:
+        deleted = await rustfs_service.delete_file(portfolio.resume_object_key)
+        if not deleted:
+            raise HTTPException(
+                status_code=500,
+                detail="Could not delete the portfolio's stored resume file.",
+            )
     await db.execute(delete(PageView).where(PageView.portfolio_id == portfolio_id))
     await db.delete(portfolio)
     await db.commit()

@@ -1,16 +1,27 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.ext.asyncio import AsyncSession
+import requests
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from loguru import logger
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from config import get_settings
 from database import get_db
 from models.user import User
 from schemas.user import (
-    UserCreate, UserLogin, UserOut, Token, GoogleAuth,
-    ProfileUpdate, PasswordChange, ResendVerification,
-    ForgotPassword, ResetPassword
+    ForgotPassword,
+    GoogleAuth,
+    PasswordChange,
+    ProfileUpdate,
+    ResendVerification,
+    ResetPassword,
+    Token,
+    UserCreate,
+    UserLogin,
+    UserOut,
 )
-from utils.auth import hash_password, verify_password, create_access_token, get_current_user
+from services.rustfs_service import rustfs_service
+from utils.auth import create_access_token, get_current_user, hash_password, verify_password
 from utils.rate_limit import rate_limiter
-from loguru import logger
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -20,15 +31,33 @@ def _rate_key(request: Request, action: str, identity: str = "") -> str:
     return f"{action}:{ip}:{identity}".lower()
 
 
+async def _delete_resume_objects_or_raise(db: AsyncSession, user_id: str, email: str) -> None:
+    from models.portfolio import Portfolio
+
+    result = await db.execute(select(Portfolio.resume_object_key).where(Portfolio.user_id == user_id))
+    object_keys = [row[0] for row in result.all() if row[0]]
+    failed_deletions = await rustfs_service.delete_files(object_keys)
+    if failed_deletions:
+        logger.error(f"Failed to delete resume objects for {email}: {failed_deletions}")
+        raise HTTPException(
+            status_code=500,
+            detail="Could not delete stored resume files. Please try again.",
+        )
+
+
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserCreate, request: Request, db: AsyncSession = Depends(get_db)):
+async def register(
+    user_data: UserCreate,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
     rate_limiter.enforce(
         key=_rate_key(request, "auth_register", user_data.email),
         limit=5,
         window_seconds=60,
         message="Too many registration attempts. Please wait a minute.",
     )
-    # Check if email already exists
+
     result = await db.execute(select(User).where(User.email == user_data.email))
     existing = result.scalar_one_or_none()
     if existing:
@@ -38,18 +67,17 @@ async def register(user_data: UserCreate, request: Request, db: AsyncSession = D
         name=user_data.name,
         email=user_data.email,
         hashed_password=hash_password(user_data.password),
-        is_verified=False,  # Needs email verification
+        is_verified=False,
     )
     db.add(user)
     await db.commit()
     await db.refresh(user)
 
-    # Send verification email (non-blocking — don't fail registration if email fails)
     try:
         from services.email_service import create_verification_token, send_verification_email
-        from config import get_settings
+
         settings = get_settings()
-        if settings.mail_username:  # Only send if email is configured
+        if settings.mail_username:
             token = create_verification_token(user.id)
             await send_verification_email(user.email, user.name, token)
             logger.info(f"Verification email sent to {user.email}")
@@ -59,58 +87,88 @@ async def register(user_data: UserCreate, request: Request, db: AsyncSession = D
     return {"message": "Registration successful. Please check your email to verify your account."}
 
 
-import requests
-from config import get_settings
-
-
 @router.post("/google", response_model=Token)
-async def google_auth(data: GoogleAuth, request: Request, db: AsyncSession = Depends(get_db)):
+async def google_auth(
+    data: GoogleAuth,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
     rate_limiter.enforce(
         key=_rate_key(request, "auth_google"),
         limit=20,
         window_seconds=60,
         message="Too many Google sign-in attempts. Please try again shortly.",
     )
-    try:
-        # Instead of verifying an ID token (JWT), we use the access token provided by useGoogleLogin.
-        # We call the Google TokenInfo endpoint to validate the token and get user info.
-        logger.debug("Attempting to verify Google access token...")
-        response = requests.get(f"https://www.googleapis.com/oauth2/v3/userinfo?access_token={data.credential}")
 
+    settings = get_settings()
+    if not settings.google_client_id:
+        logger.error("Google sign-in attempted without GOOGLE_CLIENT_ID configured")
+        raise HTTPException(status_code=503, detail="Google sign-in is not configured")
+
+    try:
+        logger.debug("Attempting to verify Google access token...")
+        token_response = requests.get(
+            "https://oauth2.googleapis.com/tokeninfo",
+            params={"access_token": data.credential},
+            timeout=10,
+        )
+        if token_response.status_code != 200:
+            raise ValueError("Invalid Google token")
+
+        token_info = token_response.json()
+        token_audiences = {
+            token_info.get("aud"),
+            token_info.get("azp"),
+            token_info.get("issued_to"),
+        }
+        if settings.google_client_id not in token_audiences:
+            raise ValueError("Google token audience mismatch")
+
+        scopes = set((token_info.get("scope") or "").split())
+        required_scopes = {
+            "openid",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+        }
+        if not required_scopes.issubset(scopes):
+            raise ValueError("Google token is missing required scopes")
+
+        response = requests.get(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            headers={"Authorization": f"Bearer {data.credential}"},
+            timeout=10,
+        )
         if response.status_code != 200:
-            raise ValueError(f"Invalid Token: {response.text}")
+            raise ValueError("Failed to load Google profile")
 
         idinfo = response.json()
-        logger.debug(f"Google token verified successfully for: {idinfo.get('email')}")
+        if str(idinfo.get("email_verified", "")).lower() != "true":
+            raise ValueError("Google account email is not verified")
 
-        email = idinfo['email']
-        name = idinfo.get('name', email.split('@')[0])
-        avatar_url = idinfo.get('picture', None)
+        email = idinfo["email"]
+        name = idinfo.get("name", email.split("@")[0])
+        avatar_url = idinfo.get("picture")
 
-        # Check if user exists
         result = await db.execute(select(User).where(User.email == email))
         user = result.scalar_one_or_none()
 
         if user:
-            # GUARD: Email/password user trying Google Sign-In
             if user.auth_provider == "email" and user.hashed_password:
                 raise HTTPException(
                     status_code=400,
-                    detail="This account was created with email & password. Please use the standard login."
+                    detail="This account was created with email & password. Please use the standard login.",
                 )
-            # Update avatar if available
             if avatar_url and not user.avatar_url:
                 user.avatar_url = avatar_url
                 await db.commit()
                 await db.refresh(user)
         else:
-            # Auto-register new Google user
             user = User(
                 name=name,
                 email=email,
                 hashed_password=None,
                 auth_provider="google",
-                is_verified=True,  # Google users are auto-verified
+                is_verified=True,
                 avatar_url=avatar_url,
             )
             db.add(user)
@@ -120,22 +178,31 @@ async def google_auth(data: GoogleAuth, request: Request, db: AsyncSession = Dep
         if not user.is_active:
             raise HTTPException(status_code=403, detail="Account is deactivated")
 
-        # Generate our internal JWT
         token = create_access_token({"sub": user.id})
         return Token(access_token=token, user=UserOut.model_validate(user))
-
+    except requests.RequestException as e:
+        logger.error(f"Google auth request failed: {str(e)}")
+        raise HTTPException(status_code=502, detail="Google authentication is temporarily unavailable")
+    except HTTPException:
+        raise
     except ValueError as e:
-        logger.error(f"Google Token Verification Failed: {str(e)}")
+        logger.error(f"Google token verification failed: {str(e)}")
         raise HTTPException(status_code=401, detail=f"Invalid Google token: {str(e)}")
 
+
 @router.post("/login", response_model=Token)
-async def login(credentials: UserLogin, request: Request, db: AsyncSession = Depends(get_db)):
+async def login(
+    credentials: UserLogin,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
     rate_limiter.enforce(
         key=_rate_key(request, "auth_login", credentials.email),
         limit=10,
         window_seconds=60,
         message="Too many login attempts. Please wait a minute.",
     )
+
     result = await db.execute(select(User).where(User.email == credentials.email))
     user = result.scalar_one_or_none()
 
@@ -147,10 +214,6 @@ async def login(credentials: UserLogin, request: Request, db: AsyncSession = Dep
 
     if not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
-
-    # We do NOT block login for unverified users here.
-    # The PRD requires unverified users to access the dashboard and see a warning banner,
-    # and we should restrict generation/publishing instead.
 
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is deactivated")
@@ -165,8 +228,11 @@ async def get_me(current_user: User = Depends(get_current_user)):
 
 
 @router.patch("/me", response_model=UserOut)
-async def update_profile(data: ProfileUpdate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """Update user profile: name and/or avatar_url."""
+async def update_profile(
+    data: ProfileUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     if data.name is not None:
         current_user.name = data.name.strip()
     if data.avatar_url is not None:
@@ -177,36 +243,39 @@ async def update_profile(data: ProfileUpdate, db: AsyncSession = Depends(get_db)
 
 
 @router.patch("/me/password")
-async def change_password(data: PasswordChange, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """Change password for email-registered users."""
+async def change_password(
+    data: PasswordChange,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     if current_user.auth_provider == "google" and not current_user.hashed_password:
         raise HTTPException(status_code=400, detail="Google users cannot change password here. Use Google Account settings.")
     if not verify_password(data.current_password, current_user.hashed_password or ""):
         raise HTTPException(status_code=401, detail="Current password is incorrect")
-    if len(data.new_password) < 8:
-        raise HTTPException(status_code=400, detail="New password must be at least 8 characters")
+
     current_user.hashed_password = hash_password(data.new_password)
     await db.commit()
     return {"message": "Password updated successfully!"}
 
 
 @router.delete("/me", status_code=status.HTTP_200_OK)
-async def delete_account(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """Permanently delete the current user's account and all associated data."""
-    from models.portfolio import Portfolio
+async def delete_account(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     from models.page_view import PageView
+    from models.portfolio import Portfolio
     from sqlalchemy import delete
 
-    # 1. Delete page views for user's portfolios
     portfolio_result = await db.execute(select(Portfolio.id).where(Portfolio.user_id == current_user.id))
     portfolio_ids = [row[0] for row in portfolio_result.all()]
+
+    await _delete_resume_objects_or_raise(db, current_user.id, current_user.email)
+
     if portfolio_ids:
         await db.execute(delete(PageView).where(PageView.portfolio_id.in_(portfolio_ids)))
 
-    # 2. Delete portfolios
     await db.execute(delete(Portfolio).where(Portfolio.user_id == current_user.id))
-
-    # 3. Delete the user
     await db.delete(current_user)
     await db.commit()
 
@@ -214,14 +283,10 @@ async def delete_account(db: AsyncSession = Depends(get_db), current_user: User 
     return {"message": "Account and all data deleted successfully."}
 
 
-# ============================================================
-# Email Verification & Password Reset Endpoints
-# ============================================================
-
 @router.get("/verify-email")
 async def verify_email(token: str, db: AsyncSession = Depends(get_db)):
-    """Verify user's email via the token from the verification link."""
     from services.email_service import decode_token
+
     try:
         payload = decode_token(token)
         if payload.get("type") != "verify":
@@ -239,20 +304,25 @@ async def verify_email(token: str, db: AsyncSession = Depends(get_db)):
         user.is_verified = True
         await db.commit()
         return {"message": "Email verified successfully! You can now generate portfolios.", "already_verified": False}
-
-    except Exception as e:
+    except HTTPException:
+        raise
+    except Exception:
         raise HTTPException(status_code=400, detail="Invalid or expired verification link")
 
 
 @router.post("/resend-verification")
-async def resend_verification(data: ResendVerification, request: Request, db: AsyncSession = Depends(get_db)):
-    """Resend verification email."""
+async def resend_verification(
+    data: ResendVerification,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
     rate_limiter.enforce(
         key=_rate_key(request, "auth_resend_verification", data.email),
         limit=3,
         window_seconds=300,
         message="Too many verification email requests. Please try again in a few minutes.",
     )
+
     result = await db.execute(select(User).where(User.email == data.email))
     user = result.scalar_one_or_none()
 
@@ -263,6 +333,7 @@ async def resend_verification(data: ResendVerification, request: Request, db: As
 
     try:
         from services.email_service import create_verification_token, send_verification_email
+
         token = create_verification_token(user.id)
         await send_verification_email(user.email, user.name, token)
         return {"message": "Verification email sent! Check your inbox."}
@@ -272,23 +343,27 @@ async def resend_verification(data: ResendVerification, request: Request, db: As
 
 
 @router.post("/forgot-password")
-async def forgot_password(data: ForgotPassword, request: Request, db: AsyncSession = Depends(get_db)):
-    """Send password reset link if the email exists."""
+async def forgot_password(
+    data: ForgotPassword,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
     rate_limiter.enforce(
         key=_rate_key(request, "auth_forgot_password", data.email),
         limit=5,
         window_seconds=300,
         message="Too many password reset requests. Please try again later.",
     )
+
     result = await db.execute(select(User).where(User.email == data.email))
     user = result.scalar_one_or_none()
 
-    # Always return success (don't reveal if email exists)
     if not user or user.auth_provider == "google":
         return {"message": "If that email exists, a password reset link has been sent."}
 
     try:
         from services.email_service import create_reset_token, send_reset_email
+
         token = create_reset_token(user.id)
         await send_reset_email(user.email, user.name, token)
         return {"message": "Password reset link sent! Check your inbox."}
@@ -298,30 +373,38 @@ async def forgot_password(data: ForgotPassword, request: Request, db: AsyncSessi
 
 
 @router.post("/reset-password")
-async def reset_password(data: ResetPassword, request: Request, db: AsyncSession = Depends(get_db)):
-    """Reset password using the token from the email link."""
+async def reset_password(
+    data: ResetPassword,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
     rate_limiter.enforce(
         key=_rate_key(request, "auth_reset_password"),
         limit=10,
         window_seconds=300,
         message="Too many password reset attempts. Please try again shortly.",
     )
+
     from services.email_service import decode_token
+
     try:
         payload = decode_token(data.token)
         if payload.get("type") != "reset":
             raise HTTPException(status_code=400, detail="Invalid reset token")
-        
+
         user_id = payload.get("sub")
         result = await db.execute(select(User).where(User.id == user_id))
         user = result.scalar_one_or_none()
-        
+
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
-        
+        if user.auth_provider == "google" and not user.hashed_password:
+            raise HTTPException(status_code=400, detail="Google users cannot reset password here.")
+
         user.hashed_password = hash_password(data.new_password)
         await db.commit()
         return {"message": "Password reset successfully! You can now log in with your new password."}
-    
-    except Exception as e:
+    except HTTPException:
+        raise
+    except Exception:
         raise HTTPException(status_code=400, detail="Invalid or expired reset link")

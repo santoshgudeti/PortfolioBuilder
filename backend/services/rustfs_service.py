@@ -83,6 +83,36 @@ class RustFSService:
         except ClientError as e:
             raise Exception(f"Failed to upload file to RustFS: {str(e)}")
 
+    async def delete_file(self, object_key: str) -> bool:
+        """Delete an object from RustFS. Returns True if deleted or already missing."""
+        import asyncio
+
+        if not object_key:
+            return True
+        if not self.s3_client:
+            return False
+
+        def _do_delete():
+            self.s3_client.delete_object(Bucket=self.bucket_name, Key=object_key)
+
+        try:
+            await asyncio.to_thread(_do_delete)
+            return True
+        except ClientError as e:
+            error_code = e.response.get("Error", {}).get("Code")
+            if error_code in {"404", "NoSuchKey", "NotFound"}:
+                return True
+            print(f"Error deleting object {object_key}: {e}")
+            return False
+
+    async def delete_files(self, object_keys: list[str]) -> list[str]:
+        """Delete multiple objects and return any keys that could not be removed."""
+        failed_keys: list[str] = []
+        for object_key in {key for key in object_keys if key}:
+            if not await self.delete_file(object_key):
+                failed_keys.append(object_key)
+        return failed_keys
+
     def get_presigned_url(self, object_key: str, expires_in: int = 3600) -> str:
         """
         Generate a presigned GET URL valid for `expires_in` seconds for secure downloading.

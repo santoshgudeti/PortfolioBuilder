@@ -55,11 +55,15 @@ async def update_portfolio(
 ) -> Portfolio:
     """Update portfolio fields."""
     for key, value in updates.items():
-        if value is not None:
-            if key == "parsed_data" and isinstance(value, dict):
-                setattr(portfolio, key, json.dumps(value))
-            else:
-                setattr(portfolio, key, value)
+        if key == "custom_domain":
+            setattr(portfolio, key, value)
+            continue
+        if value is None:
+            continue
+        if key == "parsed_data" and isinstance(value, dict):
+            setattr(portfolio, key, json.dumps(value))
+        else:
+            setattr(portfolio, key, value)
     await db.commit()
     await db.refresh(portfolio)
     return portfolio

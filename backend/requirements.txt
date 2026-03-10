@@ -2,6 +2,7 @@ fastapi
 python-multipart
 uvicorn
 sqlalchemy
+aiosqlite
 asyncpg
 psycopg2-binary
 pydantic[email]

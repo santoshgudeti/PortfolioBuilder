@@ -2,13 +2,19 @@ import apiClient from './client'
 
 export const resumeApi = {
     upload: (file: File, tone: string = 'professional', mode: string = 'replace') => {
+        if (/\.doc$/i.test(file.name)) {
+            return Promise.reject(new Error('Legacy .doc files are not supported. Please convert the file to PDF or DOCX.'))
+        }
+
         const formData = new FormData()
 
         let filename = file.name || 'document.pdf'
         const lowerName = filename.toLowerCase()
-        if (!lowerName.endsWith('.pdf') && !lowerName.endsWith('.docx') && !lowerName.endsWith('.doc')) {
-            if (file.type && (file.type.includes('wordprocessingml') || file.type.includes('msword'))) {
+        if (!lowerName.endsWith('.pdf') && !lowerName.endsWith('.docx')) {
+            if (file.type && file.type.includes('wordprocessingml')) {
                 filename += '.docx'
+            } else if (file.type && file.type.includes('msword')) {
+                return Promise.reject(new Error('Legacy .doc files are not supported. Please convert the file to PDF or DOCX.'))
             } else {
                 filename += '.pdf'
             }

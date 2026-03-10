@@ -66,5 +66,5 @@ async def get_db():
 
 async def init_db():
     async with engine.begin() as conn:
-        from models import user, portfolio  # noqa: F401
+        from models import page_view, portfolio, user  # noqa: F401
         await conn.run_sync(Base.metadata.create_all)
