@@ -91,7 +91,7 @@ export default function PublicPortfolioPage({ previewData, previewTheme, preview
     const templateId = isPreview ? previewTemplateId : data?.template_id || 'standard'
     const mode = isPreview ? (previewMode || 'light') : data?.mode || 'light'
     const rgb = hexToRgb(color)
-    const initials = pd.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || '?'
+    const initials = pd?.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || '?'
     const publicUrl = window.location.href
     const hiddenSections = isPreview ? new Set<string>(previewHiddenSections || []) : new Set<string>((data?.hidden_sections || '').split(',').filter(Boolean))
 

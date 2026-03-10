@@ -62,13 +62,19 @@ export default function App() {
         }
     }, [initTheme, token, setAuth])
 
-    const hostname = window.location.hostname
-    const isCustomDomain = hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.includes('vercel.app') && hostname !== (import.meta.env.VITE_APP_DOMAIN || '')
+    const host = window.location.hostname.toLowerCase()
+    const appDomain = (import.meta.env.VITE_APP_DOMAIN || '').toLowerCase().trim()
+    const isCustomDomain = host !== 'localhost' &&
+        host !== '127.0.0.1' &&
+        !host.includes('vercel.app') &&
+        appDomain && host !== appDomain
 
     if (isCustomDomain) {
         return (
             <HelmetProvider>
-                <PublicPortfolioPage />
+                <ErrorBoundary>
+                    <PublicPortfolioPage />
+                </ErrorBoundary>
             </HelmetProvider>
         )
     }

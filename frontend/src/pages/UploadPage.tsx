@@ -26,12 +26,10 @@ export default function UploadPage() {
     const [mode, setMode] = useState<'replace' | 'merge'>('replace')
     const [uploadError, setUploadError] = useState<string | null>(null)
     const [debugLog, setDebugLog] = useState<string[]>([])
-    const addLog = (msg: string) => setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`])
-    const fileInputRef = useRef<HTMLInputElement>(null)
-
-    const openFilePicker = () => {
-        addLog('openFilePicker called')
-        fileInputRef.current?.click()
+    const addLog = (msg: string) => {
+        const entry = `${new Date().toLocaleTimeString()}: ${msg}`
+        console.log(`[UploadDebug] ${msg}`)
+        setDebugLog(prev => [...prev, entry])
     }
 
     // Wake Lock: prevents mobile screen from dimming/locking during AI processing
@@ -40,12 +38,16 @@ export default function UploadPage() {
         try {
             if ('wakeLock' in navigator) {
                 wakeLockRef.current = await (navigator as any).wakeLock.request('screen')
+                addLog('WakeLock acquired')
             }
-        } catch (_) { /* ignore */ }
+        } catch (e: any) {
+            addLog(`WakeLock failed: ${e.message}`)
+        }
     }
     const releaseWakeLock = () => {
         wakeLockRef.current?.release().catch(() => { })
         wakeLockRef.current = null
+        addLog('WakeLock released')
     }
 
     // Only fetch existing portfolio if logged in (prevents guest loading hang)
@@ -60,16 +62,16 @@ export default function UploadPage() {
 
     const mutation = useMutation({
         mutationFn: (f: File) => {
-            addLog(`Sending upload request... file=${f.name}`)
+            addLog(`API START: file=${f.name} size=${f.size} type=${f.type}`)
             return resumeApi.upload(f, tone, mode).then(r => {
-                addLog(`Upload response received`)
+                addLog(`API SUCCESS: Received response`)
                 return r.data
             })
         },
         onSuccess: (data) => {
             releaseWakeLock()
             setUploadError(null)
-            addLog(`SUCCESS: portfolio_id=${data.portfolio_id}`)
+            addLog(`NAVIGATING: portfolio_id=${data.portfolio_id}`)
             setParsedData(data.parsed_data)
             setPortfolio({
                 portfolioId: data.portfolio_id,
@@ -85,7 +87,7 @@ export default function UploadPage() {
         onError: (err: any) => {
             releaseWakeLock()
             const msg = err.response?.data?.detail || err.message || 'Upload failed'
-            addLog(`ERROR: ${msg}`)
+            addLog(`API ERROR: ${msg}`)
             setUploadError(msg)
             toast.error(msg)
         },
@@ -93,33 +95,46 @@ export default function UploadPage() {
 
     const validateAndSetFile = (f: File) => {
         if (!f) return
-        addLog(`File picked: ${f.name}`)
-        if (f.size > 5 * 1024 * 1024) {
-            toast.error(`File exceeds 5MB limit`)
-            return
-        }
-        if (f.type && (f.type.startsWith('image/') || f.type.startsWith('video/'))) {
+        addLog(`FILE_PICKED: name=${f.name}, type=${f.type || 'unknown'}, size=${(f.size / 1024).toFixed(1)}KB`)
+
+        const fileName = f.name.toLowerCase()
+        const isAllowedExt = fileName.endsWith('.pdf') || fileName.endsWith('.docx') || fileName.endsWith('.doc')
+        const isAllowedType = f.type && (
+            f.type.includes('pdf') ||
+            f.type.includes('word') ||
+            f.type.includes('msword') ||
+            f.type.includes('officedocument.wordprocessingml')
+        )
+
+        if (!isAllowedExt && !isAllowedType) {
+            addLog(`REJECTED: Invalid type/ext`)
             toast.error(`Please upload a document (PDF/DOCX).`)
             return
         }
+
+        if (f.size > 10 * 1024 * 1024) { // Increase to 10MB just in case
+            addLog(`REJECTED: File size too large`)
+            toast.error(`File exceeds 10MB limit`)
+            return
+        }
+
         setFile(f)
+        addLog(`FILE_READY: Ready for upload`)
     }
 
-    const onDrop = useCallback((accepted: File[]) => {
-        if (accepted[0]) validateAndSetFile(accepted[0])
-    }, [])
-
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        noClick: true,
+    const { getRootProps, getInputProps, isDragActive, open: openPicker } = useDropzone({
+        onDrop: (accepted) => {
+            if (accepted?.[0]) validateAndSetFile(accepted[0])
+            else addLog('DROPZONE: No accepted files')
+        },
+        noClick: true, // We want to control the click on specific buttons for better UX
         maxFiles: 1,
+        accept: {
+            'application/pdf': ['.pdf'],
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+            'application/msword': ['.doc']
+        }
     })
-
-    const handleNativeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files
-        if (files?.[0]) validateAndSetFile(files[0])
-        e.target.value = ''
-    }
 
     const handleUpload = async () => {
         if (file) {
@@ -159,6 +174,8 @@ export default function UploadPage() {
         )
     }
 
+    const showDebug = uploadError !== null || new URLSearchParams(window.location.search).get('debug') === 'true'
+
     return (
         <PageTransition className="max-w-2xl mx-auto pb-24 px-4 sm:px-0">
             {mutation.isPending && <AIProcessingOverlay />}
@@ -181,38 +198,31 @@ export default function UploadPage() {
                 </p>
             </div>
 
-            <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                onChange={handleNativeInput}
-            />
-
             <div
                 {...getRootProps()}
                 className={`
-                    border-2 border-dashed rounded-[2rem] p-12 text-center transition-all duration-500
+                    border-2 border-dashed rounded-[2rem] p-12 text-center transition-all duration-500 cursor-pointer
                     ${isDragActive ? 'border-brand-500 bg-brand-500/5' : 'border-gray-300 dark:border-white/20 hover:border-brand-500/60 bg-gray-50/50 dark:bg-white/[0.02]'}
                 `}
+                onClick={openPicker}
             >
                 <input {...getInputProps()} />
                 <div className="flex flex-col items-center gap-6">
                     <div
-                        onClick={openFilePicker}
-                        className="w-20 h-20 rounded-3xl bg-white dark:bg-[#0a0a0a] border border-gray-100 dark:border-white/5 text-brand-500 flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-transform"
+                        className="w-20 h-20 rounded-3xl bg-white dark:bg-[#0a0a0a] border border-gray-100 dark:border-white/5 text-brand-500 flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
                     >
                         <Upload className="w-10 h-10" />
                     </div>
                     <div className="space-y-2">
                         <p className="font-black text-xl text-gray-900 dark:text-white uppercase tracking-tight">Drop your resume</p>
-                        <p className="text-sm text-gray-400 dark:text-gray-500 font-medium">PDF, DOCX up to 5MB</p>
+                        <p className="text-sm text-gray-400 dark:text-gray-500 font-medium">TAP HERE to select PDF/DOCX</p>
                     </div>
                 </div>
             </div>
 
             <button
                 type="button"
-                onClick={openFilePicker}
+                onClick={openPicker}
                 className="mt-4 w-full flex items-center justify-center gap-2 py-4 px-4 rounded-2xl border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0a0a0a] text-gray-500 font-bold text-sm hover:text-brand-500 transition-all shadow-sm"
             >
                 <FileText className="w-4 h-4" />
@@ -285,9 +295,19 @@ export default function UploadPage() {
                 </div>
             </div>
 
-            {import.meta.env.DEV && debugLog.length > 0 && (
-                <div className="mt-12 p-4 rounded-2xl bg-gray-950 text-[10px] font-mono opacity-50">
-                    {debugLog.map((log, i) => <div key={i} className="py-0.5 text-gray-400">{log}</div>)}
+            {showDebug && debugLog.length > 0 && (
+                <div className="mt-12 p-6 rounded-[2rem] bg-gray-950 border border-white/5 overflow-hidden">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Debug Diagnostics</h3>
+                        <button onClick={() => setDebugLog([])} className="text-[10px] text-brand-500 hover:text-brand-400 font-bold uppercase">Clear Log</button>
+                    </div>
+                    <div className="space-y-1.5 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                        {debugLog.map((log, i) => (
+                            <div key={i} className="text-[10px] font-mono py-0.5 text-gray-400 border-l border-white/10 pl-3">
+                                {log}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
         </PageTransition>
