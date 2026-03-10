@@ -23,7 +23,7 @@ export default function CyberpunkTemplate({ pd, data, hiddenSections, rgb, mode 
             }}
         >
             {/* Header / Nav Grid */}
-            <header className="fixed top-0 inset-x-0 h-16 border-b-2 border-[#00ffff] bg-[#050510]/80 backdrop-blur-md z-50 flex items-center px-4 md:px-8 shadow-[0_0_15px_rgba(0,255,255,0.3)]">
+            <header className="sticky top-0 inset-x-0 h-16 border-b-2 border-[#00ffff] bg-[#050510]/90 backdrop-blur-md z-50 flex items-center px-4 md:px-8 shadow-[0_0_15px_rgba(0,255,255,0.3)]">
                 <div className="flex items-center gap-3">
                     <Cpu className="w-6 h-6 text-[#00ffff] animate-pulse" />
                     <h1 className="font-bold text-lg md:text-2xl tracking-[0.2em] text-[#00ffff] uppercase animate-pulse">

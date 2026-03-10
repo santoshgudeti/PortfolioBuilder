@@ -115,12 +115,24 @@ export default function PublicPortfolioPage({ previewData, previewTheme, preview
         return <StandardTemplate {...props} />
     }
 
+    const ogTitle = pd?.name ? `${pd.name} - Professional Portfolio` : 'Professional Portfolio'
+    const ogDescription = pd?.summary?.substring(0, 160) || 'View my professional portfolio, experience, and projects.'
+
     return (
         <>
             {!isPreview && (
                 <Helmet>
                     <body className={mode === 'dark' ? 'bg-[#050505]' : 'bg-white'} />
                     <html className={mode === 'dark' ? 'dark' : ''} />
+                    <title>{ogTitle}</title>
+                    <meta name="description" content={ogDescription} />
+                    <meta property="og:title" content={ogTitle} />
+                    <meta property="og:description" content={ogDescription} />
+                    <meta property="og:type" content="website" />
+                    <meta property="og:url" content={publicUrl} />
+                    <meta name="twitter:card" content="summary_large_image" />
+                    <meta name="twitter:title" content={ogTitle} />
+                    <meta name="twitter:description" content={ogDescription} />
                 </Helmet>
             )}
             <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-gray-950" />}>

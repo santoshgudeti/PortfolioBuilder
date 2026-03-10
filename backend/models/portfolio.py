@@ -22,8 +22,8 @@ class Portfolio(Base):
     resume_object_key: Mapped[str] = mapped_column(String, nullable=True)
     view_count: Mapped[int] = mapped_column(Integer, default=0)
     hidden_sections: Mapped[str] = mapped_column(String, default="")  # comma-separated section names
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     # Relationships
     user = relationship("User", back_populates="portfolio", uselist=False)

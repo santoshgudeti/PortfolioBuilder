@@ -28,7 +28,8 @@ export default function TerminalTemplate({ pd, data, color, rgb, mode, hiddenSec
 
             <div className="max-w-4xl mx-auto w-full relative">
                 {/* CRT Scanline overlay effect */}
-                <div className="pointer-events-none fixed inset-0 z-50 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))', backgroundSize: '100% 2px, 3px 100%' }} />
+                {/* CRT Scanline overlay effect - scoped within template */}
+                <div className="pointer-events-none absolute inset-0 z-50 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))', backgroundSize: '100% 2px, 3px 100%' }} />
 
                 {/* Header Sequence */}
                 <div className="mb-8 opacity-80 whitespace-pre-wrap select-none" style={{ textShadow: `0 0 10px rgba(${rgb}, 0.5)` }}>
@@ -148,8 +149,8 @@ export default function TerminalTemplate({ pd, data, color, rgb, mode, hiddenSec
                     </div>
                 </div>
             </div>
-            {/* Glow overlay */}
-            <div className="fixed inset-0 pointer-events-none opacity-[0.02]" style={{ boxShadow: `inset 0 0 100px rgba(${rgb}, 1)` }} />
+            {/* Glow overlay - scoped within template */}
+            <div className="absolute inset-0 pointer-events-none opacity-[0.02]" style={{ boxShadow: `inset 0 0 100px rgba(${rgb}, 1)` }} />
         </div>
     )
 }

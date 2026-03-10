@@ -80,7 +80,7 @@ export default function LoginPage() {
                             <div className="w-full border-t border-gray-200 dark:border-gray-800"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-white dark:bg-gray-900 text-gray-500">Or continue with email</span>
+                            <span className="px-2 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400">Or continue with email</span>
                         </div>
                     </div>
 
@@ -112,6 +112,7 @@ export default function LoginPage() {
                                 type="email"
                                 className="input"
                                 placeholder="you@example.com"
+                                autoComplete="email"
                                 {...register('email', { required: 'Email is required' })}
                             />
                             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
@@ -124,6 +125,7 @@ export default function LoginPage() {
                                     type={showPass ? 'text' : 'password'}
                                     className="input pr-10"
                                     placeholder="••••••••"
+                                    autoComplete="current-password"
                                     {...register('password', { required: 'Password is required' })}
                                 />
                                 <button
@@ -142,7 +144,7 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
+                        <button type="submit" disabled={loading} className="w-full mt-2 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm transition-all shadow-lg shadow-brand-500/20 disabled:opacity-60">
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                             {loading ? 'Signing in...' : 'Sign In'}
                         </button>

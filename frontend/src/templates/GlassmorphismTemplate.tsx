@@ -13,7 +13,8 @@ export default function GlassmorphismTemplate({ pd, data, color, rgb, mode, hidd
         }`
 
     return (
-        <div className={`min-h-screen relative overflow-hidden font-sans ${isDark ? 'bg-[#0a0a14]' : 'bg-[#f0f4f8]'}`}>
+        <div className={`min-h-screen relative overflow-hidden isolate font-sans ${isDark ? 'bg-[#0a0a14]' : 'bg-[#f0f4f8]'}`}
+            style={{ isolation: 'isolate', overflow: 'hidden' }}>
             {!isPreview && (
                 <Helmet>
                     <title>{pd.name} — Portfolio</title>
@@ -21,13 +22,13 @@ export default function GlassmorphismTemplate({ pd, data, color, rgb, mode, hidd
                 </Helmet>
             )}
 
-            {/* Ambient Animated Blobs */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"
+            {/* Ambient Animated Blobs - scoped within template container */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"
                     style={{ backgroundColor: color, animationDuration: '10s' }} />
-                <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"
+                <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"
                     style={{ backgroundColor: isDark ? '#4c1d95' : '#c084fc', animationDuration: '12s', animationDelay: '2s' }} />
-                <div className="absolute bottom-[-20%] left-[20%] w-[60vw] h-[60vw] rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"
+                <div className="absolute bottom-[-20%] left-[20%] w-[60%] h-[60%] rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"
                     style={{ backgroundColor: isDark ? '#1e3a8a' : '#93c5fd', animationDuration: '14s', animationDelay: '4s' }} />
             </div>
 

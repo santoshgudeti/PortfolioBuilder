@@ -50,13 +50,13 @@ export default function CookieConsent() {
                         <div className="flex gap-3">
                             <button
                                 onClick={handleAccept}
-                                className="flex-1 bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-lg shadow-brand-500/20"
+                                className="flex-1 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-2.5 rounded-xl transition-all shadow-lg shadow-brand-500/20"
                             >
                                 Accept All
                             </button>
                             <button
                                 onClick={handleDecline}
-                                className="flex-1 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-900 dark:text-white text-xs font-bold py-2.5 rounded-xl transition-all"
+                                className="flex-1 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-900 dark:text-white text-sm font-bold py-2.5 rounded-xl transition-all"
                             >
                                 Reject Non-Essential
                             </button>

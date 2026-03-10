@@ -27,7 +27,7 @@ export default function MaterialAppTemplate({ pd, data, hiddenSections, rgb, mod
 
             {/* Top App Bar - Fixed */}
             <header
-                className="fixed top-0 inset-x-0 h-14 md:h-16 flex items-center justify-between px-4 z-40 shadow-md transition-colors duration-300"
+                className="sticky top-0 inset-x-0 h-14 md:h-16 flex items-center justify-between px-4 z-40 shadow-md transition-colors duration-300"
                 style={{ backgroundColor: primaryColor }}
             >
                 <div className="flex items-center gap-4 text-white">
@@ -44,7 +44,7 @@ export default function MaterialAppTemplate({ pd, data, hiddenSections, rgb, mod
             </header>
 
             {/* Desktop Navigation Tabs (Hidden on mobile) */}
-            <div className="hidden md:flex fixed top-16 inset-x-0 h-12 bg-white dark:bg-[#212121] shadow flex-row justify-center z-30 transition-colors duration-300">
+            <div className="hidden md:flex sticky top-14 md:top-16 inset-x-0 h-12 bg-white dark:bg-[#212121] shadow flex-row justify-center z-30 transition-colors duration-300">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
@@ -222,7 +222,7 @@ export default function MaterialAppTemplate({ pd, data, hiddenSections, rgb, mod
             </main>
 
             {/* Bottom Navigation (Mobile Only) */}
-            <div className="md:hidden fixed bottom-0 inset-x-0 h-16 bg-white dark:bg-[#212121] shadow-[0_-2px_10px_rgba(0,0,0,0.05)] pt-1 pb-2 px-2 flex justify-around items-center z-40 transition-colors duration-300">
+            <div className="md:hidden sticky bottom-0 inset-x-0 h-16 bg-white dark:bg-[#212121] shadow-[0_-2px_10px_rgba(0,0,0,0.05)] pt-1 pb-2 px-2 flex justify-around items-center z-40 transition-colors duration-300">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
@@ -241,7 +241,7 @@ export default function MaterialAppTemplate({ pd, data, hiddenSections, rgb, mod
             {pd.email && (
                 <a
                     href={`mailto:${pd.email}`}
-                    className="fixed bottom-20 md:bottom-8 right-4 md:right-8 w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform z-50 group hover:shadow-2xl"
+                    className="sticky bottom-8 right-4 ml-auto block w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform z-50 group hover:shadow-2xl"
                     style={{ backgroundColor: primaryColor }}
                     title="Send Email"
                 >

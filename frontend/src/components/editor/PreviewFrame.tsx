@@ -61,12 +61,20 @@ export function PreviewFrame({
 
             <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl p-4 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-700 shadow-inner">
                 <div
-                    className="bg-white dark:bg-gray-900 shadow-2xl transition-all duration-500 overflow-y-auto"
+                    className="bg-white dark:bg-gray-900 shadow-2xl transition-all duration-500 overflow-y-auto custom-scrollbar relative"
                     style={{
                         width: previewDevice === 'mobile' ? '375px' : previewDevice === 'tablet' ? '768px' : '100%',
                         height: '100%',
                         borderRadius: previewDevice === 'desktop' ? '0' : '24px',
-                        border: previewDevice === 'desktop' ? 'none' : '8px solid #1f2937'
+                        border: previewDevice === 'desktop' ? 'none' : '8px solid #1f2937',
+                        // CSS Isolation: creates an impenetrable container for position:fixed/sticky
+                        transform: 'translateZ(0)',
+                        willChange: 'transform',
+                        isolation: 'isolate',
+                        // Also force clipping
+                        overflowX: 'hidden',
+                        // Foolproof clipping for blurs and shadows
+                        clipPath: 'inset(0 rounded-2xl)'
                     }}
                 >
                     {isMobile && !previewFullscreen ? (
@@ -75,16 +83,14 @@ export function PreviewFrame({
                             <p className="text-gray-500 font-medium">To see the preview on mobile, tap the Eye icon above.</p>
                         </div>
                     ) : (
-                        <div className="h-full relative overflow-y-auto custom-scrollbar">
-                            <PublicPortfolioPage
-                                previewData={localData}
-                                previewTheme={theme}
-                                previewTemplateId={templateId}
-                                previewMode={mode}
-                                previewColor={primaryColor}
-                                previewHiddenSections={Array.from(hiddenSections || [])}
-                            />
-                        </div>
+                        <PublicPortfolioPage
+                            previewData={localData}
+                            previewTheme={theme}
+                            previewTemplateId={templateId}
+                            previewMode={mode}
+                            previewColor={primaryColor}
+                            previewHiddenSections={Array.from(hiddenSections || [])}
+                        />
                     )}
                 </div>
             </div>

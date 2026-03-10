@@ -2,8 +2,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import {
     LayoutDashboard, Upload, Palette, Settings, LogOut,
-    Moon, Sun, Menu, Briefcase, TrendingUp, User, ChevronLeft, ChevronRight,
-    Shield
+    Moon, Sun, Menu, TrendingUp, User, ChevronLeft, ChevronRight,
+    Shield, Lock, LogIn
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -79,19 +79,29 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         )}
                         {navItems.map(({ to, icon: Icon, label }) => {
                             const active = location.pathname === to
+                            // These routes require auth — show lock for guests
+                            const requiresAuth = ['/dashboard', '/analytics', '/editor', '/profile', '/settings'].includes(to)
+                            const isLocked = !user && requiresAuth
                             return (
                                 <Link
                                     key={to}
-                                    to={to}
+                                    to={isLocked ? '/login' : to}
                                     onClick={() => setMobileOpen(false)}
-                                    title={collapsed ? label : undefined}
+                                    title={collapsed ? (isLocked ? `${label} (Sign in required)` : label) : undefined}
                                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${collapsed ? 'justify-center' : ''} ${active
                                         ? 'bg-brand-50 text-brand-600 dark:bg-brand-900/20 dark:text-brand-400'
-                                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
+                                        : isLocked
+                                            ? 'text-gray-400 dark:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer'
+                                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
                                         }`}
                                 >
                                     <Icon className="w-4 h-4 flex-shrink-0" />
-                                    {!collapsed && label}
+                                    {!collapsed && (
+                                        <span className="flex-1 flex items-center justify-between">
+                                            {label}
+                                            {isLocked && <Lock className="w-3 h-3 opacity-50" />}
+                                        </span>
+                                    )}
                                 </Link>
                             )
                         })}
@@ -120,9 +130,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             <Link
                                 to="/login"
                                 title={collapsed ? 'Sign In' : undefined}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-black transition-all w-full text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950/20 uppercase tracking-widest ${collapsed ? 'justify-center px-3' : 'justify-start'}`}
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all w-full text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-950/20 ${collapsed ? 'justify-center px-3' : 'justify-start'}`}
                             >
-                                <LogOut className="w-4 h-4 flex-shrink-0 rotate-180" />
+                                <LogIn className="w-4 h-4 flex-shrink-0" />
                                 {!collapsed && 'Sign In'}
                             </Link>
                         )}
@@ -140,8 +150,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                 </div>
                                 {!collapsed && (
                                     <div className="flex-1">
-                                        <p className="text-xs font-black text-brand-500 uppercase tracking-widest">Guest Session</p>
-                                        <p className="text-[10px] text-gray-500 uppercase font-black">Register to Sync</p>
+                                        <p className="text-xs font-semibold text-brand-500">Guest Session</p>
+                                        <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Register to save your work</p>
                                     </div>
                                 )}
                             </div>

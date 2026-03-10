@@ -175,8 +175,8 @@ export default function UploadPage() {
             )}
 
             <div className="mb-8">
-                <h1 className="uppercase">Elevate Your Story</h1>
-                <p className="text-gray-500 dark:text-gray-400 mt-2 font-medium">
+                <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white uppercase">Elevate Your Story</h1>
+                <p className="text-gray-600 dark:text-gray-300 mt-3 font-medium text-base">
                     Upload your professional history and watch your digital presence come to life.
                 </p>
             </div>
@@ -192,7 +192,7 @@ export default function UploadPage() {
                 {...getRootProps()}
                 className={`
                     border-2 border-dashed rounded-[2rem] p-12 text-center transition-all duration-500
-                    ${isDragActive ? 'border-brand-500 bg-brand-500/5' : 'border-gray-200 dark:border-white/5 hover:border-brand-500/50'}
+                    ${isDragActive ? 'border-brand-500 bg-brand-500/5' : 'border-gray-300 dark:border-white/20 hover:border-brand-500/60 bg-gray-50/50 dark:bg-white/[0.02]'}
                 `}
             >
                 <input {...getInputProps()} />

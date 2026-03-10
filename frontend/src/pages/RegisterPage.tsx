@@ -119,7 +119,7 @@ export default function RegisterPage() {
                             <div className="w-full border-t border-gray-200 dark:border-gray-800"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-white dark:bg-gray-900 text-gray-500">Or continue with email</span>
+                            <span className="px-2 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400">Or continue with email</span>
                         </div>
                     </div>
 
@@ -130,6 +130,7 @@ export default function RegisterPage() {
                                 type="text"
                                 className="input"
                                 placeholder="John Doe"
+                                autoComplete="name"
                                 {...register('name', { required: 'Name is required', minLength: { value: 2, message: 'Name too short' } })}
                             />
                             {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
@@ -141,6 +142,7 @@ export default function RegisterPage() {
                                 type="email"
                                 className="input"
                                 placeholder="you@example.com"
+                                autoComplete="email"
                                 {...register('email', { required: 'Email is required' })}
                             />
                             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
@@ -153,6 +155,7 @@ export default function RegisterPage() {
                                     type={showPass ? 'text' : 'password'}
                                     className="input pr-10"
                                     placeholder="Min 8 characters"
+                                    autoComplete="new-password"
                                     {...register('password', { required: 'Password is required', minLength: { value: 8, message: 'Min 8 characters' } })}
                                 />
                                 <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -194,7 +197,7 @@ export default function RegisterPage() {
                             {errors.consent && <p className="text-red-500 text-[10px] mt-1 ml-9">{errors.consent.message}</p>}
                         </div>
 
-                        <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
+                        <button type="submit" disabled={loading} className="w-full mt-2 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm transition-all shadow-lg shadow-brand-500/20 disabled:opacity-60">
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                             {loading ? 'Creating account...' : 'Create Account'}
                         </button>

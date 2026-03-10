@@ -50,10 +50,10 @@ export default function AppleDesktopTemplate({ pd, data, hiddenSections, isPdf, 
         : "url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=2670&auto=format&fit=crop')"
 
     return (
-        <div className="min-h-screen font-sans overflow-x-hidden relative" style={{ backgroundImage: bgImage, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+        <div className="min-h-screen font-sans overflow-x-hidden relative" style={{ backgroundImage: bgImage, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'local' }}>
 
-            {/* Top Menu Bar */}
-            <div className="fixed top-0 inset-x-0 h-6 md:h-7 bg-white/30 dark:bg-black/30 backdrop-blur-md flex items-center justify-between px-2 md:px-4 z-50 text-[11px] md:text-xs font-medium text-gray-900 dark:text-gray-100 border-b border-white/20 dark:border-white/5">
+            {/* Top Menu Bar - sticky so it stays in preview frame */}
+            <div className="sticky top-0 inset-x-0 h-6 md:h-7 bg-white/30 dark:bg-black/30 backdrop-blur-md flex items-center justify-between px-2 md:px-4 z-50 text-[11px] md:text-xs font-medium text-gray-900 dark:text-gray-100 border-b border-white/20 dark:border-white/5">
                 <div className="flex items-center gap-4">
                     <span className="font-bold text-sm"></span>
                     <span className="font-bold cursor-default hidden md:block">Finder</span>
@@ -240,9 +240,10 @@ export default function AppleDesktopTemplate({ pd, data, hiddenSections, isPdf, 
                 </div>
             </div>
 
-            {/* macOS Dock */}
+
+            {/* macOS Dock - sticky within the preview frame */}
             {!isPdf && (
-                <div className="fixed bottom-4 inset-x-0 flex justify-center z-50 pointer-events-none">
+                <div className="sticky bottom-4 inset-x-0 flex justify-center z-50 pointer-events-none">
                     <div className="flex items-end gap-2 px-4 py-2 rounded-2xl bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-2xl pointer-events-auto">
                         <button onClick={() => setActiveWindow('about')} className="relative group p-2 hover:-translate-y-2 transition-transform">
                             <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-lg flex items-center justify-center border border-white/20">
