@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -22,21 +22,80 @@ import PageTransition from '@/components/PageTransition'
 import ToneSelector from '@/components/ToneSelector'
 
 const MOBILE_FILE_INPUT_ID = 'resume-upload-native'
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
+const APP_BUILD_INFO = __APP_BUILD_INFO__
+
+function formatUnknownError(reason: unknown): string {
+    if (reason instanceof Error) return reason.message
+    if (typeof reason === 'string') return reason
+    return 'unknown'
+}
 
 export default function UploadPage() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const { token } = useAuthStore()
     const { setParsedData, setPortfolio } = usePortfolioStore()
+
     const [file, setFile] = useState<File | null>(null)
     const [tone, setTone] = useState('professional')
     const [mode, setMode] = useState<'replace' | 'merge'>('replace')
     const [uploadError, setUploadError] = useState<string | null>(null)
-    const [debugLog, setDebugLog] = useState<string[]>([])
-
-    const addLog = (msg: string) => setDebugLog(prev => [...prev.slice(-49), `${new Date().toLocaleTimeString()}: ${msg}`])
+    const [debugLog, setDebugLog] = useState<string[]>(() => {
+        if (typeof window === 'undefined') return []
+        try {
+            const stored = window.sessionStorage.getItem('upload_debug_log')
+            return stored ? JSON.parse(stored) : []
+        } catch {
+            return []
+        }
+    })
 
     const wakeLockRef = useRef<any>(null)
+    const forceDebug =
+        typeof window !== 'undefined' &&
+        new URLSearchParams(window.location.search).get('debug') === 'true'
+    const showDebug = forceDebug || uploadError !== null
+
+    const addLog = useCallback((msg: string) => {
+        const entry = `${new Date().toLocaleTimeString()}: ${msg}`
+        console.log(`[UploadDebug] ${msg}`)
+        setDebugLog(prev => {
+            const next = [...prev.slice(-49), entry]
+            if (typeof window !== 'undefined') {
+                try {
+                    window.sessionStorage.setItem('upload_debug_log', JSON.stringify(next))
+                } catch {}
+            }
+            return next
+        })
+    }, [])
+
+    const clearLogs = useCallback(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                window.sessionStorage.removeItem('upload_debug_log')
+            } catch {}
+        }
+        setDebugLog([])
+    }, [])
+
+    useEffect(() => {
+        addLog(`Upload page ready. Build=${APP_BUILD_INFO}`)
+
+        const handleError = (event: ErrorEvent) => addLog(`Runtime error: ${event.message}`)
+        const handleRejection = (event: PromiseRejectionEvent) =>
+            addLog(`Unhandled rejection: ${formatUnknownError(event.reason)}`)
+
+        window.addEventListener('error', handleError)
+        window.addEventListener('unhandledrejection', handleRejection)
+
+        return () => {
+            window.removeEventListener('error', handleError)
+            window.removeEventListener('unhandledrejection', handleRejection)
+        }
+    }, [addLog])
+
     const requestWakeLock = async () => {
         try {
             if ('wakeLock' in navigator) {
@@ -47,6 +106,7 @@ export default function UploadPage() {
             addLog(`Wake lock unavailable: ${error?.message || 'unsupported'}`)
         }
     }
+
     const releaseWakeLock = () => {
         wakeLockRef.current?.release().catch(() => {})
         wakeLockRef.current = null
@@ -62,7 +122,9 @@ export default function UploadPage() {
 
     const mutation = useMutation({
         mutationFn: (selectedFile: File) => {
-            addLog(`Uploading: name=${selectedFile.name || 'unnamed'} size=${selectedFile.size} type=${selectedFile.type || 'empty'}`)
+            addLog(
+                `Upload started: name=${selectedFile.name || 'unnamed'} type=${selectedFile.type || 'empty'} size=${selectedFile.size}`,
+            )
             return resumeApi.upload(selectedFile, tone, mode).then(r => r.data)
         },
         onSuccess: (data) => {
@@ -90,43 +152,68 @@ export default function UploadPage() {
         },
     })
 
-    const validateAndSetFile = (selectedFile: File | null | undefined) => {
-        if (!selectedFile) {
-            addLog('Selection returned no file')
-            return
-        }
+    const rejectSelection = useCallback(
+        (message: string, logMessage: string) => {
+            setFile(null)
+            setUploadError(message)
+            addLog(logMessage)
+            toast.error(message)
+        },
+        [addLog],
+    )
 
-        addLog(`File selected: name=${selectedFile.name || 'unnamed'} size=${selectedFile.size} type=${selectedFile.type || 'empty'}`)
+    const validateAndSetFile = useCallback(
+        (selectedFile: File | null | undefined) => {
+            if (!selectedFile) {
+                addLog('Native input changed but no file was returned')
+                return
+            }
 
-        if (/\.doc$/i.test(selectedFile.name) || selectedFile.type.includes('msword')) {
-            addLog('Rejected legacy .doc file')
-            toast.error('Legacy .doc files are not supported. Please convert the file to PDF or DOCX.')
-            return
-        }
+            addLog(
+                `File selected: name=${selectedFile.name || 'unnamed'} type=${selectedFile.type || 'empty'} size=${selectedFile.size}`,
+            )
 
-        if (selectedFile.size > 5 * 1024 * 1024) {
-            addLog('Rejected file larger than 5MB')
-            toast.error('File exceeds 5MB limit')
-            return
-        }
+            if (/\.doc$/i.test(selectedFile.name || '')) {
+                rejectSelection(
+                    'Legacy .doc files are not supported. Please convert the file to PDF or DOCX.',
+                    'Rejected legacy .doc file',
+                )
+                return
+            }
 
-        if (
-            selectedFile.type &&
-            (selectedFile.type.startsWith('image/') || selectedFile.type.startsWith('video/'))
-        ) {
-            addLog(`Rejected non-document type ${selectedFile.type}`)
-            toast.error('Please upload a document (PDF/DOCX).')
-            return
-        }
+            if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
+                rejectSelection('File exceeds 5MB limit', 'Rejected file larger than 5MB')
+                return
+            }
 
-        setFile(selectedFile)
-        setUploadError(null)
-        addLog('File accepted and rendered in UI')
-    }
+            if (
+                selectedFile.type &&
+                (selectedFile.type.startsWith('image/') || selectedFile.type.startsWith('video/'))
+            ) {
+                rejectSelection(
+                    'Please upload a document (PDF/DOCX).',
+                    `Rejected non-document type ${selectedFile.type}`,
+                )
+                return
+            }
 
-    const onDrop = useCallback((accepted: File[]) => {
-        validateAndSetFile(accepted[0])
-    }, [])
+            setFile(selectedFile)
+            setUploadError(null)
+            addLog('File accepted and rendered in UI')
+        },
+        [addLog, rejectSelection],
+    )
+
+    const onDrop = useCallback(
+        (accepted: File[]) => {
+            if (!accepted[0]) {
+                addLog('Dropzone reported no accepted files')
+                return
+            }
+            validateAndSetFile(accepted[0])
+        },
+        [addLog, validateAndSetFile],
+    )
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -179,6 +266,9 @@ export default function UploadPage() {
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Upload Your Resume</h1>
                 <p className="text-gray-500 dark:text-gray-400 mt-1">
                     Our AI will extract your data and generate a portfolio in seconds.
+                </p>
+                <p className="mt-2 text-xs font-mono text-gray-400 dark:text-gray-500">
+                    Build {APP_BUILD_INFO}
                 </p>
             </div>
 
@@ -359,34 +449,41 @@ export default function UploadPage() {
                     <div className="text-sm text-blue-700 dark:text-blue-300">
                         <p className="font-medium mb-1">Tips for best results</p>
                         <ul className="space-y-1 text-blue-600 dark:text-blue-400">
-                            <li>• Use a text-based PDF (not scanned)</li>
-                            <li>• Include skills, projects, and work experience</li>
-                            <li>• Make sure contact info is clearly visible</li>
+                            <li>- Use a text-based PDF (not scanned)</li>
+                            <li>- Include skills, projects, and work experience</li>
+                            <li>- Make sure contact info is clearly visible</li>
                         </ul>
                     </div>
                 </div>
             </div>
 
-            {debugLog.length > 0 && (
+            {showDebug && (
                 <div className="mt-6 p-3 rounded-xl bg-gray-900 text-xs font-mono max-h-48 overflow-y-auto">
                     <div className="flex justify-between items-center mb-2">
                         <span className="text-gray-400 font-bold">Debug Log</span>
-                        <button onClick={() => setDebugLog([])} className="text-gray-500 text-xs">Clear</button>
+                        <button onClick={clearLogs} className="text-gray-500 text-xs">Clear</button>
                     </div>
-                    {debugLog.map((log, i) => (
-                        <div
-                            key={i}
-                            className={`py-0.5 ${
-                                log.includes('failed') || log.includes('Rejected')
-                                    ? 'text-red-400'
-                                    : log.includes('accepted') || log.includes('complete')
-                                      ? 'text-green-400'
-                                      : 'text-gray-300'
-                            }`}
-                        >
-                            {log}
-                        </div>
-                    ))}
+                    <div className="mb-2 text-gray-500">Build {APP_BUILD_INFO}</div>
+                    {debugLog.length > 0 ? (
+                        debugLog.map((log, i) => (
+                            <div
+                                key={i}
+                                className={`py-0.5 ${
+                                    log.includes('failed') || log.includes('Rejected')
+                                        ? 'text-red-400'
+                                        : log.includes('accepted') ||
+                                          log.includes('complete') ||
+                                          log.includes('started')
+                                          ? 'text-green-400'
+                                          : 'text-gray-300'
+                                }`}
+                            >
+                                {log}
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-gray-400">No diagnostic events recorded yet.</div>
+                    )}
                 </div>
             )}
         </PageTransition>

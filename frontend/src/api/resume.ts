@@ -3,7 +3,9 @@ import apiClient from './client'
 export const resumeApi = {
     upload: (file: File, tone: string = 'professional', mode: string = 'replace') => {
         if (/\.doc$/i.test(file.name)) {
-            return Promise.reject(new Error('Legacy .doc files are not supported. Please convert the file to PDF or DOCX.'))
+            return Promise.reject(
+                new Error('Legacy .doc files are not supported. Please convert the file to PDF or DOCX.'),
+            )
         }
 
         const formData = new FormData()
@@ -14,7 +16,9 @@ export const resumeApi = {
             if (file.type && file.type.includes('wordprocessingml')) {
                 filename += '.docx'
             } else if (file.type && file.type.includes('msword')) {
-                return Promise.reject(new Error('Legacy .doc files are not supported. Please convert the file to PDF or DOCX.'))
+                return Promise.reject(
+                    new Error('Legacy .doc files are not supported. Please convert the file to PDF or DOCX.'),
+                )
             } else {
                 filename += '.pdf'
             }
@@ -23,9 +27,10 @@ export const resumeApi = {
         formData.append('file', file, filename)
         formData.append('tone', tone)
         formData.append('mode', mode)
+
         return apiClient.post('/resume/upload', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            timeout: 90000, // 90s — ensures onError fires if server drops connection
+            // Let the browser attach the multipart boundary automatically.
+            timeout: 90000,
         })
     },
 }
