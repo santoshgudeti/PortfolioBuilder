@@ -1,14 +1,13 @@
-import { useCallback, useState, useRef, useEffect } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { resumeApi } from '@/api/resume'
 import { portfolioApi } from '@/api/portfolio'
 import { usePortfolioStore } from '@/store/portfolioStore'
 import { useAuthStore } from '@/store/authStore'
 import {
-    Upload, FileText, CheckCircle, Loader2, X, AlertCircle,
+    Upload, FileText, CheckCircle, Loader2, AlertCircle,
     RefreshCw, GitMerge, Sparkles
 } from 'lucide-react'
 import PageTransition from '@/components/PageTransition'
@@ -17,19 +16,28 @@ import ToneSelector from '@/components/ToneSelector'
 
 export default function UploadPage() {
     const navigate = useNavigate()
-    const queryClient = useQueryClient()
     const { token } = useAuthStore()
     const { setParsedData, setPortfolio } = usePortfolioStore()
 
-    const [file, setFile] = useState<File | null>(null)
+    const [fileName, setFileName] = useState<string>("")
     const [tone, setTone] = useState('professional')
     const [mode, setMode] = useState<'replace' | 'merge'>('replace')
     const [uploadError, setUploadError] = useState<string | null>(null)
-    const [debugLog, setDebugLog] = useState<string[]>([])
+    const [debugLog, setDebugLog] = useState<string[]>(() => {
+        try {
+            const saved = sessionStorage.getItem('upload_debug_log')
+            return saved ? JSON.parse(saved) : []
+        } catch { return [] }
+    })
+
     const addLog = (msg: string) => {
         const entry = `${new Date().toLocaleTimeString()}: ${msg}`
-        console.log(`[UploadDebug] ${msg}`)
-        setDebugLog(prev => [...prev.slice(-49), entry])
+        console.log(`[MobileUploadDebug] ${msg}`)
+        setDebugLog(prev => {
+            const next = [...prev.slice(-49), entry]
+            sessionStorage.setItem('upload_debug_log', JSON.stringify(next))
+            return next
+        })
     }
 
     // Capture global errors for mobile debugging
@@ -70,30 +78,25 @@ export default function UploadPage() {
 
     const mutation = useMutation({
         mutationFn: (f: File) => {
-            addLog(`API START: file=${f.name} size=${f.size} type=${f.type}`)
+            addLog(`UPLOADING: name=${f.name}, size=${f.size}, type=${f.type}`)
             return resumeApi.upload(f, tone, mode).then(r => {
-                addLog(`API SUCCESS: Received response`)
+                addLog(`API SUCCESS: Success response received`)
                 return r.data
             })
         },
         onSuccess: (data) => {
-            releaseWakeLock()
             setUploadError(null)
-            addLog(`NAVIGATING: portfolio_id=${data.portfolio_id}`)
+            addLog(`FINISHING: portfolio_id=${data.portfolio_id}`)
             setParsedData(data.parsed_data)
             setPortfolio({
                 portfolioId: data.portfolio_id,
                 slug: data.slug,
                 isGuest: data.is_guest
             })
-            if (!data.is_guest) {
-                queryClient.invalidateQueries({ queryKey: ['portfolio'] })
-            }
             toast.success('Resume parsed successfully!')
             setTimeout(() => navigate('/editor'), 1000)
         },
         onError: (err: any) => {
-            releaseWakeLock()
             const msg = err.response?.data?.detail || err.message || 'Upload failed'
             addLog(`API ERROR: ${msg}`)
             setUploadError(msg)
@@ -101,55 +104,42 @@ export default function UploadPage() {
         },
     })
 
-    const validateAndSetFile = (f: File) => {
-        if (!f) return
-        addLog(`FILE_SELECTED: name=${f.name}, type=${f.type || 'unknown'}, size=${(f.size / 1024).toFixed(1)}KB`)
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const pickedFile = e.target.files?.[0]
+        addLog(`EVENT_FIRED: files_count=${e.target.files?.length || 0}`)
 
-        const fileName = f.name.toLowerCase()
-        const isAllowedExt = fileName.endsWith('.pdf') || fileName.endsWith('.docx') || fileName.endsWith('.doc')
-        const isAllowedType = f.type && (
-            f.type.includes('pdf') ||
-            f.type.includes('word') ||
-            f.type.includes('msword') ||
-            f.type.includes('officedocument.wordprocessingml')
-        )
-
-        if (!isAllowedExt && !isAllowedType) {
-            addLog(`REJECTED: Invalid type/ext. type=${f.type}`)
-            toast.error(`Please upload a document (PDF/DOCX).`)
+        if (!pickedFile) {
+            addLog('EVENT_CANCELLED: No file in selection')
             return
         }
 
-        if (f.size > 15 * 1024 * 1024) { // 15MB
-            addLog(`REJECTED: File size too large`)
-            toast.error(`File exceeds 15MB limit`)
+        addLog(`FILE_DETECTED: name=${pickedFile.name}, size=${pickedFile.size}`)
+        setFileName(pickedFile.name)
+
+        const lowerName = pickedFile.name.toLowerCase()
+        const isDoc = lowerName.endsWith('.pdf') || lowerName.endsWith('.docx') || lowerName.endsWith('.doc')
+
+        if (!isDoc) {
+            addLog(`REJECTED: Invalid extension`)
+            toast.error('Only PDF/DOCX allowed')
             return
         }
 
-        setFile(f)
-        addLog(`FILE_READY: Ready for upload`)
+        if (pickedFile.size > 15 * 1024 * 1024) {
+            addLog(`REJECTED: Too large`)
+            toast.error('File exceeds 15MB limit')
+            return
+        }
+
+        addLog('TRIGGERING_UPLOAD_NOW')
+        setUploadError(null)
+        await requestWakeLock()
+        mutation.mutate(pickedFile)
     }
 
-    const { getRootProps, getInputProps, isDragActive, open: openPicker } = useDropzone({
-        onDrop: (accepted) => {
-            if (accepted?.[0]) validateAndSetFile(accepted[0])
-            else addLog('DROPZONE: No accepted files in drop')
-        },
-        noClick: false, // Standard behavior for mobile
-        maxFiles: 1,
-        accept: {
-            'application/pdf': ['.pdf'],
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-            'application/msword': ['.doc']
-        }
-    })
-
-    const handleUpload = async () => {
-        if (file) {
-            setUploadError(null)
-            await requestWakeLock()
-            mutation.mutate(file)
-        }
+    const clearLogs = () => {
+        sessionStorage.removeItem('upload_debug_log')
+        setDebugLog([])
     }
 
     if (isLoading) {
@@ -206,67 +196,49 @@ export default function UploadPage() {
                 </p>
             </div>
 
-            <div
-                {...getRootProps()}
-                className={`
-                    border-2 border-dashed rounded-[2rem] p-12 text-center transition-all duration-500 cursor-pointer
-                    ${isDragActive ? 'border-brand-500 bg-brand-500/5' : 'border-gray-300 dark:border-white/20 hover:border-brand-500/60 bg-gray-50/50 dark:bg-white/[0.02]'}
-                `}
-            >
-                <input {...getInputProps()} />
-                <div className="flex flex-col items-center gap-6">
-                    <div
-                        className="w-20 h-20 rounded-3xl bg-white dark:bg-[#0a0a0a] border border-gray-100 dark:border-white/5 text-brand-500 flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
-                    >
-                        <Upload className="w-10 h-10" />
+            {/* ULTIMATE MOBILE COMPATIBLE TRIGGER: Standard Label + Hidden Input */}
+            <div className="relative">
+                <input
+                    type="file"
+                    id="resume-upload"
+                    className="sr-only"
+                    accept=".pdf,.docx,.doc"
+                    onChange={handleFileChange}
+                />
+                <label
+                    htmlFor="resume-upload"
+                    className="block group cursor-pointer"
+                >
+                    <div className="border-4 border-dashed rounded-[3rem] p-16 text-center transition-all duration-300 border-gray-200 dark:border-white/10 group-hover:border-brand-500 bg-gray-50 dark:bg-white/[0.02] group-hover:bg-brand-500/[0.03] shadow-inner">
+                        <div className="w-20 h-20 rounded-3xl bg-white dark:bg-gray-900 shadow-xl mx-auto mb-8 flex items-center justify-center text-brand-500 transition-transform group-hover:scale-110">
+                            <Upload className="w-10 h-10" />
+                        </div>
+                        <h3 className="text-2xl font-black uppercase tracking-tight mb-2 text-gray-900 dark:text-white">
+                            {fileName || "Select Resume"}
+                        </h3>
+                        <p className="text-gray-400 font-bold uppercase text-xs tracking-widest">
+                            {fileName ? "TAP TO CHANGE" : "TAP HERE TO START"}
+                        </p>
                     </div>
-                    <div className="space-y-2">
-                        <p className="font-black text-xl text-gray-900 dark:text-white uppercase tracking-tight">Drop your resume</p>
-                        <p className="text-sm text-gray-400 dark:text-gray-500 font-medium">TAP HERE to select PDF/DOCX</p>
-                    </div>
-                </div>
+                </label>
             </div>
 
-            <button
-                type="button"
-                onClick={openPicker}
-                className="mt-4 w-full flex items-center justify-center gap-2 py-4 px-4 rounded-2xl border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0a0a0a] text-gray-500 font-bold text-sm hover:text-brand-500 transition-all shadow-sm"
-            >
-                <FileText className="w-4 h-4" />
-                Select File Manually
-            </button>
+            {fileName && <div className="mt-6"><ToneSelector selected={tone} onChange={setTone} /></div>}
 
-            {file && (
-                <div className="mt-4 card flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                        <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{file.name}</p>
-                        <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
-                    </div>
-                    <button onClick={() => setFile(null)} className="text-gray-400 hover:text-gray-600">
-                        <X className="w-4 h-4" />
-                    </button>
-                </div>
-            )}
-
-            {file && <div className="mt-6"><ToneSelector selected={tone} onChange={setTone} /></div>}
-
-            {file && hasPortfolio && (
+            {fileName && hasPortfolio && (
                 <div className="mt-4 card">
                     <p className="text-sm font-semibold text-gray-900 dark:text-white mb-3">How should we handle this?</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <button
                             onClick={() => setMode('merge')}
-                            className={`p-4 rounded-xl border-2 text-left ${mode === 'merge' ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20' : 'border-gray-200 dark:border-gray-700'}`}
+                            className={`p-4 rounded-xl border-2 text-left transition-all ${mode === 'merge' ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-brand-500/30'}`}
                         >
                             <div className="flex items-center gap-2 mb-1"><GitMerge className="w-4 h-4 text-brand-500" /><span className="text-sm font-bold">Merge</span></div>
                             <p className="text-xs text-gray-500">Keep edits, fill empty fields.</p>
                         </button>
                         <button
                             onClick={() => setMode('replace')}
-                            className={`p-4 rounded-xl border-2 text-left ${mode === 'replace' ? 'border-red-500 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-gray-700'}`}
+                            className={`p-4 rounded-xl border-2 text-left transition-all ${mode === 'replace' ? 'border-red-500 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-brand-500/30'}`}
                         >
                             <div className="flex items-center gap-2 mb-1"><RefreshCw className="w-4 h-4 text-red-500" /><span className="text-sm font-bold">Replace</span></div>
                             <p className="text-xs text-gray-500">Start fresh. Overwrites all.</p>
@@ -275,19 +247,7 @@ export default function UploadPage() {
                 </div>
             )}
 
-            {file && (
-                <button
-                    onClick={handleUpload}
-                    disabled={mutation.isPending}
-                    className="btn-primary w-full mt-4 py-3 text-base"
-                >
-                    {mutation.isPending ? (
-                        <><Loader2 className="w-5 h-5 animate-spin" /> Crafting Portfolio...</>
-                    ) : (
-                        <><Sparkles className="w-5 h-5" /> Build My Professional Site</>
-                    )}
-                </button>
-            )}
+            {/* Removed redundant manual Build button to ensure immediate mobile trigger consistency */}
 
             <div className="mt-8 card bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800">
                 <div className="flex gap-3">
@@ -303,14 +263,14 @@ export default function UploadPage() {
             </div>
 
             {showDebug && debugLog.length > 0 && (
-                <div className="mt-12 p-6 rounded-[2rem] bg-gray-950 border border-white/5 overflow-hidden">
+                <div className="mt-12 p-6 rounded-[2rem] bg-gray-950 border border-white/5 overflow-hidden shadow-2xl">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Debug Diagnostics</h3>
-                        <button onClick={() => setDebugLog([])} className="text-[10px] text-brand-500 hover:text-brand-400 font-bold uppercase">Clear Log</button>
+                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">System Diagnostics</h3>
+                        <button onClick={clearLogs} className="text-[10px] text-brand-500 hover:text-brand-400 font-bold uppercase tracking-tight">Clear Persistence</button>
                     </div>
                     <div className="space-y-1.5 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                         {debugLog.map((log, i) => (
-                            <div key={i} className="text-[10px] font-mono py-0.5 text-gray-400 border-l border-white/10 pl-3">
+                            <div key={i} className="text-[10px] font-mono py-0.5 text-gray-400 border-l border-white/10 pl-3 leading-relaxed">
                                 {log}
                             </div>
                         ))}
