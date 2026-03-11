@@ -19,6 +19,7 @@ import {
 import AIProcessingOverlay from '@/components/AIProcessingOverlay'
 import PageTransition from '@/components/PageTransition'
 import ToneSelector from '@/components/ToneSelector'
+import { getErrorMessage } from '@/lib/errors'
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
 const ACCEPTED_UPLOAD_TYPES =
@@ -27,9 +28,7 @@ const APP_BUILD_INFO = __APP_BUILD_INFO__
 let cachedSelectedFile: File | null = null
 
 function formatUnknownError(reason: unknown): string {
-    if (reason instanceof Error) return reason.message
-    if (typeof reason === 'string') return reason
-    return 'unknown'
+    return getErrorMessage(reason, 'unknown')
 }
 
 export default function UploadPage() {
@@ -169,7 +168,10 @@ export default function UploadPage() {
         },
         onError: (err: any) => {
             releaseWakeLock()
-            const msg = err.response?.data?.detail || err.message || 'Upload failed. Please try again.'
+            const msg = getErrorMessage(
+                err.response?.data?.detail ?? err.response?.data ?? err,
+                'Upload failed. Please try again.',
+            )
             addLog(`Upload failed: ${msg}`)
             setUploadError(msg)
             toast.error(msg)

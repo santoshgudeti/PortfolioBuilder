@@ -68,9 +68,10 @@ export const ClickSpark: React.FC<ClickSparkProps> = ({
                 s.y += s.vy;
                 s.life -= 1 / (60 * duration);
                 s.opacity = Math.max(0, s.life);
+                const radius = Math.max(0, sparkSize * s.life);
 
                 ctx.beginPath();
-                ctx.arc(s.x, s.y, sparkSize * s.life, 0, Math.PI * 2);
+                ctx.arc(s.x, s.y, radius, 0, Math.PI * 2);
                 ctx.fillStyle = sparkColor;
                 ctx.globalAlpha = s.opacity;
                 ctx.fill();
