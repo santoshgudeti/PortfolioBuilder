@@ -24,7 +24,7 @@ export default function BauhausTemplate({ pd, data, hiddenSections, rgb, mode }:
                     <div>
                         {/* Huge Typography Intro */}
                         <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[10rem] font-black uppercase tracking-tighter leading-[0.85] mb-6 md:mb-12 break-words" style={{ letterSpacing: '-0.05em' }}>
-                            {pd.name?.split(' ').map((n: string, i: number, arr: any[]) => (
+                            {(pd.name || '').split(' ').filter(Boolean).map((n: string, i: number, arr: any[]) => (
                                 <span key={i} className="block hover:translate-x-4 transition-transform duration-500" style={{ color: i === arr.length - 1 ? primaryColor : fgColor }}>
                                     {n}
                                 </span>

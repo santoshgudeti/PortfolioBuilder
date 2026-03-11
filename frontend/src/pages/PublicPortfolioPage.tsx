@@ -4,6 +4,7 @@ import { portfolioApi } from '@/api/portfolio'
 import { Helmet } from 'react-helmet-async'
 import { Suspense, lazy } from 'react'
 import { normalizeHostname } from '@/lib/domain'
+import { getInitials } from '@/lib/utils'
 
 const StandardTemplate = lazy(() => import('@/templates/StandardTemplate'))
 const TechGridTemplate = lazy(() => import('@/templates/TechGridTemplate'))
@@ -93,7 +94,7 @@ export default function PublicPortfolioPage({ previewData, previewTheme, preview
     const templateId = isPreview ? previewTemplateId : data?.template_id || 'standard'
     const mode = isPreview ? (previewMode || 'light') : data?.mode || 'light'
     const rgb = hexToRgb(color)
-    const initials = pd?.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || '?'
+    const initials = getInitials(pd?.name)
     const publicUrl = window.location.href
     const hiddenSections = isPreview ? new Set<string>(previewHiddenSections || []) : new Set<string>((data?.hidden_sections || '').split(',').filter(Boolean))
 
