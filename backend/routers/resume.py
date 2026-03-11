@@ -70,12 +70,18 @@ async def upload_resume(
     except Exception as e:
         if resume_object_key:
             await rustfs_service.delete_file(resume_object_key)
-        raise HTTPException(status_code=422, detail=f"Could not extract text: {str(e)}")
+        raise HTTPException(
+            status_code=422,
+            detail=f"Could not extract text: {str(e)}",
+        )
 
     if not resume_text.strip():
         if resume_object_key:
             await rustfs_service.delete_file(resume_object_key)
-        raise HTTPException(status_code=422, detail="No text found in the uploaded file")
+        raise HTTPException(
+            status_code=422,
+            detail="No text found in the uploaded file. Please upload a text-based PDF or DOCX.",
+        )
 
     # Parse with Groq
     try:

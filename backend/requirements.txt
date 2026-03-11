@@ -19,5 +19,7 @@ boto3
 loguru
 python-jose[cryptography]
 pdfplumber
+pypdf
+PyMuPDF
 python-docx
 fastapi-mail
