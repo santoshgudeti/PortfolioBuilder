@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { portfolioApi } from '@/api/portfolio'
@@ -189,7 +190,7 @@ export default function EditorPage() {
         return (
             <div className="max-w-4xl mx-auto text-center py-20">
                 <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium">Your professional story is waiting to be told.</p>
-                <a href="/upload" className="btn-primary px-8">Elevate Your Story</a>
+                <Link to="/upload" className="btn-primary px-8">Elevate Your Story</Link>
             </div>
         )
     }

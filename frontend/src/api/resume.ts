@@ -13,12 +13,8 @@ export const resumeApi = {
         let filename = file.name || 'document.pdf'
         const lowerName = filename.toLowerCase()
         if (!lowerName.endsWith('.pdf') && !lowerName.endsWith('.docx')) {
-            if (file.type && file.type.includes('wordprocessingml')) {
+            if (file.type && (file.type.includes('wordprocessingml') || file.type.includes('msword'))) {
                 filename += '.docx'
-            } else if (file.type && file.type.includes('msword')) {
-                return Promise.reject(
-                    new Error('Legacy .doc files are not supported. Please convert the file to PDF or DOCX.'),
-                )
             } else {
                 filename += '.pdf'
             }

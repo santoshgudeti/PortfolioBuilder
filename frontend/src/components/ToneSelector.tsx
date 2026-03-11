@@ -36,7 +36,7 @@ export default function ToneSelector({ selected, onChange }: ToneSelectorProps) 
     return (
         <div>
             <label className="label mb-3">Choose AI Tone</label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 {tones.map(tone => {
                     const Icon = tone.icon
                     const isActive = selected === tone.id
@@ -45,7 +45,7 @@ export default function ToneSelector({ selected, onChange }: ToneSelectorProps) 
                             key={tone.id}
                             type="button"
                             onClick={() => onChange(tone.id)}
-                            className={`relative rounded-xl border p-4 text-left transition-all duration-200 ${isActive
+                            className={`relative min-w-0 rounded-xl border p-3 text-left transition-all duration-200 sm:p-4 ${isActive
                                     ? `border-transparent ring-2 ${tone.ring} shadow-glow-sm bg-gray-50 dark:bg-gray-800`
                                     : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                                 }`}
@@ -54,7 +54,7 @@ export default function ToneSelector({ selected, onChange }: ToneSelectorProps) 
                                 <Icon className="w-4 h-4 text-white" />
                             </div>
                             <p className="text-sm font-semibold text-gray-900 dark:text-white">{tone.label}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{tone.desc}</p>
+                            <p className="mt-0.5 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{tone.desc}</p>
                         </button>
                     )
                 })}

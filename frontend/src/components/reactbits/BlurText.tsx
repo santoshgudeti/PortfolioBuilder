@@ -1,24 +1,25 @@
 /**
  * @name BlurText
- * @description A text component that reveals its content with a blurring animation
+ * @description A text component that reveals its content with a blur/fade animation
  */
 
-import { useRef, useEffect, useState } from 'react';
-import { useSprings, animated, SpringConfig } from '@react-spring/web';
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 interface BlurTextProps {
-    text?: string;
-    delay?: number;
-    className?: string;
-    animateBy?: 'words' | 'letters';
-    direction?: 'top' | 'bottom';
-    threshold?: number;
-    rootMargin?: string;
-    animationFrom?: object;
-    animationTo?: object[];
-    easing?: (t: number) => number | string;
-    onAnimationComplete?: () => void;
+    text?: string
+    delay?: number
+    className?: string
+    animateBy?: 'words' | 'letters'
+    direction?: 'top' | 'bottom'
+    threshold?: number
+    rootMargin?: string
+    animationFrom?: React.CSSProperties
+    animationTo?: React.CSSProperties[]
+    easing?: string
+    onAnimationComplete?: () => void
 }
+
+const FALLBACK_OBSERVER_THRESHOLD = 0.1
 
 export const BlurText: React.FC<BlurTextProps> = ({
     text = '',
@@ -26,87 +27,104 @@ export const BlurText: React.FC<BlurTextProps> = ({
     className = '',
     animateBy = 'words',
     direction = 'top',
-    threshold = 0.1,
+    threshold = FALLBACK_OBSERVER_THRESHOLD,
     rootMargin = '0px',
     animationFrom,
     animationTo,
-    easing = 'easeOutCubic',
+    easing = 'cubic-bezier(0.22, 1, 0.36, 1)',
     onAnimationComplete,
 }) => {
-    const elements = animateBy === 'words' ? text.split(' ') : text.split('');
-    const [inView, setInView] = useState(false);
-    const ref = useRef<HTMLParagraphElement>(null);
-    const animatedCount = useRef(0);
+    const ref = useRef<HTMLParagraphElement>(null)
+    const timeoutRef = useRef<number | null>(null)
+    const [inView, setInView] = useState(false)
 
-    // Default animations based on direction
-    const defaultFrom =
+    const elements = useMemo(
+        () => (animateBy === 'words' ? text.split(' ') : text.split('')),
+        [animateBy, text]
+    )
+
+    const defaultFrom: React.CSSProperties =
         direction === 'top'
-            ? { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,-50px,0)' }
-            : { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,50px,0)' };
+            ? { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,-24px,0)' }
+            : { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,24px,0)' }
 
-    const defaultTo = [
-        {
-            filter: 'blur(5px)',
-            opacity: 0.5,
-            transform: direction === 'top' ? 'translate3d(0,5px,0)' : 'translate3d(0,-5px,0)',
-        },
-        { filter: 'blur(0px)', opacity: 1, transform: 'translate3d(0,0,0)' },
-    ];
+    const finalStep: React.CSSProperties =
+        animationTo?.[animationTo.length - 1] || {
+            filter: 'blur(0px)',
+            opacity: 1,
+            transform: 'translate3d(0,0,0)',
+        }
 
     useEffect(() => {
+        if (typeof window === 'undefined' || !ref.current || typeof IntersectionObserver === 'undefined') {
+            setInView(true)
+            return
+        }
+
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
-                    setInView(true);
+                    setInView(true)
                     if (ref.current) {
-                        observer.unobserve(ref.current);
+                        observer.unobserve(ref.current)
                     }
                 }
             },
             { threshold, rootMargin }
-        );
+        )
 
-        if (ref.current) {
-            observer.observe(ref.current);
+        observer.observe(ref.current)
+        return () => observer.disconnect()
+    }, [rootMargin, threshold])
+
+    useEffect(() => {
+        if (!inView || !onAnimationComplete || elements.length === 0) {
+            return
         }
 
-        return () => observer.disconnect();
-    }, [threshold, rootMargin]);
+        timeoutRef.current = window.setTimeout(onAnimationComplete, delay * Math.max(elements.length - 1, 0) + 650)
 
-    const springs = useSprings(
-        elements.length,
-        elements.map((_, i) => ({
-            from: animationFrom || defaultFrom,
-            to: inView
-                ? async (next: (arg: object) => Promise<void>) => {
-                    for (const step of (animationTo || defaultTo)) {
-                        await next(step);
-                    }
-                    animatedCount.current += 1;
-                    if (animatedCount.current === elements.length && onAnimationComplete) {
-                        onAnimationComplete();
-                    }
-                }
-                : animationFrom || defaultFrom,
-            delay: i * delay,
-            config: { easing: easing as any },
-        }))
-    );
+        return () => {
+            if (timeoutRef.current !== null) {
+                window.clearTimeout(timeoutRef.current)
+            }
+        }
+    }, [delay, elements.length, inView, onAnimationComplete])
 
     return (
         <p ref={ref} className={`blur-text ${className} flex flex-wrap`}>
-            {springs.map((props, index) => (
-                <animated.span
-                    key={index}
-                    style={props as any}
-                    className="inline-block transition-transform will-change-[transform,filter,opacity]"
-                >
-                    {elements[index] === ' ' ? '\u00A0' : elements[index]}
-                    {animateBy === 'words' && index < elements.length - 1 && '\u00A0'}
-                </animated.span>
-            ))}
-        </p>
-    );
-};
+            {elements.map((element, index) => {
+                const style: React.CSSProperties = inView
+                    ? {
+                        ...(animationFrom || defaultFrom),
+                        ...finalStep,
+                        transitionProperty: 'opacity, transform, filter',
+                        transitionDuration: '650ms',
+                        transitionTimingFunction: easing,
+                        transitionDelay: `${index * delay}ms`,
+                        willChange: 'opacity, transform, filter',
+                    }
+                    : {
+                        ...(animationFrom || defaultFrom),
+                        transitionProperty: 'opacity, transform, filter',
+                        transitionDuration: '650ms',
+                        transitionTimingFunction: easing,
+                        willChange: 'opacity, transform, filter',
+                    }
 
-export default BlurText;
+                return (
+                    <span
+                        key={`${element}-${index}`}
+                        style={style}
+                        className="inline-block"
+                    >
+                        {element === ' ' ? '\u00A0' : element}
+                        {animateBy === 'words' && index < elements.length - 1 && '\u00A0'}
+                    </span>
+                )
+            })}
+        </p>
+    )
+}
+
+export default BlurText

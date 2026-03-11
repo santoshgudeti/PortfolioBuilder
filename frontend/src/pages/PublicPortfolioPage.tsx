@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { portfolioApi } from '@/api/portfolio'
 import { Helmet } from 'react-helmet-async'
 import { Suspense, lazy } from 'react'
+import { normalizeHostname } from '@/lib/domain'
 
 const StandardTemplate = lazy(() => import('@/templates/StandardTemplate'))
 const TechGridTemplate = lazy(() => import('@/templates/TechGridTemplate'))
@@ -46,8 +47,9 @@ export default function PublicPortfolioPage({ previewData, previewTheme, preview
     const [searchParams] = useSearchParams()
     const isPdf = searchParams.get('pdf') === 'true'
 
-    const hostname = window.location.hostname
-    const isCustomDomain = hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.includes('vercel.app') && hostname !== import.meta.env.VITE_APP_DOMAIN
+    const hostname = normalizeHostname(window.location.hostname)
+    const appDomain = normalizeHostname(import.meta.env.VITE_APP_DOMAIN)
+    const isCustomDomain = hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.includes('vercel.app') && hostname !== appDomain
 
     const { data: fetchedData, isLoading, isError } = useQuery({
         queryKey: isCustomDomain ? ['public-portfolio-domain', hostname] : ['public-portfolio', slug],

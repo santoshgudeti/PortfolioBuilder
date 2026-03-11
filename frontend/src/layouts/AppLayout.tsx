@@ -80,7 +80,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         {navItems.map(({ to, icon: Icon, label }) => {
                             const active = location.pathname === to
                             // These routes require auth — show lock for guests
-                            const requiresAuth = ['/dashboard', '/analytics', '/editor', '/profile', '/settings'].includes(to)
+                            const requiresAuth = ['/dashboard', '/analytics', '/profile', '/settings'].includes(to)
                             const isLocked = !user && requiresAuth
                             return (
                                 <Link

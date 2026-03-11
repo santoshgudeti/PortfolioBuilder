@@ -23,6 +23,8 @@ import ToneSelector from '@/components/ToneSelector'
 
 const MOBILE_FILE_INPUT_ID = 'resume-upload-native'
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
+const ACCEPTED_UPLOAD_TYPES =
+    '.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 const APP_BUILD_INFO = __APP_BUILD_INFO__
 
 function formatUnknownError(reason: unknown): string {
@@ -52,6 +54,7 @@ export default function UploadPage() {
     })
 
     const wakeLockRef = useRef<any>(null)
+    const nativeInputRef = useRef<HTMLInputElement | null>(null)
     const forceDebug =
         typeof window !== 'undefined' &&
         new URLSearchParams(window.location.search).get('debug') === 'true'
@@ -228,6 +231,11 @@ export default function UploadPage() {
         e.target.value = ''
     }
 
+    const openNativePicker = useCallback(() => {
+        addLog('Opening native file picker')
+        nativeInputRef.current?.click()
+    }, [addLog])
+
     const handleUpload = async () => {
         if (!file) {
             addLog('Upload requested without a selected file')
@@ -248,11 +256,11 @@ export default function UploadPage() {
     }
 
     return (
-        <PageTransition className="max-w-2xl mx-auto pb-24 px-4 sm:px-0">
+        <PageTransition className="mx-auto w-full max-w-2xl pb-24">
             {mutation.isPending && <AIProcessingOverlay />}
 
             {uploadError && (
-                <div className="mb-4 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3">
+                <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/20 sm:p-4">
                     <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                     <div>
                         <p className="text-sm font-semibold text-red-700 dark:text-red-400">Upload Failed</p>
@@ -273,7 +281,7 @@ export default function UploadPage() {
             </div>
 
             {hasPortfolio && (
-                <div className="mb-6 rounded-2xl border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/10 p-5">
+                <div className="mb-6 rounded-2xl border border-brand-200 bg-brand-50 p-4 dark:border-brand-800 dark:bg-brand-900/10 sm:p-5">
                     <div className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-brand-600 dark:text-brand-400 flex-shrink-0 mt-0.5" />
                         <div className="flex-1">
@@ -281,11 +289,11 @@ export default function UploadPage() {
                             <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                 Uploading again will update your existing portfolio. Use <strong>Merge</strong> to keep edits or <strong>Replace</strong> to start fresh.
                             </p>
-                            <div className="flex gap-3 mt-3">
-                                <button onClick={() => navigate('/editor')} className="btn-secondary text-sm">
+                            <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+                                <button onClick={() => navigate('/editor')} className="btn-secondary w-full text-sm sm:w-auto">
                                     Go To Editor
                                 </button>
-                                <button onClick={() => navigate('/dashboard')} className="text-sm font-medium text-brand-600 dark:text-brand-400 hover:underline">
+                                <button onClick={() => navigate('/dashboard')} className="text-sm font-medium text-brand-600 dark:text-brand-400 hover:underline sm:self-center">
                                     Back to Dashboard
                                 </button>
                             </div>
@@ -296,8 +304,9 @@ export default function UploadPage() {
 
             <input
                 id={MOBILE_FILE_INPUT_ID}
+                ref={nativeInputRef}
                 type="file"
-                accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                accept={ACCEPTED_UPLOAD_TYPES}
                 className="sr-only"
                 onChange={handleNativeInput}
             />
@@ -305,7 +314,7 @@ export default function UploadPage() {
             <div
                 {...getRootProps()}
                 className={`
-                    border-2 border-dashed rounded-xl p-10 text-center transition-all
+                    rounded-3xl border-2 border-dashed px-4 py-8 text-center transition-all sm:px-8 sm:py-10
                     ${isDragActive
                         ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/10'
                         : 'border-gray-300 dark:border-gray-700 hover:border-brand-400 hover:bg-gray-50 dark:hover:bg-gray-800/50'
@@ -315,8 +324,10 @@ export default function UploadPage() {
                 <input {...getInputProps()} />
 
                 <div className="flex flex-col items-center gap-4">
-                    <label
-                        htmlFor={MOBILE_FILE_INPUT_ID}
+                    <button
+                        type="button"
+                        onClick={openNativePicker}
+                        aria-label="Choose a resume to upload"
                         className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors cursor-pointer ${
                             isDragActive
                                 ? 'bg-brand-100 dark:bg-brand-900/30'
@@ -324,28 +335,29 @@ export default function UploadPage() {
                         }`}
                     >
                         <Upload className={`w-8 h-8 ${isDragActive ? 'text-brand-500' : 'text-gray-400'}`} />
-                    </label>
+                    </button>
                     {isDragActive ? (
                         <p className="text-brand-600 dark:text-brand-400 font-medium">Drop your resume here</p>
                     ) : (
                         <div>
-                            <p className="font-medium text-gray-900 dark:text-white">Drag and drop your resume</p>
+                            <p className="text-sm font-medium text-gray-900 dark:text-white sm:text-base">Drag and drop your resume</p>
                             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">PDF or DOCX - Max 5MB</p>
                         </div>
                     )}
                 </div>
             </div>
 
-            <label
-                htmlFor={MOBILE_FILE_INPUT_ID}
-                className="mt-3 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 font-medium text-sm cursor-pointer hover:bg-brand-100 dark:hover:bg-brand-900/40 transition-colors"
+            <button
+                type="button"
+                onClick={openNativePicker}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-brand-200 bg-brand-50 px-4 py-3 text-sm font-medium text-brand-600 transition-colors hover:bg-brand-100 dark:border-brand-800 dark:bg-brand-900/20 dark:text-brand-400 dark:hover:bg-brand-900/40"
             >
                 <Upload className="w-4 h-4" />
                 Tap to browse files
-            </label>
+            </button>
 
             {file && (
-                <div className="mt-4 card flex items-center gap-3">
+                <div className="mt-4 card flex items-start gap-3 rounded-3xl p-4 sm:items-center sm:p-6">
                     <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
                         <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
@@ -353,7 +365,7 @@ export default function UploadPage() {
                         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{file.name || 'Selected file'}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">{(file.size / 1024).toFixed(1)} KB</p>
                     </div>
-                    <button onClick={() => setFile(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <button onClick={() => setFile(null)} className="self-start rounded-full p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 sm:self-auto">
                         <X className="w-4 h-4" />
                     </button>
                 </div>
@@ -366,7 +378,7 @@ export default function UploadPage() {
             )}
 
             {file && hasPortfolio && (
-                <div className="mt-4 card">
+                <div className="mt-4 card rounded-3xl p-4 sm:p-6">
                     <p className="text-sm font-semibold text-gray-900 dark:text-white mb-3">You already have a portfolio. How should we handle this?</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <button
@@ -443,7 +455,7 @@ export default function UploadPage() {
                 </div>
             )}
 
-            <div className="mt-8 card bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800">
+            <div className="mt-8 card rounded-3xl border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/10 sm:p-6">
                 <div className="flex gap-3">
                     <AlertCircle className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
                     <div className="text-sm text-blue-700 dark:text-blue-300">
