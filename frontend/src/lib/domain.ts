@@ -4,4 +4,4 @@ export function normalizeHostname(value: string | undefined | null) {
         .trim()
         .replace(/^https?:\/\//, '')
         .replace(/\/.*$/, '')
-}
+} 
