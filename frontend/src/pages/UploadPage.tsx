@@ -24,6 +24,7 @@ const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
 const ACCEPTED_UPLOAD_TYPES =
     '.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 const APP_BUILD_INFO = __APP_BUILD_INFO__
+let cachedSelectedFile: File | null = null
 
 function formatUnknownError(reason: unknown): string {
     if (reason instanceof Error) return reason.message
@@ -37,7 +38,7 @@ export default function UploadPage() {
     const { token } = useAuthStore()
     const { setParsedData, setPortfolio } = usePortfolioStore()
 
-    const [file, setFile] = useState<File | null>(null)
+    const [file, setFileState] = useState<File | null>(() => cachedSelectedFile)
     const [tone, setTone] = useState('professional')
     const [mode, setMode] = useState<'replace' | 'merge'>('replace')
     const [uploadError, setUploadError] = useState<string | null>(null)
@@ -56,6 +57,11 @@ export default function UploadPage() {
         typeof window !== 'undefined' &&
         new URLSearchParams(window.location.search).get('debug') === 'true'
     const showDebug = forceDebug || uploadError !== null
+
+    const setSelectedFile = useCallback((nextFile: File | null) => {
+        cachedSelectedFile = nextFile
+        setFileState(nextFile)
+    }, [])
 
     const addLog = useCallback((msg: string) => {
         const entry = `${new Date().toLocaleTimeString()}: ${msg}`
@@ -82,6 +88,9 @@ export default function UploadPage() {
 
     useEffect(() => {
         addLog(`Upload page ready. Build=${APP_BUILD_INFO}`)
+        if (cachedSelectedFile) {
+            addLog(`Restored selected file from page cache: ${cachedSelectedFile.name || 'unnamed'}`)
+        }
 
         const handleError = (event: ErrorEvent) => addLog(`Runtime error: ${event.message}`)
         const handleRejection = (event: PromiseRejectionEvent) =>
@@ -114,9 +123,23 @@ export default function UploadPage() {
 
     const { data: existingPortfolio, isLoading } = useQuery({
         queryKey: ['portfolio'],
-        queryFn: () => portfolioApi.getMyPortfolio().then(r => r.data),
+        queryFn: async () => {
+            try {
+                const response = await portfolioApi.getMyPortfolio()
+                return response.data
+            } catch (error: any) {
+                if (error?.response?.status === 404) {
+                    addLog('No existing portfolio found for current user')
+                    return null
+                }
+                throw error
+            }
+        },
         retry: false,
         enabled: !!token,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        staleTime: 5 * 60 * 1000,
     })
     const hasPortfolio = !!existingPortfolio
 
@@ -129,6 +152,7 @@ export default function UploadPage() {
         },
         onSuccess: (data) => {
             releaseWakeLock()
+            setSelectedFile(null)
             setUploadError(null)
             addLog(`Upload complete: portfolio_id=${data.portfolio_id} guest=${data.is_guest}`)
             setParsedData(data.parsed_data)
@@ -154,12 +178,12 @@ export default function UploadPage() {
 
     const rejectSelection = useCallback(
         (message: string, logMessage: string) => {
-            setFile(null)
+            setSelectedFile(null)
             setUploadError(message)
             addLog(logMessage)
             toast.error(message)
         },
-        [addLog],
+        [addLog, setSelectedFile],
     )
 
     const validateAndSetFile = useCallback(
@@ -197,11 +221,11 @@ export default function UploadPage() {
                 return
             }
 
-            setFile(selectedFile)
+            setSelectedFile(selectedFile)
             setUploadError(null)
             addLog('File accepted and rendered in UI')
         },
-        [addLog, rejectSelection],
+        [addLog, rejectSelection, setSelectedFile],
     )
 
     const handleNativeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -315,7 +339,7 @@ export default function UploadPage() {
                         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{file.name || 'Selected file'}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">{(file.size / 1024).toFixed(1)} KB</p>
                     </div>
-                    <button onClick={() => setFile(null)} className="self-start rounded-full p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 sm:self-auto">
+                    <button onClick={() => setSelectedFile(null)} className="self-start rounded-full p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 sm:self-auto">
                         <X className="w-4 h-4" />
                     </button>
                 </div>
