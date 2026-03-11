@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
@@ -21,7 +20,6 @@ import AIProcessingOverlay from '@/components/AIProcessingOverlay'
 import PageTransition from '@/components/PageTransition'
 import ToneSelector from '@/components/ToneSelector'
 
-const MOBILE_FILE_INPUT_ID = 'resume-upload-native'
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
 const ACCEPTED_UPLOAD_TYPES =
     '.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -54,7 +52,6 @@ export default function UploadPage() {
     })
 
     const wakeLockRef = useRef<any>(null)
-    const nativeInputRef = useRef<HTMLInputElement | null>(null)
     const forceDebug =
         typeof window !== 'undefined' &&
         new URLSearchParams(window.location.search).get('debug') === 'true'
@@ -207,34 +204,12 @@ export default function UploadPage() {
         [addLog, rejectSelection],
     )
 
-    const onDrop = useCallback(
-        (accepted: File[]) => {
-            if (!accepted[0]) {
-                addLog('Dropzone reported no accepted files')
-                return
-            }
-            validateAndSetFile(accepted[0])
-        },
-        [addLog, validateAndSetFile],
-    )
-
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        noClick: true,
-        maxFiles: 1,
-    })
-
     const handleNativeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         addLog('Native file input changed')
         const selectedFile = e.target.files?.[0]
         validateAndSetFile(selectedFile)
         e.target.value = ''
     }
-
-    const openNativePicker = useCallback(() => {
-        addLog('Opening native file picker')
-        nativeInputRef.current?.click()
-    }, [addLog])
 
     const handleUpload = async () => {
         if (!file) {
@@ -302,59 +277,34 @@ export default function UploadPage() {
                 </div>
             )}
 
-            <input
-                id={MOBILE_FILE_INPUT_ID}
-                ref={nativeInputRef}
-                type="file"
-                accept={ACCEPTED_UPLOAD_TYPES}
-                className="sr-only"
-                onChange={handleNativeInput}
-            />
-
             <div
-                {...getRootProps()}
-                className={`
-                    rounded-3xl border-2 border-dashed px-4 py-8 text-center transition-all sm:px-8 sm:py-10
-                    ${isDragActive
-                        ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/10'
-                        : 'border-gray-300 dark:border-gray-700 hover:border-brand-400 hover:bg-gray-50 dark:hover:bg-gray-800/50'
-                    }
-                `}
+                className="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900/40 sm:p-6"
             >
-                <input {...getInputProps()} />
+                <div className="flex items-start gap-3">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-900/20 dark:text-brand-400">
+                        <Upload className="h-6 w-6" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white sm:text-base">
+                            Choose your resume file
+                        </p>
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            Plain native file input for maximum mobile compatibility. PDF or DOCX only, max 5MB.
+                        </p>
+                    </div>
+                </div>
 
-                <div className="flex flex-col items-center gap-4">
-                    <button
-                        type="button"
-                        onClick={openNativePicker}
-                        aria-label="Choose a resume to upload"
-                        className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors cursor-pointer ${
-                            isDragActive
-                                ? 'bg-brand-100 dark:bg-brand-900/30'
-                                : 'bg-gray-100 dark:bg-gray-800 hover:bg-brand-50 dark:hover:bg-brand-900/20'
-                        }`}
-                    >
-                        <Upload className={`w-8 h-8 ${isDragActive ? 'text-brand-500' : 'text-gray-400'}`} />
-                    </button>
-                    {isDragActive ? (
-                        <p className="text-brand-600 dark:text-brand-400 font-medium">Drop your resume here</p>
-                    ) : (
-                        <div>
-                            <p className="text-sm font-medium text-gray-900 dark:text-white sm:text-base">Drag and drop your resume</p>
-                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">PDF or DOCX - Max 5MB</p>
-                        </div>
-                    )}
+                <input
+                    type="file"
+                    accept={ACCEPTED_UPLOAD_TYPES}
+                    onChange={handleNativeInput}
+                    className="mt-4 block w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-950 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-brand-500 dark:border-white/10 dark:bg-[#0b0b0b] dark:text-gray-200 dark:file:bg-white dark:file:text-gray-900"
+                />
+
+                <div className="mt-3 rounded-xl bg-gray-50 px-4 py-3 text-xs text-gray-500 dark:bg-white/[0.03] dark:text-gray-400">
+                    If the same file does not trigger on some phones, change to another file once and then switch back. This input resets after each selection.
                 </div>
             </div>
-
-            <button
-                type="button"
-                onClick={openNativePicker}
-                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-brand-200 bg-brand-50 px-4 py-3 text-sm font-medium text-brand-600 transition-colors hover:bg-brand-100 dark:border-brand-800 dark:bg-brand-900/20 dark:text-brand-400 dark:hover:bg-brand-900/40"
-            >
-                <Upload className="w-4 h-4" />
-                Tap to browse files
-            </button>
 
             {file && (
                 <div className="mt-4 card flex items-start gap-3 rounded-3xl p-4 sm:items-center sm:p-6">
