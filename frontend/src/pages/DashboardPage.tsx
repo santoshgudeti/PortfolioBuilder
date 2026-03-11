@@ -35,6 +35,7 @@ export default function DashboardPage() {
 
     const hasPortfolio = !!data && !isError
     const showVerificationBanner = user && !user.is_verified && user.auth_provider === 'email'
+    const firstName = user?.name?.split(' ')?.[0] || 'there'
 
     const handleResendVerification = async () => {
         if (!user) return
@@ -73,7 +74,7 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="mb-10">
                 <h1 className="uppercase">
-                    Welcome Back, {user?.name?.split(' ')[0]}
+                    Welcome Back, {firstName}
                 </h1>
                 <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg font-medium">
                     {hasPortfolio ? 'Your professional brand is active. Ready to elevate further?' : 'Transform your professional story into a stunning digital home.'}
@@ -174,7 +175,7 @@ export default function DashboardPage() {
                                 { label: 'Skills Identified', value: pd.skills?.length || 0 },
                                 { label: 'Projects Featured', value: pd.projects?.length || 0 },
                                 { label: 'Experience Nodes', value: pd.experience?.length || 0 },
-                                { label: 'Layout Theme', value: data.theme.toUpperCase() },
+                                { label: 'Layout Theme', value: (data.theme || 'minimal').toUpperCase() },
                             ].map(({ label, value }) => (
                                 <div key={label} className="text-center">
                                     <p className="text-3xl font-black text-brand-500 dark:text-brand-500 tracking-tighter">{value}</p>

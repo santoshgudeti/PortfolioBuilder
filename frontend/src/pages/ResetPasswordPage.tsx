@@ -21,8 +21,8 @@ export default function ResetPasswordPage() {
             toast.error('Passwords do not match')
             return
         }
-        if (password.length < 6) {
-            toast.error('Password must be at least 6 characters')
+        if (password.length < 8) {
+            toast.error('Password must be at least 8 characters')
             return
         }
         if (!token) {
@@ -100,7 +100,7 @@ export default function ResetPasswordPage() {
                                             className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition pr-10"
                                             placeholder="••••••••"
                                             required
-                                            minLength={6}
+                                            minLength={8}
                                         />
                                         <button
                                             type="button"

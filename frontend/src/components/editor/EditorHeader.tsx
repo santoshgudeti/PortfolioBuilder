@@ -122,7 +122,7 @@ export function EditorHeader({
                 ) : isDirty ? (
                     <><AlertCircle className="w-4 h-4 flex-shrink-0" /> <span><strong>Unsaved changes</strong> — Click <strong>Sync Changes</strong> to save, then <strong>Go Live</strong>.</span></>
                 ) : isPublished ? (
-                    <><CheckCircle2 className="w-4 h-4 flex-shrink-0" /> <span><strong>Live & Sync'd</strong> — Check it at <a href={`/u/${slug}`} target="_blank" className="underline">folioai.com/u/{slug}</a></span></>
+                    <><CheckCircle2 className="w-4 h-4 flex-shrink-0" /> <span><strong>Live & Sync'd</strong> — Check it at <a href={`/u/${slug}`} target="_blank" rel="noopener noreferrer" className="underline">folioai.com/u/{slug}</a></span></>
                 ) : savedOnce ? (
                     <><CheckCircle2 className="w-4 h-4 flex-shrink-0" /> <span><strong>Sync'd</strong> — Click <strong>Go Live</strong> to launch.</span></>
                 ) : (

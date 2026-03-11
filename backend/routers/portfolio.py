@@ -1,5 +1,6 @@
 import json
 from datetime import datetime, timedelta, timezone
+import re
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -44,7 +45,22 @@ async def update_my_portfolio(
     if not portfolio:
         raise HTTPException(status_code=404, detail="Portfolio not found")
 
-    update_dict = updates.model_dump(exclude_none=True)
+    update_dict = updates.model_dump(exclude_unset=True)
+    if "custom_domain" in update_dict:
+        custom_domain = update_dict["custom_domain"]
+        if custom_domain is not None:
+            custom_domain = custom_domain.strip().lower()
+            if custom_domain and not re.match(r"^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,63}$", custom_domain):
+                raise HTTPException(status_code=400, detail="Invalid custom domain format")
+            existing_domain = await db.execute(
+                select(Portfolio).where(
+                    Portfolio.custom_domain == custom_domain,
+                    Portfolio.user_id != current_user.id,
+                )
+            )
+            if existing_domain.scalar_one_or_none():
+                raise HTTPException(status_code=409, detail="This domain is already connected to another portfolio.")
+        update_dict["custom_domain"] = custom_domain or None
     portfolio = await update_portfolio(db, portfolio, update_dict)
     setattr(portfolio, 'avatar_url', current_user.avatar_url)
     return portfolio
@@ -218,9 +234,6 @@ async def preview_portfolio(
         "view_count": portfolio.view_count or 0,
         "hidden_sections": portfolio.hidden_sections or "",
     }
-
-
-import re
 
 @router.get("/check-slug")
 async def check_slug_availability(

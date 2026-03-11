@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 import { User, Camera, Lock, Shield, Calendar, Loader2, CheckCircle2, Eye, EyeOff } from 'lucide-react'
 import apiClient from '@/api/client'
+import { getInitials } from '@/lib/utils'
 
 interface NameFormData { name: string }
 interface PasswordFormData { current_password: string; new_password: string; confirm_password: string }
@@ -24,7 +25,7 @@ export default function ProfilePage() {
 
     if (!user) return null
 
-    const initials = user.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?'
+    const initials = getInitials(user.name)
 
     const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]

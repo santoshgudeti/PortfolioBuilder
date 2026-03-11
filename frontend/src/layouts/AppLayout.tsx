@@ -25,7 +25,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [collapsed, setCollapsed] = useState(false)
 
     return (
-        <div className="flex h-[100dvh] bg-gray-50 dark:bg-gray-950">
+        <div className="flex min-h-[100dvh] bg-gray-50 dark:bg-gray-950 lg:h-[100dvh]">
             {/* Sidebar */}
             <aside className={`
                 fixed inset-y-0 left-0 z-50 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800
@@ -80,7 +80,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         {navItems.map(({ to, icon: Icon, label }) => {
                             const active = location.pathname === to
                             // These routes require auth — show lock for guests
-                            const requiresAuth = ['/dashboard', '/analytics', '/editor', '/profile', '/settings'].includes(to)
+                            const requiresAuth = ['/dashboard', '/analytics', '/profile', '/settings'].includes(to)
                             const isLocked = !user && requiresAuth
                             return (
                                 <Link
@@ -185,7 +185,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             )}
 
             {/* Main */}
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <div className="flex-1 flex min-w-0 flex-col lg:overflow-hidden">
                 {/* Top bar (mobile) */}
                 <header className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
                     <button onClick={() => setMobileOpen(true)} className="btn-ghost p-2">
@@ -197,7 +197,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </header>
 
                 {/* Page content */}
-                <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+                <main className="flex-1 p-4 sm:p-6 lg:overflow-y-auto">
                     {children}
                 </main>
             </div>

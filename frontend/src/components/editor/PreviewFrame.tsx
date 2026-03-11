@@ -1,4 +1,4 @@
-import { Monitor, Tablet, Smartphone, Maximize2, Minimize2, EyeOff, Loader2 } from 'lucide-react'
+import { Monitor, Tablet, Smartphone, Maximize2, Minimize2, EyeOff } from 'lucide-react'
 import PublicPortfolioPage from '../../pages/PublicPortfolioPage'
 
 interface PreviewFrameProps {
@@ -23,7 +23,7 @@ export function PreviewFrame({
     previewDevice,
     previewFullscreen,
     showPreview,
-    isMobile,
+    isMobile: _isMobile,
     localData,
     theme,
     templateId,
@@ -38,7 +38,7 @@ export function PreviewFrame({
 
     return (
         <div className={`
-            ${previewFullscreen ? 'fixed inset-0 z-[100] bg-white dark:bg-gray-900 p-4' : 'hidden lg:flex lg:w-[45%] flex-col'} 
+            ${previewFullscreen ? 'fixed inset-0 z-[100] flex flex-col bg-white dark:bg-gray-900 p-4' : 'hidden lg:flex lg:w-[45%] flex-col'} 
             transition-all duration-300
         `}>
             <div className="flex items-center justify-between mb-4">
@@ -59,11 +59,12 @@ export function PreviewFrame({
                 </div>
             </div>
 
-            <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl p-4 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-700 shadow-inner">
+            <div className="flex-1 min-h-0 bg-gray-100 dark:bg-gray-800 rounded-2xl p-4 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-700 shadow-inner">
                 <div
                     className="bg-white dark:bg-gray-900 shadow-2xl transition-all duration-500 overflow-y-auto custom-scrollbar relative"
                     style={{
-                        width: previewDevice === 'mobile' ? '375px' : previewDevice === 'tablet' ? '768px' : '100%',
+                        width: previewDevice === 'mobile' ? 'min(375px, 100%)' : previewDevice === 'tablet' ? 'min(768px, 100%)' : '100%',
+                        maxWidth: '100%',
                         height: '100%',
                         borderRadius: previewDevice === 'desktop' ? '0' : '24px',
                         border: previewDevice === 'desktop' ? 'none' : '8px solid #1f2937',
@@ -73,25 +74,16 @@ export function PreviewFrame({
                         isolation: 'isolate',
                         // Also force clipping
                         overflowX: 'hidden',
-                        // Foolproof clipping for blurs and shadows
-                        clipPath: 'inset(0 rounded-2xl)'
                     }}
                 >
-                    {isMobile && !previewFullscreen ? (
-                        <div className="h-full flex flex-col items-center justify-center p-8 text-center">
-                            <Maximize2 className="w-12 h-12 text-gray-300 mb-4" />
-                            <p className="text-gray-500 font-medium">To see the preview on mobile, tap the Eye icon above.</p>
-                        </div>
-                    ) : (
-                        <PublicPortfolioPage
-                            previewData={localData}
-                            previewTheme={theme}
-                            previewTemplateId={templateId}
-                            previewMode={mode}
-                            previewColor={primaryColor}
-                            previewHiddenSections={Array.from(hiddenSections || [])}
-                        />
-                    )}
+                    <PublicPortfolioPage
+                        previewData={localData}
+                        previewTheme={theme}
+                        previewTemplateId={templateId}
+                        previewMode={mode}
+                        previewColor={primaryColor}
+                        previewHiddenSections={Array.from(hiddenSections || [])}
+                    />
                 </div>
             </div>
         </div>
