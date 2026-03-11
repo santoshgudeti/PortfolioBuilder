@@ -5,8 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || '/api'
 
 const apiClient = axios.create({
     baseURL: API_URL,
-    timeout: 30000, // 30s — generous for AI parsing, prevents indefinite hangs
-    headers: { 'Content-Type': 'application/json' },
+    timeout: 60000, // 60s - increased for production AI parsing
 })
 
 // Attach JWT token to every request
