@@ -16,7 +16,6 @@ import TiltedCard from '@/components/reactbits/TiltedCard'
 import TrueFocus from '@/components/reactbits/TrueFocus'
 import LetterGlitch from '@/components/reactbits/LetterGlitch'
 import TextPressure from '@/components/reactbits/TextPressure'
-import UploadProbeCard from '@/components/UploadProbeCard'
 
 // ───────────────────────────────────────
 // Brand Data
@@ -204,8 +203,6 @@ export default function LandingPage() {
                             Log In
                         </Link>
                     </div>
-
-                    <UploadProbeCard />
 
                     <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 text-sm text-gray-500 dark:text-gray-400 font-medium">
                         <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-500" /> No coding required</span>
