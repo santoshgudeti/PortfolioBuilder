@@ -102,9 +102,9 @@ export default function RegisterPage() {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4">
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <Link to="/" className="inline-flex items-center gap-2 mb-6">
-                        <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg border border-white/10 bg-brand-500">
-                            <img src="/assets/branding/logo.png" alt="FolioAI Logo" className="w-full h-full object-cover" />
+                    <Link to="/" className="inline-flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20">
+                            <img src="/assets/branding/logo.png" alt="FolioAI Logo" className="w-full h-full object-contain" />
                         </div>
                     </Link>
                     <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">Join FolioAI</h1>

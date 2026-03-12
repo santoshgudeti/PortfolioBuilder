@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from database import AsyncSessionLocal
 from models.user import User
-
+import models.portfolio  # Required for SQLAlchemy relationship resolution
 async def make_admin(email: str):
     async with AsyncSessionLocal() as session:
         result = await session.execute(select(User).where(User.email == email))

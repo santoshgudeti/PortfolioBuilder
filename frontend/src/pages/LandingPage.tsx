@@ -107,9 +107,9 @@ export default function LandingPage() {
             {/* ─── Navbar ───────────────────────────────── */}
             <nav className="fixed top-0 inset-x-0 z-50 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-md border-b border-gray-200 dark:border-white/5" role="navigation" aria-label="Main navigation">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link to="/" className="flex items-center gap-2.5 group" aria-label="FolioAI Home">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-brand-500/10 group-hover:shadow-brand-500/25 transition-all">
-                            <img src="/assets/branding/logo.png" alt="FolioAI Logo" className="w-full h-full object-cover" />
+                    <Link to="/" className="flex items-center gap-2.5 group hover:opacity-80 transition-opacity" aria-label="FolioAI Home">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16">
+                            <img src="/assets/branding/logo.png" alt="FolioAI Logo" className="w-full h-full object-contain" />
                         </div>
                     </Link>
                     <div className="flex items-center gap-4">
@@ -562,8 +562,8 @@ export default function LandingPage() {
                     <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
                         <div className="max-w-sm">
                             <div className="flex items-center gap-2.5 mb-6">
-                                <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-white/10">
-                                    <img src="/assets/branding/logo.png" alt="FolioAI Logo" className="w-full h-full object-cover" />
+                                <div className="w-12 h-12 sm:w-16 sm:h-16">
+                                    <img src="/assets/branding/logo.png" alt="FolioAI Logo" className="w-full h-full object-contain" />
                                 </div>
                             </div>
                             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
@@ -594,7 +594,6 @@ export default function LandingPage() {
                     </div>
                     <div className="pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400 dark:text-gray-500">
                         <p>© {new Date().getFullYear()} FolioAI. Built for the future of work.</p>
-                        <p>Made with ❤️ for professionals worldwide</p>
                     </div>
                 </div>
             </footer>

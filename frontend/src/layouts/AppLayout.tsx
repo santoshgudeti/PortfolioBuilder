@@ -39,14 +39,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <div className={`flex items-center border-b border-gray-200 dark:border-gray-800 ${collapsed ? 'justify-center px-3 py-5' : 'gap-2 px-4 py-5'}`}>
                         {!collapsed && (
                             <>
-                                <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 shadow-lg border border-white/10 bg-brand-500">
-                                    <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
+                                    <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-contain" />
                                 </div>
                             </>
                         )}
                         {collapsed && (
-                            <div className="w-8 h-8 rounded-lg overflow-hidden shadow-lg border border-white/10 bg-brand-500">
-                                <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                            <div className="w-10 h-10 sm:w-12 sm:h-12">
+                                <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-contain" />
                             </div>
                         )}
                         {/* Desktop collapse button */}
@@ -191,8 +191,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <button onClick={() => setMobileOpen(true)} className="btn-ghost p-2">
                         <Menu className="w-5 h-5" />
                     </button>
-                    <div className="w-8 h-8 rounded-lg overflow-hidden shadow-lg border border-white/10 bg-brand-500">
-                        <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12">
+                        <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-contain" />
                     </div>
                 </header>
 
