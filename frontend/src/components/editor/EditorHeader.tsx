@@ -36,99 +36,96 @@ export function EditorHeader({
     isSavePending
 }: EditorHeaderProps) {
     return (
-        <div className="mb-6">
-            <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-4">
-                <div>
-                    <h1 className="mb-0.5">Brand Designer</h1>
+        <div className="mb-10">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div className="space-y-1">
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-editor-title m-0">Editor</h1>
+                        <div className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${isGuest
+                            ? 'border-brand-200 bg-brand-50 text-brand-600'
+                            : isDirty
+                                ? 'border-amber-200 bg-amber-50 text-amber-700 animate-pulse'
+                                : isPublished
+                                    ? 'border-green-200 bg-green-50 text-green-700'
+                                    : 'border-gray-200 bg-gray-50 text-gray-500'
+                            }`}>
+                            {isGuest ? 'Guest' : isDirty ? 'Unsaved' : isPublished ? 'Live' : 'Draft'}
+                        </div>
+                    </div>
                     {slug && !isGuest ? (
-                        <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-1.5 font-medium">
-                            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                        <a href={`/u/${slug}`} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-brand-500 transition-colors text-[11px] flex items-center gap-1.5 font-bold uppercase tracking-widest group">
+                            <Globe className="w-3 h-3 opacity-50 group-hover:opacity-100" />
                             folioai.com/u/{slug}
-                        </p>
-                    ) : (
-                        <p className="text-xs font-black text-brand-500 uppercase tracking-widest">
-                            {isGuest ? 'Guest Session — Changes Not Saved' : 'Curate your professional presence'}
-                        </p>
-                    )}
-                </div>
-
-                <div className="flex items-center gap-2">
-                    {slug && isPublished && (
-                        <button onClick={onDownloadPDF} disabled={isExportingPDF}
-                            className="btn-secondary text-sm px-3" title="Download as PDF">
-                            {isExportingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-                            <span className="hidden sm:inline">{isExportingPDF ? 'Exporting...' : 'PDF'}</span>
-                        </button>
-                    )}
-                    {slug && isPublished && (
-                        <a href={`/u/${slug}`} target="_blank" rel="noopener noreferrer"
-                            className="btn-secondary text-sm px-3 flex" title="View your live public portfolio">
-                            <ExternalLink className="w-4 h-4" /> <span className="hidden sm:inline">View Live</span>
+                            <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all" />
                         </a>
-                    )}
-                    <button
-                        onClick={onTogglePreview}
-                        className="btn-secondary text-sm px-3 flex"
-                        title="Toggle Live Preview"
-                    >
-                        {showPreview ? <ToggleRight className="w-4 h-4 text-brand-500 hidden lg:block" /> : <ToggleLeft className="w-4 h-4 text-gray-400 hidden lg:block" />}
-                        <Eye className="w-4 h-4 text-brand-500 lg:hidden" />
-                        <span className="hidden sm:inline lg:hidden ml-1">Preview</span>
-                        <span className="hidden lg:inline ml-1">{showPreview ? 'Hide Preview' : 'Show Preview'}</span>
-                    </button>
-                    {isGuest ? (
-                        <Link
-                            to="/register"
-                            className="btn-primary text-xs uppercase tracking-widest font-black py-2.5 px-6 shadow-glow-brand animate-pulse"
-                        >
-                            Claim Your Portfolio
-                        </Link>
                     ) : (
-                        <>
-                            <button
-                                onClick={onPublish}
-                                disabled={isPublishPending || isDirty}
-                                title={isDirty ? 'Save your changes first before going live' : isPublished ? 'Take portfolio offline' : 'Go live with your portfolio'}
-                                className={`btn-secondary text-xs uppercase tracking-widest font-black py-2.5 ${isDirty ? 'opacity-50 cursor-not-allowed' :
-                                    isPublished ? 'text-red-500 hover:bg-red-50' : 'text-brand-500 hover:bg-brand-50'
-                                    }`}
-                            >
-                                {isPublishPending ? <Loader2 className="w-4 h-4 animate-spin" /> : isPublished ? <EyeOff className="w-4 h-4" /> : <Globe className="w-4 h-4" />}
-                                {isPublished ? 'Go Offline' : 'Go Live'}
-                            </button>
-                            <button
-                                onClick={onSave}
-                                disabled={isSavePending}
-                                className={`btn-primary text-xs uppercase tracking-widest font-black py-2.5 px-6 ${isDirty ? 'shadow-glow-sm' : ''}`}
-                            >
-                                {isSavePending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                {isSavePending ? 'Saving...' : 'Sync Changes'}
-                            </button>
-                        </>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                            {isGuest ? 'Changes will not be persisted' : 'Workspace / Narrative Design'}
+                        </p>
                     )}
+                </div>
+
+                <div className="flex items-center flex-wrap gap-2 bg-white dark:bg-white/[0.02] p-1.5 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                    <div className="flex items-center gap-1 pr-2 mr-2 border-r border-gray-100 dark:border-white/10">
+                        {slug && isPublished && (
+                            <button onClick={onDownloadPDF} disabled={isExportingPDF}
+                                className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500 transition-all" title="Download as PDF">
+                                {isExportingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+                            </button>
+                        )}
+                        <button
+                            onClick={onTogglePreview}
+                            className={`p-2.5 rounded-xl transition-all ${showPreview ? 'bg-brand-500/10 text-brand-500' : 'hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400'}`}
+                            title={showPreview ? "Hide Live Preview" : "Show Live Preview"}
+                        >
+                            {showPreview ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
+                        </button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        {isGuest ? (
+                            <Link
+                                to="/register"
+                                className="btn-primary !py-2.5 !px-5 text-[10px]"
+                            >
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                Claim Identity
+                            </Link>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={onPublish}
+                                    disabled={isPublishPending || isDirty}
+                                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isDirty 
+                                        ? 'opacity-30 cursor-not-allowed text-gray-400' 
+                                        : isPublished 
+                                            ? 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white' 
+                                            : 'bg-brand-500/10 text-brand-500 hover:bg-brand-500 hover:text-white'
+                                    }`}
+                                >
+                                    {isPublishPending ? <Loader2 className="w-3 h-3 animate-spin" /> : isPublished ? <EyeOff className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
+                                    {isPublished ? 'Go Offline' : 'Go Live'}
+                                </button>
+                                <button
+                                    onClick={onSave}
+                                    disabled={isSavePending}
+                                    className={`btn-primary !py-2.5 !px-5 text-[10px] ${isDirty ? 'shadow-glow-brand ring-4 ring-brand-500/10' : 'opacity-80'}`}
+                                >
+                                    {isSavePending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                                    {isSavePending ? 'Syncing...' : 'Sync Changes'}
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
 
-            <div className={`mt-3 px-4 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-widest flex items-center gap-3 transition-all ${isGuest
-                ? 'border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400'
-                : isDirty
-                    ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400'
-                    : isPublished
-                        ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                        : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400'
-                }`}>
-                {isGuest ? (
-                    <><AlertCircle className="w-4 h-4 flex-shrink-0 animate-bounce" /> <span>Guest Session — Create an account to save your work and go live.</span></>
-                ) : isDirty ? (
-                    <><AlertCircle className="w-4 h-4 flex-shrink-0" /> <span><strong>Unsaved changes</strong> — Click <strong>Sync Changes</strong> to save, then <strong>Go Live</strong>.</span></>
-                ) : isPublished ? (
-                    <><CheckCircle2 className="w-4 h-4 flex-shrink-0" /> <span><strong>Live & Sync'd</strong> — Check it at <a href={`/u/${slug}`} target="_blank" rel="noopener noreferrer" className="underline">folioai.com/u/{slug}</a></span></>
-                ) : savedOnce ? (
-                    <><CheckCircle2 className="w-4 h-4 flex-shrink-0" /> <span><strong>Sync'd</strong> — Click <strong>Go Live</strong> to launch.</span></>
-                ) : (
-                    <><CheckCircle2 className="w-4 h-4 flex-shrink-0" /> <span>Design your brand, then sync to save.</span></>
-                )}
-            </div>
+            {isDirty && !isGuest && (
+                <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-widest animate-pulse">
+                    <AlertCircle className="w-3 h-3" />
+                    <span>Unsaved changes in workspace</span>
+                </div>
+            )}
         </div>
     )
 }
