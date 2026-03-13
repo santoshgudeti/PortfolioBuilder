@@ -99,16 +99,18 @@ export default function LandingPage() {
     return (
         <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-900 dark:text-white overflow-x-hidden selection:bg-brand-500/30">
             <Helmet>
-                <title>FolioAI — AI Portfolio Builder | Stand Out Online</title>
-                <meta name="description" content="Upload your resume and let AI build a stunning portfolio website in 60 seconds. 15 premium templates, custom domains, dark mode, and analytics — all free. Stand out to recruiters and clients." />
+                <title>PortfolioBuilder.AI — AI Portfolio Builder | Stand Out Online</title>
+                <meta name="description" content="Upload your resume and let AI build a stunning portfolio website in 60 seconds. 15 premium templates, custom domains, dark mode, and analytics — all free." />
             </Helmet>
 
             {/* ─── Navbar ───────────────────────────────── */}
             <nav className="fixed top-0 inset-x-0 z-50 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-md border-b border-gray-200 dark:border-white/5" role="navigation" aria-label="Main navigation">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link to="/" className="flex items-center gap-2.5 group hover:opacity-80 transition-opacity" aria-label="FolioAI Home">
-                        <div className="w-12 h-12 sm:w-16 sm:h-16">
-                            <img src="/assets/branding/logo.png" alt="FolioAI Logo" className="w-full h-full object-contain" />
+                    <Link to="/" className="flex items-center gap-2.5 group hover:opacity-80 transition-opacity" aria-label="PortfolioBuilder.AI Home">
+                        <div className="flex items-center justify-center">
+                            <span className="text-xl sm:text-2xl font-black tracking-tighter text-gray-900 dark:text-white">
+                                PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
+                            </span>
                         </div>
                     </Link>
                     <div className="flex items-center gap-4">
@@ -224,12 +226,12 @@ export default function LandingPage() {
                         <div className="absolute top-8 left-10 z-20 flex items-center gap-2 bg-gray-950/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-2xl">
                             <div className={`w-2 h-2 rounded-full ${activeStep >= 3 ? 'bg-green-500' : 'bg-brand-400 animate-pulse'}`} />
                             <span className="text-[10px] font-mono text-white tracking-widest uppercase">
-                                {activeStep >= 3 ? 'folioai.com/live-site' : 'folioai.com/processing'}
+                                {activeStep >= 3 ? 'portfoliobuilder.ai/live-site' : 'portfoliobuilder.ai/processing'}
                             </span>
                         </div>
 
                         <div className="aspect-[4/3] rounded-2xl overflow-hidden relative">
-                            <img src="/assets/branding/hero.png" alt="FolioAI Platform Demo" className="w-full h-full object-cover opacity-60 mix-blend-luminosity hover:mix-blend-normal hover:opacity-100 transition-all duration-700" />
+                            <img src="/assets/branding/hero.png" alt="PortfolioBuilder.AI Platform Demo" className="w-full h-full object-cover opacity-60 mix-blend-luminosity hover:mix-blend-normal hover:opacity-100 transition-all duration-700" />
 
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <AnimatePresence mode="popLayout">
@@ -344,7 +346,7 @@ export default function LandingPage() {
                             />
                         </h2>
                         <p className="text-gray-500 dark:text-gray-400 text-xl leading-relaxed mb-10 font-medium">
-                            Don't let rigid templates or static text define your potential. FolioAI transforms your achievements into a dynamic career story that resonates with decision-makers at every level.
+                            Don't let rigid templates or static text define your potential. PortfolioBuilder.AI transforms your achievements into a dynamic career story that resonates with decision-makers at every level.
                         </p>
                         <ul className="space-y-4">
                             {[
@@ -464,7 +466,7 @@ export default function LandingPage() {
                             Everything you need to <LetterGlitch text="stand out" className="text-brand-500" />
                         </h2>
                         <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-                            Not just a pretty page. FolioAI gives you the tools to build, manage, and grow your online presence.
+                            Not just a pretty page. PortfolioBuilder.AI gives you the tools to build, manage, and grow your online presence.
                         </p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -500,7 +502,7 @@ export default function LandingPage() {
                             Loved by <span className="text-brand-500">professionals</span>
                         </h2>
                         <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-                            Developers, designers, and job seekers use FolioAI to make unforgettable first impressions.
+                            Developers, designers, and job seekers use PortfolioBuilder.AI to make unforgettable first impressions.
                         </p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -559,8 +561,10 @@ export default function LandingPage() {
                     <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
                         <div className="max-w-sm">
                             <div className="flex items-center gap-2.5 mb-6">
-                                <div className="w-12 h-12 sm:w-16 sm:h-16">
-                                    <img src="/assets/branding/logo.png" alt="FolioAI Logo" className="w-full h-full object-contain" />
+                                <div className="flex items-center justify-center">
+                                    <span className="text-2xl font-black tracking-tighter text-gray-900 dark:text-white">
+                                        PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
+                                    </span>
                                 </div>
                             </div>
                             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
@@ -590,7 +594,7 @@ export default function LandingPage() {
                         </div>
                     </div>
                     <div className="pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400 dark:text-gray-500">
-                        <p>© {new Date().getFullYear()} FolioAI. Built for the future of work.</p>
+                        <p>© {new Date().getFullYear()} PortfolioBuilder.AI. Built for the future of work.</p>
                     </div>
                 </div>
             </footer>

@@ -7,8 +7,8 @@ export default function PrivacyPage() {
     return (
         <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-900 dark:text-white pb-20">
             <Helmet>
-                <title>Privacy Policy — FolioAI</title>
-                <meta name="description" content="Privacy Policy for FolioAI. Learn how we collect, use, and protect your personal data." />
+                <title>Privacy Policy — PortfolioBuilder.AI</title>
+                <meta name="description" content="Privacy Policy for PortfolioBuilder.AI. Learn how we collect, use, and protect your personal data." />
             </Helmet>
 
             <nav className="fixed top-0 inset-x-0 z-50 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-md border-b border-gray-200 dark:border-white/5">
@@ -17,7 +17,9 @@ export default function PrivacyPage() {
                         <ArrowLeft className="w-4 h-4 text-gray-500 group-hover:text-brand-500 transition-colors" />
                         <span className="font-bold text-sm">Back to Home</span>
                     </Link>
-                    <span className="font-black text-xl tracking-tighter">FolioAI</span>
+                    <span className="font-black text-xl tracking-tighter">
+                        PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
+                    </span>
                 </div>
             </nav>
 
@@ -97,7 +99,7 @@ export default function PrivacyPage() {
                     <div className="mt-16 p-8 rounded-3xl bg-brand-500/5 border border-brand-500/20 text-center">
                         <h2 className="text-xl font-bold mb-4">Questions about your privacy?</h2>
                         <p className="text-sm text-gray-500 mb-6">If you have any questions about this Privacy Policy, please reach out to our data protection officer.</p>
-                        <a href="mailto:privacy@folioai.com" className="btn-primary">Contact Privacy Team</a>
+                        <a href="mailto:privacy@portfoliobuilder.ai" className="btn-primary">Contact Privacy Team</a>
                     </div>
                 </motion.div>
             </div>

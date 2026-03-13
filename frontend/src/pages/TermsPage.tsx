@@ -7,8 +7,8 @@ export default function TermsPage() {
     return (
         <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-900 dark:text-white pb-20">
             <Helmet>
-                <title>Terms of Service — FolioAI</title>
-                <meta name="description" content="Terms of Service for FolioAI. Rules and guidelines for using our AI portfolio builder." />
+                <title>Terms of Service — PortfolioBuilder.AI</title>
+                <meta name="description" content="Terms of Service for PortfolioBuilder.AI. Rules and guidelines for using our AI portfolio builder." />
             </Helmet>
 
             <nav className="fixed top-0 inset-x-0 z-50 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-md border-b border-gray-200 dark:border-white/5">
@@ -17,7 +17,9 @@ export default function TermsPage() {
                         <ArrowLeft className="w-4 h-4 text-gray-500 group-hover:text-brand-500 transition-colors" />
                         <span className="font-bold text-sm">Back to Home</span>
                     </Link>
-                    <span className="font-black text-xl tracking-tighter">FolioAI</span>
+                    <span className="font-black text-xl tracking-tighter">
+                        PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
+                    </span>
                 </div>
             </nav>
 
@@ -33,7 +35,7 @@ export default function TermsPage() {
                         <div className="p-6 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
                             <Scale className="w-6 h-6 text-brand-500 mb-4" />
                             <h3 className="font-bold mb-2">Fair Usage</h3>
-                            <p className="text-xs text-gray-500 leading-relaxed">We provide FolioAI for professional use. Please do not use the platform for spam or hosting illegal content.</p>
+                            <p className="text-xs text-gray-500 leading-relaxed">We provide PortfolioBuilder.AI for professional use. Please do not use the platform for spam or hosting illegal content.</p>
                         </div>
                         <div className="p-6 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
                             <AlertCircle className="w-6 h-6 text-brand-500 mb-4" />
@@ -48,7 +50,7 @@ export default function TermsPage() {
                                 <Gavel className="w-5 h-5 text-brand-500" />
                                 1. Acceptance of Terms
                             </h2>
-                            <p>By accessing or using FolioAI, you agree to be bound by these Terms of Service. If you do not agree to all of these terms, do not use our services.</p>
+                            <p>By accessing or using PortfolioBuilder.AI, you agree to be bound by these Terms of Service. If you do not agree to all of these terms, do not use our services.</p>
                         </section>
 
                         <section>
@@ -58,12 +60,12 @@ export default function TermsPage() {
 
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">3. Content Ownership</h2>
-                            <p>You retain all rights to the content you upload or create on FolioAI. By publishing a portfolio, you grant us a worldwide, non-exclusive, royalty-free license to host and display your content for the purpose of providing the service.</p>
+                            <p>You retain all rights to the content you upload or create on PortfolioBuilder.AI. By publishing a portfolio, you grant us a worldwide, non-exclusive, royalty-free license to host and display your content for the purpose of providing the service.</p>
                         </section>
 
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">4. Limitations of Liability</h2>
-                            <p>FolioAI is provided "as is". We make no warranties regarding the accuracy of AI-generated content or the availability of the service. In no event shall FolioAI be liable for any indirect, incidental, or consequential damages.</p>
+                            <p>PortfolioBuilder.AI is provided "as is". We make no warranties regarding the accuracy of AI-generated content or the availability of the service. In no event shall PortfolioBuilder.AI be liable for any indirect, incidental, or consequential damages.</p>
                         </section>
 
                         <section>

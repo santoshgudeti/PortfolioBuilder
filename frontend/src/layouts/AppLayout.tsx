@@ -38,15 +38,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     {/* Logo + desktop collapse toggle */}
                     <div className={`flex items-center border-b border-gray-200 dark:border-gray-800 ${collapsed ? 'justify-center px-3 py-5' : 'gap-2 px-4 py-5'}`}>
                         {!collapsed && (
-                            <>
-                                <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
-                                    <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-contain" />
-                                </div>
-                            </>
+                            <div className="flex items-center justify-center">
+                                <span className="text-xl font-black tracking-tighter text-gray-900 dark:text-white">
+                                    PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
+                                </span>
+                            </div>
                         )}
                         {collapsed && (
-                            <div className="w-10 h-10 sm:w-12 sm:h-12">
-                                <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                            <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center text-white font-black text-xs shadow-lg shadow-brand-500/20">
+                                PB
                             </div>
                         )}
                         {/* Desktop collapse button */}
@@ -191,8 +191,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <button onClick={() => setMobileOpen(true)} className="btn-ghost p-2">
                         <Menu className="w-5 h-5" />
                     </button>
-                    <div className="w-10 h-10 sm:w-12 sm:h-12">
-                        <img src="/assets/branding/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                    <div className="flex items-center justify-center">
+                        <span className="text-lg font-black tracking-tighter text-gray-900 dark:text-white">
+                            PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
+                        </span>
                     </div>
                 </header>
 

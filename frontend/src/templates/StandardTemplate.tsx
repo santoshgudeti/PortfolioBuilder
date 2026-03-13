@@ -473,7 +473,7 @@ export default function StandardTemplate({ pd, data, color, rgb, mode, hiddenSec
             <footer className="border-t border-black/5 dark:border-white/5 py-8 text-center">
                 <p className="text-xs text-gray-600">
                     Built with{' '}
-                    <a href="/" className="hover:underline transition-colors" style={{ color }}>FolioAI</a>
+                    <a href="/" className="hover:underline transition-colors" style={{ color }}>PortfolioBuilder.AI</a>
                 </p>
             </footer>
         </div>

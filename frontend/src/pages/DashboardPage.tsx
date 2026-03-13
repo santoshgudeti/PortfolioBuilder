@@ -96,7 +96,7 @@ export default function DashboardPage() {
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                             {hasPortfolio
-                                ? `Live at: folioai.com/u/${data.slug}`
+                                ? `Live at: portfoliobuilder.ai/u/${data.slug}`
                                 : 'Upload your history to claim your URL'}
                         </p>
                     </div>

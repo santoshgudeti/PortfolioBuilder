@@ -55,7 +55,7 @@ export function EditorHeader({
                     {slug && !isGuest ? (
                         <a href={`/u/${slug}`} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-brand-500 transition-colors text-[11px] flex items-center gap-1.5 font-bold uppercase tracking-widest group">
                             <Globe className="w-3 h-3 opacity-50 group-hover:opacity-100" />
-                            folioai.com/u/{slug}
+                            portfoliobuilder.ai/u/{slug}
                             <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all" />
                         </a>
                     ) : (

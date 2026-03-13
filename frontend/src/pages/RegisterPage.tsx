@@ -63,7 +63,7 @@ export default function RegisterPage() {
                             <div className="w-full p-4 rounded-xl bg-brand-50 dark:bg-brand-900/10 border border-brand-200 dark:border-brand-800 text-left space-y-2">
                                 <div className="flex items-start gap-2">
                                     <CheckCircle2 className="w-4 h-4 text-brand-500 flex-shrink-0 mt-0.5" />
-                                    <span className="text-sm text-gray-700 dark:text-gray-300">Open the email from <strong>FolioAI</strong></span>
+                                    <span className="text-sm text-gray-700 dark:text-gray-300">Open the email from <strong>PortfolioBuilder.AI</strong></span>
                                 </div>
                                 <div className="flex items-start gap-2">
                                     <CheckCircle2 className="w-4 h-4 text-brand-500 flex-shrink-0 mt-0.5" />
@@ -103,11 +103,11 @@ export default function RegisterPage() {
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <Link to="/" className="inline-flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity">
-                        <div className="w-16 h-16 sm:w-20 sm:h-20">
-                            <img src="/assets/branding/logo.png" alt="FolioAI Logo" className="w-full h-full object-contain" />
-                        </div>
+                        <span className="text-4xl font-black tracking-tighter text-gray-900 dark:text-white">
+                            PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
+                        </span>
                     </Link>
-                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">Join FolioAI</h1>
+                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">Join PortfolioBuilder.AI</h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-1">Build your portfolio in under 60 seconds</p>
                 </div>
 
