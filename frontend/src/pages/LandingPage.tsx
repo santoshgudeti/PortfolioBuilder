@@ -41,25 +41,41 @@ const FEATURES = [
 
 const TEMPLATES = [
     // Professional & Classic
-    { id: 'standard', label: 'Standard', color: '#f59e0b', desc: 'The elegant single-page layout that works for everyone.', category: 'Professional' },
-    { id: 'corporate', label: 'Corporate', color: '#0ea5e9', desc: 'Structured two-column CV for business professionals.', category: 'Professional' },
-    { id: 'student', label: 'Academic', color: '#14b8a6', desc: 'Formal serif layout for researchers and students.', category: 'Professional' },
-    { id: 'tech', label: 'Tech Grid', color: '#6366f1', desc: 'Modern Bento layout for software engineers.', category: 'Professional' },
-    { id: 'freelancer', label: 'Freelancer', color: '#ec4899', desc: 'Bold typography and masonry grids for creatives.', category: 'Professional' },
+    { id: 'standard', label: 'Executive', color: '#f59e0b', desc: 'Minimalist layout for high-impact leadership roles.', category: 'Professional' },
+    { id: 'corporate', label: 'Atlas', color: '#0ea5e9', desc: 'Powerhouse structure for multi-faceted careers.', category: 'Professional' },
+    { id: 'student', label: 'Scholar', color: '#14b8a6', desc: 'Sophisticated typography for research & education.', category: 'Professional' },
+    { id: 'tech', label: 'Bento Grid', color: '#6366f1', desc: 'The gold standard for software engineering portfolios.', category: 'Professional' },
+    { id: 'freelancer', label: 'Studio', color: '#ec4899', desc: 'Creative masonry layout for designers and artists.', category: 'Professional' },
 
     // Modern & Trending
-    { id: 'split', label: 'Split Screen', color: '#8b5cf6', desc: 'Dual-pane layout with fixed hero section.', category: 'Modern' },
-    { id: 'terminal', label: 'Terminal', color: '#22c55e', desc: 'Retro hacker command-line aesthetic.', category: 'Modern' },
-    { id: 'neobrutalism', label: 'Neobrutalism', color: '#ef4444', desc: 'Bold, high-contrast trendy design.', category: 'Modern' },
-    { id: 'glassmorphism', label: 'Glass', color: '#3b82f6', desc: 'Frosted glass UI with immersive gradients.', category: 'Modern' },
-    { id: 'notion', label: 'Notion', color: '#1f2937', desc: 'Clean, utilitarian document style.', category: 'Modern' },
+    { id: 'split', label: 'Horizon', color: '#8b5cf6', desc: 'Cinematic split-screen for immersive storytelling.', category: 'Modern' },
+    { id: 'terminal', label: 'Kernel', color: '#22c55e', desc: 'A love letter to developer culture and CLI.', category: 'Modern' },
+    { id: 'neobrutalism', label: 'Impact', color: '#ef4444', desc: 'Raw, high-contrast, and impossible to ignore.', category: 'Modern' },
+    { id: 'glassmorphism', label: 'Crystal', color: '#3b82f6', desc: 'Modern transparency with vibrant depth.', category: 'Modern' },
+    { id: 'notion', label: 'Canvas', color: '#1f2937', desc: 'Pure focus. Utilitarian design that breathes.', category: 'Modern' },
 
     // Advanced & Immersive
-    { id: 'apple', label: 'macOS Desktop', color: '#a8a29e', desc: 'Interactive macOS-style desktop environment.', category: 'Immersive' },
-    { id: 'material', label: 'Material App', color: '#6200ea', desc: 'Google Material Design with floating actions.', category: 'Immersive' },
-    { id: 'cyberpunk', label: 'Cyberpunk', color: '#f000ff', desc: 'Retro-futuristic neon grid aesthetics.', category: 'Immersive' },
-    { id: 'bauhaus', label: 'Bauhaus', color: '#dc2626', desc: 'Swiss minimalist brutalism and strict grids.', category: 'Immersive' },
-    { id: 'biolink', label: 'Bio Link', color: '#10b981', desc: 'Mobile-first social media link tree.', category: 'Immersive' },
+    { id: 'apple', label: 'Meta', color: '#a8a29e', desc: 'Interactive desktop experience for power users.', category: 'Immersive' },
+    { id: 'material', label: 'Blueprint', color: '#6200ea', desc: 'Smooth transitions and depth-based interactions.', category: 'Immersive' },
+    { id: 'cyberpunk', label: 'Neon', color: '#f000ff', desc: 'The future of digital presence, tonight.', category: 'Immersive' },
+    { id: 'bauhaus', label: 'Radical', color: '#dc2626', desc: 'Strict grids meets bold geometric expression.', category: 'Immersive' },
+    { id: 'biolink', label: 'Flow', color: '#10b981', desc: 'Sleek, mobile-first social identity gateway.', category: 'Immersive' },
+]
+
+const LOGOS = [
+    { name: 'Google', icon: Globe },
+    { name: 'Meta', icon: Shield },
+    { name: 'Amazon', icon: Zap },
+    { name: 'Apple', icon: LayoutTemplate },
+    { name: 'Netflix', icon: Palette },
+]
+
+
+const FAQS = [
+    { q: 'How does the AI builder work?', a: 'Our engine parses your resume using advanced NLP to extract key achievements, skills, and metrics, then automatically maps them to your chosen professional template.' },
+    { q: 'Can I use my own domain?', a: 'Yes! Pro users can easily connect any custom domain to their portfolio with one-click SSL setup.' },
+    { q: 'Do I need to know how to code?', a: 'Absolutely not. PortfolioBuilder.AI is a 100% no-code platform. If you can drag and drop, you can build a stunning site.' },
+    { q: 'Is my data secure?', a: 'We use enterprise-grade encryption for all data and never sell your professional information to third parties.' },
 ]
 
 const TEMPLATE_CATEGORIES = [
@@ -76,9 +92,9 @@ const HOW_IT_WORKS = [
 ]
 
 const TESTIMONIALS = [
-    { name: 'Priya Sharma', role: 'Frontend Developer', text: 'I uploaded my resume and had a polished portfolio live in under a minute. The Cyberpunk template is absolutely fire.', avatar: '/assets/testimonials/priya.png' },
-    { name: 'Alex Chen', role: 'Product Designer', text: 'Finally, a portfolio builder that doesn\'t require me to fight with CSS for hours. The AI rewrites are surprisingly good.', avatar: '/assets/testimonials/alex.png' },
-    { name: 'Marcus Johnson', role: 'Data Scientist', text: 'The Academic template is perfect for my research portfolio. Publishing papers and projects has never been this easy.', avatar: '/assets/testimonials/marcus.png' },
+    { name: 'Priya Sharma', role: 'Frontend Developer, Bangalore', text: 'I uploaded my resume and had a polished portfolio live in under a minute. The Cyberpunk template is absolutely fire for showcasing my side projects.', avatar: 'https://i.pravatar.cc/150?u=priya' },
+    { name: 'Rohan Mehta', role: 'Full Stack Engineer, Mumbai', text: 'Finally, a portfolio builder that doesn\'t require me to fight with CSS for hours. The AI-generated phrasing helped me stand out in a very competitive job market.', avatar: 'https://i.pravatar.cc/150?u=rohan' },
+    { name: 'Ananya Iyer', role: 'Product Designer, Gurgaon', text: 'The Bento Grid layout is perfect for my design case studies. It captures my aesthetic perfectly without me needing to write a single line of code.', avatar: 'https://i.pravatar.cc/150?u=ananya' },
 ]
 
 export default function LandingPage() {
@@ -104,38 +120,39 @@ export default function LandingPage() {
             </Helmet>
 
             {/* ─── Navbar ───────────────────────────────── */}
-            <nav className="fixed top-0 inset-x-0 z-50 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-md border-b border-gray-200 dark:border-white/5" role="navigation" aria-label="Main navigation">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link to="/" className="flex items-center gap-2.5 group hover:opacity-80 transition-opacity" aria-label="PortfolioBuilder.AI Home">
-                        <div className="flex items-center justify-center">
-                            <span className="text-xl sm:text-2xl font-black tracking-tighter text-gray-900 dark:text-white">
+            <nav className="fixed top-0 inset-x-0 z-50 bg-white/70 dark:bg-[#050505]/70 backdrop-blur-xl border-b border-gray-100 dark:border-white/5" role="navigation" aria-label="Main navigation">
+                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                    <Link to="/" className="flex items-center gap-2 group" aria-label="PortfolioBuilder.AI Home">
+                        <div className="relative">
+                            <div className="absolute -inset-2 bg-brand-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <span className="text-xl sm:text-2xl font-black tracking-tighter text-gray-900 dark:text-white relative">
                                 PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
                             </span>
                         </div>
                     </Link>
-                    <div className="flex items-center gap-4">
-                        <div className="hidden md:flex items-center gap-10 mr-8">
-                            <a href="#features" className="text-sm font-black text-gray-400 hover:text-brand-500 transition-all uppercase tracking-widest">Experience</a>
-                            <a href="#templates" className="text-sm font-black text-gray-400 hover:text-brand-500 transition-all uppercase tracking-widest">Design</a>
-                            <a href="#how-it-works" className="text-sm font-black text-gray-400 hover:text-brand-500 transition-all uppercase tracking-widest">Process</a>
-                        </div>
-                        <button onClick={toggleTheme} className="p-2.5 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors" aria-label="Toggle theme">
+
+                    <div className="hidden md:flex items-center gap-8">
+                        {['Experience', 'Design', 'FAQ'].map(item => (
+                            <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="text-xs font-bold text-gray-400 hover:text-brand-500 transition-all uppercase tracking-[0.2em]">
+                                {item}
+                            </a>
+                        ))}
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <button onClick={toggleTheme} className="p-2.5 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors" aria-label="Toggle theme">
                             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                         </button>
                         {token ? (
-                            <Link to="/dashboard" className="btn-brand px-8">My Dashboard</Link>
+                            <Link to="/dashboard" className="btn-brand px-6 py-2.5 !rounded-xl text-xs">Dashboard</Link>
                         ) : (
                             <>
-                                <Link to="/login" className="hidden sm:inline-flex text-sm font-black text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-all px-4 uppercase tracking-widest">
-                                    <Magnet padding={20} magnetStrength={3}>
-                                        Log In
-                                    </Magnet>
+                                <Link to="/login" className="hidden sm:inline-flex text-xs font-black text-gray-400 hover:text-brand-500 transition-all px-4 uppercase tracking-widest">
+                                    Log In
                                 </Link>
-                                <Magnet padding={50} magnetStrength={5}>
-                                    <Link to="/register" className="premium-gradient text-white px-8 py-3 rounded-2xl text-sm font-black shadow-xl shadow-brand-500/30 hover:shadow-brand-500/50 hover:scale-[1.05] active:scale-[0.98] transition-all uppercase tracking-widest inline-block">
-                                        Start Free
-                                    </Link>
-                                </Magnet>
+                                <Link to="/register" className="premium-gradient text-white px-6 py-2.5 rounded-xl text-xs font-black shadow-xl shadow-brand-500/20 hover:shadow-brand-500/40 hover:-translate-y-0.5 active:scale-95 transition-all uppercase tracking-widest">
+                                    Start Free
+                                </Link>
                             </>
                         )}
                     </div>
@@ -143,170 +160,157 @@ export default function LandingPage() {
             </nav>
 
             {/* ─── Hero Section ─────────────────────────── */}
-            <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto min-h-[92vh] flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
-                <motion.div
-                    className="flex-1 text-center lg:text-left z-10"
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6 }}
-                >
+            <section className="relative pt-44 pb-32 px-6 overflow-hidden">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] h-[1000px] bg-[radial-gradient(circle_at_center,_var(--brand-500)_0%,_transparent_70%)] opacity-[0.03] dark:opacity-[0.07] blur-[120px] pointer-events-none" />
+
+                <div className="max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50/50 dark:bg-brand-900/10 dark:border-brand-500/20 px-5 py-2 text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 mb-8 backdrop-blur-sm"
+                        className="inline-flex items-center gap-3 rounded-full border border-brand-200/50 bg-brand-50/50 dark:bg-brand-950/20 dark:border-brand-500/20 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-brand-600 dark:text-brand-400 mb-10 backdrop-blur-md"
                     >
-                        <span className="relative flex h-2 w-2">
+                        <span className="flex h-2 w-2 relative">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
                         </span>
-                        Trusted by 10,000+ Professionals
+                        Trusted by 10,000+ top-tier professionals
                     </motion.div>
 
-                    <h1 className="mb-8">
+                    <h1 className="mb-8 max-w-5xl">
                         <motion.span
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: 0.3 }}
+                            transition={{ duration: 0.8 }}
+                            className="inline-block"
                         >
-                            From Resume to{' '}
+                            Your career deserves a
                         </motion.span>
                         <br />
                         <motion.span
-                            className="bg-gradient-to-r from-brand-500 via-purple-500 to-indigo-500 text-transparent bg-clip-text"
+                            className="bg-gradient-to-r from-brand-500 via-indigo-400 to-purple-500 text-transparent bg-clip-text inline-block"
                             initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
                             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                            transition={{ duration: 0.8, delay: 0.6 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
                         >
-                            Remarkable.
+                            Digital Home.
                         </motion.span>
                     </h1>
 
                     <motion.p
-                        className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed font-medium"
-                        initial={{ opacity: 0, y: 15 }}
+                        className="text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mb-12 leading-relaxed"
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.8 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
                     >
-                        Stop fighting with complex website builders. Upload your resume and get a <span className="text-brand-500 dark:text-brand-400 font-bold italic">stunning professional portfolio</span> in exactly <span className="text-gray-900 dark:text-white font-bold underline decoration-brand-500 underline-offset-4">60 seconds</span>.
+                        Transform your static resume into a stunning, professional portfolio in exactly <span className="text-gray-900 dark:text-white font-black underline decoration-brand-500 underline-offset-8">60 seconds</span>. Powered by AI, designed for impact.
                     </motion.p>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-5 justify-center lg:justify-start">
+                    <motion.div
+                        className="flex flex-col sm:flex-row items-center gap-4"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.6 }}
+                    >
                         <Link
                             to="/upload"
-                            className="w-full sm:w-auto px-12 py-5 rounded-2xl bg-gray-950 dark:bg-white text-white dark:text-gray-900 font-black text-lg shadow-[0_20px_50px_-10px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_50px_-10px_rgba(255,255,255,0.15)] hover:bg-brand-500 dark:hover:bg-brand-500 hover:text-white dark:hover:text-white hover:-translate-y-1 transition-all duration-500 flex items-center justify-center gap-3 active:scale-[0.98] uppercase tracking-tighter"
+                            className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-gray-950 dark:bg-white text-white dark:text-gray-900 font-black text-sm shadow-2xl hover:bg-brand-500 dark:hover:bg-brand-500 hover:text-white dark:hover:text-white transition-all duration-500 flex items-center justify-center gap-3 uppercase tracking-widest group"
                         >
-                            Build Your Story <ArrowRight className="w-5 h-5" />
+                            Build Your Story
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Link>
                         <Link
                             to="/login"
-                            className="w-full sm:w-auto px-12 py-5 rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-2xl border-2 border-gray-100 dark:border-white/10 font-black text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-white/10 hover:border-gray-200 hover:text-gray-900 dark:hover:text-white transition-all duration-500 flex items-center justify-center uppercase tracking-widest text-sm"
+                            className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 font-black text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition-all duration-500 uppercase tracking-widest text-xs"
                         >
-                            Log In
+                            Watch Demo
                         </Link>
-                    </div>
+                    </motion.div>
 
-                    <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 text-sm text-gray-500 dark:text-gray-400 font-medium">
-                        <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-500" /> No coding required</span>
-                        <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-500" /> Custom domain support</span>
-                        <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-500" /> Free forever</span>
-                    </div>
-                </motion.div>
-
-                {/* Hero Right — Interactive Demo */}
-                <motion.div
-                    className="flex-1 w-full max-w-xl relative hidden md:block"
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8, delay: 0.1 }}
-                >
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-brand-500/10 dark:bg-brand-500/5 blur-[120px] rounded-full pointer-events-none" />
-
-                    <TiltedCard rotateAmplitude={8} scaleOnHover={1.02} className="relative bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-[2.5rem] p-3 shadow-2xl dark:shadow-[0_0_100px_rgba(0,0,0,0.6)] overflow-hidden scale-110 rotate-[2deg]">
-                        <div className="absolute top-8 left-10 z-20 flex items-center gap-2 bg-gray-950/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-2xl">
-                            <div className={`w-2 h-2 rounded-full ${activeStep >= 3 ? 'bg-green-500' : 'bg-brand-400 animate-pulse'}`} />
-                            <span className="text-[10px] font-mono text-white tracking-widest uppercase">
-                                {activeStep >= 3 ? 'portfoliobuilder.ai/live-site' : 'portfoliobuilder.ai/processing'}
-                            </span>
-                        </div>
-
-                        <div className="aspect-[4/3] rounded-2xl overflow-hidden relative">
-                            <img src="/assets/branding/hero.png" alt="PortfolioBuilder.AI Platform Demo" className="w-full h-full object-cover opacity-60 mix-blend-luminosity hover:mix-blend-normal hover:opacity-100 transition-all duration-700" />
-
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <AnimatePresence mode="popLayout">
-                                    {activeStep === 0 && (
-                                        <motion.div key="step1" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0, y: 50 }} className="flex flex-col items-center gap-4 bg-white/90 dark:bg-black/90 px-8 py-6 rounded-2xl border border-gray-200 dark:border-white/10 backdrop-blur-xl shadow-2xl">
-                                            <FileText className="w-12 h-12 text-blue-500 mb-2" />
-                                            <p className="font-bold text-gray-900 dark:text-white tracking-tight">Generating Portfolio...</p>
-                                        </motion.div>
-                                    )}
-                                    {activeStep === 1 && (
-                                        <motion.div key="step2" initial={{ scale: 0.8, opacity: 0, y: -50 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.8, opacity: 0 }} className="flex flex-col items-center gap-4 bg-white/90 dark:bg-black/90 px-8 py-6 rounded-2xl border border-gray-200 dark:border-white/10 backdrop-blur-xl shadow-2xl">
-                                            <div className="relative">
-                                                <div className="absolute inset-0 bg-brand-500/20 rounded-full blur-xl animate-pulse" />
-                                                <div className="w-16 h-16 bg-white dark:bg-black border-2 border-brand-500 rounded-full flex items-center justify-center relative z-10">
-                                                    <Sparkles className="w-8 h-8 text-brand-500 animate-pulse" />
-                                                </div>
-                                            </div>
-                                            <div className="text-center">
-                                                <p className="font-bold text-brand-600 dark:text-brand-400 tracking-tight">Applying Theme...</p>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                    {activeStep >= 2 && (
-                                        <motion.div key="step3" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-[85%] bg-white/95 dark:bg-black/95 rounded-2xl border border-white/20 backdrop-blur-2xl p-6 shadow-2xl flex flex-col">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="w-12 h-12 bg-brand-500 rounded-full flex items-center justify-center text-white font-bold">AD</div>
-                                                <div className="flex-1">
-                                                    <div className="h-4 w-24 bg-gray-200 dark:bg-white/10 rounded mb-1" />
-                                                    <div className="h-3 w-32 bg-gray-100 dark:bg-white/5 rounded" />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <div className="h-2 w-full bg-gray-100 dark:bg-white/5 rounded" />
-                                                <div className="h-2 w-full bg-gray-100 dark:bg-white/5 rounded" />
-                                                <div className="h-2 w-2/3 bg-gray-100 dark:bg-white/5 rounded" />
-                                            </div>
-                                            <div className="mt-auto flex justify-end">
-                                                <div className="px-3 py-1 bg-green-500/10 text-green-500 text-[10px] font-bold rounded-full border border-green-500/20 flex items-center gap-1">
-                                                    <CheckCircle className="w-3 h-3" /> LIVE
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                    <div className="mt-12 flex flex-wrap items-center justify-center gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
+                        {LOGOS.map((logo) => (
+                            <div key={logo.name} className="flex items-center gap-2 group cursor-default">
+                                <logo.icon className="w-5 h-5 group-hover:text-brand-500 transition-colors" />
+                                <span className="font-black text-sm uppercase tracking-tighter">{logo.name}</span>
                             </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Hero Dashboard Preview */}
+                <motion.div
+                    className="mt-24 max-w-6xl mx-auto px-6 relative"
+                    initial={{ opacity: 0, y: 60 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.8 }}
+                >
+                    <div className="absolute -inset-4 bg-gradient-to-b from-brand-500/20 to-transparent blur-3xl opacity-20 -z-10" />
+                    <div className="bg-white dark:bg-[#0a0a0a] rounded-[2.5rem] border border-gray-200 dark:border-white/10 p-3 shadow-2xl relative overflow-hidden group">
+                        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-brand-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="aspect-[16/9] rounded-[2rem] bg-gray-50 dark:bg-[#0d0d0d] overflow-hidden relative">
+                            <img
+                                src="/assets/branding/hero.png"
+                                alt="PortfolioBuilder Dashboard"
+                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
+                            />
+                            {/* Floating UI Elements */}
+                            <motion.div
+                                animate={{ y: [0, -10, 0] }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                className="absolute top-1/4 right-10 bg-white/90 dark:bg-black/90 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl hidden lg:block"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                    </div>
+                                    <div>
+                                        <div className="text-[10px] font-black text-gray-400 uppercase">Status</div>
+                                        <div className="text-xs font-bold">Successfully Deployed</div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                            <motion.div
+                                animate={{ y: [0, 10, 0] }}
+                                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                                className="absolute bottom-1/4 left-10 bg-white/90 dark:bg-black/90 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl hidden lg:block"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-brand-500/20 flex items-center justify-center">
+                                        <BarChart3 className="w-4 h-4 text-brand-500" />
+                                    </div>
+                                    <div>
+                                        <div className="text-[10px] font-black text-gray-400 uppercase">Growth</div>
+                                        <div className="text-xs font-bold">+128 Profile Views</div>
+                                    </div>
+                                </div>
+                            </motion.div>
                         </div>
-                    </TiltedCard>
+                    </div>
                 </motion.div>
             </section>
 
             {/* ─── Stats Bar ──────────────────────────────── */}
-            <section className="py-8 px-6 border-y border-gray-200 dark:border-white/5 bg-gray-50/50 dark:bg-[#0a0a0a]">
-                <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+            <section className="py-20 px-6 border-y border-gray-100 dark:border-white/5 bg-gray-50/30 dark:bg-[#080808] relative">
+                <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-between items-center gap-12">
                     {STATS.map(({ value, label }) => (
-                        <motion.div key={label} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center">
-                            <div className="text-3xl md:text-4xl font-black text-brand-500 dark:text-brand-400 tracking-tight">{value}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">{label}</div>
+                        <motion.div key={label} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center md:text-left">
+                            <div className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{value}</div>
+                            <div className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{label}</div>
                         </motion.div>
                     ))}
                 </div>
             </section>
 
             {/* ─── How It Works ───────────────────────────── */}
-            <section id="how-it-works" className="py-24 px-6">
+            <section id="experience" className="py-32 px-6 relative">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl lg:text-7xl font-black mb-4 tracking-tighter text-balance uppercase">
-                            Your <span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">60-Second</span> Journey
-                        </h2>
-                        <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-                            No design skills. No coding. No templates to fight with. Just upload and go.
+                    <div className="text-center mb-24">
+                        <h2 className="mb-6">The <span className="text-brand-500">Fastest</span> Path to Hire.</h2>
+                        <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+                            Stop fighting with rigid builders. We streamlined the entire process so you can focus on what matters — your career.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
                         {HOW_IT_WORKS.map(({ step, title, desc, icon: Icon }, i) => (
                             <motion.div
                                 key={step}
@@ -314,13 +318,13 @@ export default function LandingPage() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.1 }}
                                 viewport={{ once: true }}
-                                className="relative card p-8 group overflow-hidden"
+                                className="relative group"
                             >
-                                <div className="text-7xl font-black text-gray-50 dark:text-white/[0.03] absolute -top-2 -right-2 select-none group-hover:text-brand-500/10 transition-colors italic">{step}</div>
-                                <div className="w-14 h-14 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6 group-hover:bg-brand-500 group-hover:scale-110 transition-all duration-500 shadow-lg shadow-brand-500/10">
-                                    <Icon className="w-7 h-7 text-brand-600 dark:text-brand-400 group-hover:text-white" />
+                                <div className="text-[120px] font-black text-gray-100 dark:text-white/[0.02] absolute -top-12 -left-4 select-none group-hover:text-brand-500/5 transition-colors leading-none -z-10">{step}</div>
+                                <div className="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center mb-6 border border-brand-500/20 group-hover:bg-brand-500 transition-all duration-500">
+                                    <Icon className="w-5 h-5 text-brand-600 dark:text-brand-400 group-hover:text-white" />
                                 </div>
-                                <h3 className="text-xl font-bold mb-3 tracking-tight">{title}</h3>
+                                <h3 className="text-lg font-bold mb-3 tracking-tight">{title}</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium">{desc}</p>
                             </motion.div>
                         ))}
@@ -329,58 +333,47 @@ export default function LandingPage() {
             </section>
 
             {/* ─── AI Spotlight ────────────────────────────── */}
-            <section className="py-24 px-6 bg-gray-50 dark:bg-[#0a0a0a] border-y border-gray-200 dark:border-white/5">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-                        <div className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50/50 dark:bg-brand-900/10 dark:border-brand-500/20 px-4 py-1.5 text-xs font-bold text-brand-600 dark:text-brand-400 mb-6 uppercase tracking-widest backdrop-blur-sm">
+            <section className="py-32 px-6 bg-gray-50/50 dark:bg-[#0a0a0a] border-y border-gray-100 dark:border-white/5 relative overflow-hidden">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                    <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+                        <div className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50/50 dark:bg-brand-950/20 dark:border-brand-500/20 px-4 py-1.5 text-[10px] font-black text-brand-600 dark:text-brand-400 mb-8 uppercase tracking-widest">
                             <Sparkles className="w-3.5 h-3.5" /> Career Intelligence
                         </div>
-                        <h2 className="mb-8 uppercase">
-                            Your experience is <br />
-                            <TrueFocus
-                                sentence="limitless."
-                                manualMode={false}
-                                focusColor="#6366f1"
-                                borderColor="#6366f1"
-                                className="!p-0 translate-y-2"
-                            />
+                        <h2 className="mb-8 leading-[1.1]">
+                            Your accomplishments,<br />
+                            <span className="text-brand-500">Perfectly Phrased.</span>
                         </h2>
-                        <p className="text-gray-500 dark:text-gray-400 text-xl leading-relaxed mb-10 font-medium">
-                            Don't let rigid templates or static text define your potential. PortfolioBuilder.AI transforms your achievements into a dynamic career story that resonates with decision-makers at every level.
+                        <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed mb-10">
+                            Our AI doesn't just copy-paste. It analyzes your experience to find the narrative threads that modern recruiters look for.
                         </p>
-                        <ul className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {[
                                 'Intelligent narrative refinement',
-                                'Curated tone sets for global markets',
-                                'Automatic professional skill synthesis',
-                                'Direct alignment with modern hiring standards',
-                                'Full SEO optimization for search presence',
+                                'Skill synthesis engine',
+                                'SEO-optimized profiles',
+                                'Global market alignment',
                             ].map(item => (
-                                <li key={item} className="flex items-center gap-3 font-medium">
-                                    <div className="w-6 h-6 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center flex-shrink-0">
-                                        <CheckCircle className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-                                    </div>
-                                    <TextPressure
-                                        text={item}
-                                        minWeight={400}
-                                        maxWeight={800}
-                                        className="cursor-pointer"
-                                    />
-                                </li>
+                                <div key={item} className="flex items-center gap-3 bg-white dark:bg-white/5 p-4 rounded-xl border border-gray-100 dark:border-white/5 shadow-sm">
+                                    <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                                    <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{item}</span>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     </motion.div>
 
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
-                        className="bg-white dark:bg-[#0d0d0d] p-10 rounded-[2.5rem] border border-gray-200 dark:border-white/10 shadow-2xl font-sans"
+                        className="relative bg-white dark:bg-[#0d0d0d] p-8 lg:p-12 rounded-[2.5rem] border border-gray-200 dark:border-white/10 shadow-2xl group"
                     >
-                        <div className="mb-6 text-gray-500 font-bold uppercase tracking-widest text-xs flex items-center gap-2"><ArrowRight className="w-3 h-3 text-red-500" /> Standard Professional Text</div>
-                        <div className="p-6 bg-red-50/50 dark:bg-red-500/5 text-gray-500 dark:text-gray-500 rounded-2xl mb-10 italic border border-red-100 dark:border-red-950/20">
-                            "responsible for team management and delivering the product features on schedule."
+                        <div className="absolute top-0 right-0 p-8">
+                            <Wand2 className="w-6 h-6 text-brand-500 animate-pulse opacity-50" />
                         </div>
-                        <div className="flex items-center gap-2 text-brand-500 font-bold uppercase tracking-widest text-xs mb-6"><Wand2 className="w-3 h-3 animate-pulse" /> Optimized for Success</div>
-                        <div className="p-8 bg-brand-500/5 text-gray-900 dark:text-white rounded-[2rem] border-2 border-brand-500/20 shadow-xl shadow-brand-500/10 font-bold text-lg leading-snug">
+                        <div className="mb-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Input</div>
+                        <div className="p-5 bg-red-50/50 dark:bg-red-500/5 text-gray-500 text-xs rounded-xl mb-8 italic border border-red-100 dark:border-red-950/10">
+                            "responsible for team management and delivering features."
+                        </div>
+                        <div className="mb-4 text-[10px] font-black text-brand-500 uppercase tracking-widest">AI Optimized</div>
+                        <div className="p-6 bg-brand-500/5 text-gray-900 dark:text-white rounded-2xl border border-brand-500/20 shadow-xl shadow-brand-500/10 font-bold text-base leading-snug">
                             "Orchestrated cross-functional engineering pods to accelerate product velocity by 30%, consistently deploying high-impact features under aggressive timelines."
                         </div>
                     </motion.div>
@@ -388,22 +381,22 @@ export default function LandingPage() {
             </section>
 
             {/* ─── Template Showcase ──────────────────────── */}
-            <section id="templates" className="py-24 px-6 relative overflow-hidden">
+            <section id="design" className="py-32 px-6 relative">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="mb-4">
-                            15 templates.<br /><span className="text-brand-500">One stunning portfolio.</span>
+                    <div className="text-center mb-20">
+                        <h2 className="mb-6">
+                            Pick Your <span className="text-brand-500">Aesthetic.</span>
                         </h2>
-                        <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-                            From clean corporate layouts to immersive cyberpunk aesthetics — pick the design that matches your personality. Every template supports light & dark modes.
+                        <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+                            15 high-end templates optimized for conversion. From clean minimalist grids to immersive interactive experiences.
                         </p>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row gap-12 items-center">
-                        <div className="w-full lg:w-1/3 flex flex-col gap-6 max-h-[600px] overflow-y-auto pr-2">
+                    <div className="flex flex-col lg:flex-row gap-16 items-start">
+                        <div className="w-full lg:w-80 flex flex-col gap-8 flex-shrink-0">
                             {TEMPLATE_CATEGORIES.map((cat) => (
-                                <div key={cat.name} className="flex flex-col gap-2">
-                                    <div className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1 px-2 border-l-2 border-brand-500">
+                                <div key={cat.name} className="flex flex-col gap-3">
+                                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-600 mb-2 px-2">
                                         {cat.name}
                                     </div>
                                     {cat.items.map((tmpl, localIndex) => {
@@ -412,13 +405,12 @@ export default function LandingPage() {
                                             <button
                                                 key={tmpl.id}
                                                 onClick={() => setActiveTemplate(i)}
-                                                className={`text-left p-4 rounded-2xl transition-all duration-300 border-2 ${activeTemplate === i ? 'bg-white dark:bg-[#111] shadow-xl border-brand-500 scale-[1.02] z-10' : 'bg-transparent border-transparent hover:bg-gray-50 dark:hover:bg-white/5'}`}
+                                                className={`text-left p-4 rounded-xl transition-all duration-300 border ${activeTemplate === i ? 'bg-white dark:bg-white/5 border-brand-500/50 shadow-glow-sm' : 'bg-transparent border-transparent hover:bg-gray-100 dark:hover:bg-white/5'}`}
                                             >
-                                                <div className="flex items-center gap-3 mb-1.5">
-                                                    <div className="w-3.5 h-3.5 rounded-full flex-shrink-0" style={{ backgroundColor: tmpl.color }} />
-                                                    <h3 className={`font-bold text-base ${activeTemplate === i ? 'text-gray-900 dark:text-white' : 'text-gray-500'}`}>{tmpl.label}</h3>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tmpl.color }} />
+                                                    <span className={`text-sm font-bold ${activeTemplate === i ? 'text-gray-900 dark:text-white' : 'text-gray-400'}`}>{tmpl.label}</span>
                                                 </div>
-                                                <p className={`text-xs ${activeTemplate === i ? 'text-gray-600 dark:text-gray-400' : 'text-gray-400 dark:text-gray-500'}`}>{tmpl.desc}</p>
                                             </button>
                                         )
                                     })}
@@ -426,30 +418,38 @@ export default function LandingPage() {
                             ))}
                         </div>
 
-                        <div className="w-full lg:w-2/3">
+                        <div className="flex-1 w-full">
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={activeTemplate}
-                                    initial={{ opacity: 0, filter: 'blur(10px)', y: 20 }}
-                                    animate={{ opacity: 1, filter: 'blur(0)', y: 0 }}
-                                    exit={{ opacity: 0, filter: 'blur(10px)', y: -20 }}
+                                    initial={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
+                                    animate={{ opacity: 1, scale: 1, filter: 'blur(0)' }}
+                                    exit={{ opacity: 0, scale: 1.02, filter: 'blur(10px)' }}
                                     transition={{ duration: 0.4 }}
-                                    className="aspect-video bg-gray-100 dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-white/10 overflow-hidden shadow-2xl relative flex items-center justify-center group"
+                                    className="relative aspect-video lg:aspect-[16/10] bg-gray-50 dark:bg-[#0a0a0a] rounded-[2.5rem] border border-gray-200 dark:border-white/10 overflow-hidden shadow-2xl group"
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-brand-500/10 to-transparent pointer-events-none" />
-                                    <div className="flex flex-col items-center justify-center gap-4 p-8 text-center pointer-events-none">
-                                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg" style={{ backgroundColor: TEMPLATES[activeTemplate].color + '20', border: `2px solid ${TEMPLATES[activeTemplate].color}` }}>
+                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--color)_0%,_transparent_50%)] opacity-20" style={{ '--color': TEMPLATES[activeTemplate].color } as any} />
+
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+                                        <div className="w-20 h-20 rounded-[2rem] flex items-center justify-center mb-8 shadow-2xl rotate-3 group-hover:rotate-0 transition-transform duration-500" style={{ backgroundColor: TEMPLATES[activeTemplate].color + '20', border: `1px solid ${TEMPLATES[activeTemplate].color}50` }}>
                                             <LayoutTemplate className="w-8 h-8" style={{ color: TEMPLATES[activeTemplate].color }} />
                                         </div>
-                                        <h3 className="text-2xl font-bold" style={{ color: TEMPLATES[activeTemplate].color }}>{TEMPLATES[activeTemplate].label}</h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs">{TEMPLATES[activeTemplate].desc}</p>
-                                        <span className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold">{TEMPLATES[activeTemplate].category}</span>
+                                        <h3 className="text-3xl font-black mb-4 tracking-tighter" style={{ color: TEMPLATES[activeTemplate].color }}>{TEMPLATES[activeTemplate].label}</h3>
+                                        <p className="text-gray-500 dark:text-gray-400 max-w-sm mb-8">{TEMPLATES[activeTemplate].desc}</p>
+
+                                        <Link to="/register" className="btn-brand !px-10 !py-4 text-xs">
+                                            Use this Template
+                                        </Link>
                                     </div>
 
-                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                                        <Link to="/register" className="btn-primary text-lg pointer-events-auto">
-                                            Use {TEMPLATES[activeTemplate].label} Template
-                                        </Link>
+                                    {/* Mock Browser Header */}
+                                    <div className="absolute top-0 inset-x-0 h-10 bg-gray-100 dark:bg-white/5 border-b border-gray-200 dark:border-white/5 flex items-center px-6 gap-1.5">
+                                        <div className="w-2 h-2 rounded-full bg-red-400/50" />
+                                        <div className="w-2 h-2 rounded-full bg-amber-400/50" />
+                                        <div className="w-2 h-2 rounded-full bg-green-400/50" />
+                                        <div className="ml-4 h-5 px-4 bg-white/50 dark:bg-white/5 rounded-full text-[10px] font-mono text-gray-400 flex items-center border border-gray-200 dark:border-white/5">
+                                            portfolio.ai/remarkable
+                                        </div>
                                     </div>
                                 </motion.div>
                             </AnimatePresence>
@@ -459,50 +459,40 @@ export default function LandingPage() {
             </section>
 
             {/* ─── Feature Grid ───────────────────────────── */}
-            <section className="py-24 px-6 bg-gray-50 dark:bg-[#0a0a0a] border-y border-gray-200 dark:border-white/5">
+            <section className="py-32 px-6 bg-gray-50/50 dark:bg-[#0a0a0a] border-y border-gray-100 dark:border-white/5 relative">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="mb-4">
-                            Everything you need to <LetterGlitch text="stand out" className="text-brand-500" />
-                        </h2>
-                        <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-                            Not just a pretty page. PortfolioBuilder.AI gives you the tools to build, manage, and grow your online presence.
+                    <div className="text-center mb-20">
+                        <h2 className="mb-6">Everything you <span className="text-brand-500">Need.</span></h2>
+                        <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+                            Powerful tools baked into every portfolio. Manage your professional brand with precision.
                         </p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {FEATURES.map(({ icon: Icon, title, desc }, i) => (
                             <SpotlightCard
                                 key={title}
-                                className="card p-8 group border border-gray-200 dark:border-white/10 h-full !shadow-none !bg-white/50 dark:!bg-white/[0.02]"
-                                spotlightColor={theme === 'dark' ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.05)'}
+                                className="p-8 group border border-gray-100 dark:border-white/5 !bg-white/80 dark:!bg-white/[0.02] !rounded-[2rem] h-full"
+                                spotlightColor={theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'}
                             >
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.05 }}
-                                    viewport={{ once: true }}
-                                >
-                                    <div className="w-14 h-14 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6 border border-brand-500/20 group-hover:bg-brand-500 transition-all duration-300">
-                                        <Icon className="w-7 h-7 text-brand-600 dark:text-brand-400 group-hover:text-white" />
-                                    </div>
-                                    <h3 className="text-lg font-bold mb-3 tracking-tight group-hover:text-brand-500 transition-colors">{title}</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium">{desc}</p>
-                                </motion.div>
+                                <div className="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center mb-6 border border-brand-500/20 group-hover:bg-brand-500 transition-all duration-500">
+                                    <Icon className="w-5 h-5 text-brand-600 dark:text-brand-400 group-hover:text-white" />
+                                </div>
+                                <h3 className="text-base font-bold mb-3 tracking-tight group-hover:text-brand-500 transition-colors">{title}</h3>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">{desc}</p>
                             </SpotlightCard>
                         ))}
                     </div>
                 </div>
             </section>
 
+
             {/* ─── Testimonials ────────────────────────────── */}
-            <section className="py-24 px-6">
+            <section className="py-32 px-6 bg-gray-50/50 dark:bg-[#0a0a0a] border-y border-gray-100 dark:border-white/5 relative overflow-hidden">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="mb-4">
-                            Loved by <span className="text-brand-500">professionals</span>
-                        </h2>
-                        <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-                            Developers, designers, and job seekers use PortfolioBuilder.AI to make unforgettable first impressions.
+                    <div className="text-center mb-24">
+                        <h2 className="mb-6">Global <span className="text-brand-500">Love.</span></h2>
+                        <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+                            Join 10,000+ professionals who transformed their careers.
                         </p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -513,20 +503,17 @@ export default function LandingPage() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.1 }}
                                 viewport={{ once: true }}
-                                className="bg-white dark:bg-[#111] p-8 rounded-3xl border border-gray-200 dark:border-white/5 hover:shadow-xl transition-all relative overflow-hidden group"
+                                className="bg-white dark:bg-white/5 p-8 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-xl transition-all relative group"
                             >
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-brand-500/5 blur-2xl group-hover:bg-brand-500/10 transition-colors" />
                                 <div className="flex items-center gap-1 mb-6">
-                                    {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
+                                    {[...Array(5)].map((_, j) => <Star key={j} className="w-3 h-3 text-amber-500 fill-amber-500" />)}
                                 </div>
-                                <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed italic relative z-10">"{text}"</p>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-brand-100 dark:border-brand-900 shadow-md">
-                                        <img src={avatar} alt={name} className="w-full h-full object-cover" />
-                                    </div>
+                                <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed italic text-sm">"{text}"</p>
+                                <div className="flex items-center gap-4 border-t border-gray-100 dark:border-white/5 pt-6">
+                                    <img src={avatar} alt={name} className="w-10 h-10 rounded-full grayscale group-hover:grayscale-0 transition-all" />
                                     <div>
-                                        <div className="font-bold text-base text-gray-900 dark:text-white">{name}</div>
-                                        <div className="text-xs font-semibold text-brand-500 dark:text-brand-400 uppercase tracking-wider">{role}</div>
+                                        <div className="font-black text-xs text-gray-900 dark:text-white uppercase tracking-tighter">{name}</div>
+                                        <div className="text-[10px] font-black text-brand-500 uppercase tracking-widest">{role}</div>
                                     </div>
                                 </div>
                             </motion.div>
@@ -535,66 +522,101 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* ─── FAQ Section ─────────────────────────────── */}
+            <section id="faq" className="py-32 px-6 relative">
+                <div className="max-w-3xl mx-auto">
+                    <div className="text-center mb-24">
+                        <h2 className="mb-6">Common <span className="text-brand-500">Questions.</span></h2>
+                        <p className="text-lg text-gray-500 dark:text-gray-400">Everything you need to know about getting started.</p>
+                    </div>
+                    <div className="space-y-6">
+                        {FAQS.map(({ q, a }, i) => (
+                            <motion.details
+                                key={i}
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                className="group bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                            >
+                                <summary className="flex items-center justify-between p-6 cursor-pointer list-none">
+                                    <span className="font-bold text-sm text-gray-900 dark:text-white">{q}</span>
+                                    <div className="w-8 h-8 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center group-open:rotate-180 transition-transform">
+                                        <ArrowRight className="w-4 h-4 text-gray-400 rotate-90" />
+                                    </div>
+                                </summary>
+                                <div className="px-6 pb-6 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-white/5 pt-4">
+                                    {a}
+                                </div>
+                            </motion.details>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* ─── Final CTA ──────────────────────────────── */}
-            <section className="py-32 px-6 relative overflow-hidden border-t border-gray-200 dark:border-white/5">
-                <div className="absolute inset-0 bg-gradient-to-b from-brand-500/5 to-brand-500/20 dark:from-brand-500/5 dark:to-brand-500/10" />
-                <div className="max-w-3xl mx-auto text-center relative z-10">
-                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-                        <LayoutTemplate className="w-16 h-16 mx-auto mb-6 text-brand-500" />
-                        <h2 className="mb-6">
-                            Your next opportunity is one<br />portfolio away.
+            <section className="py-44 px-6 relative overflow-hidden bg-gray-950 dark:bg-white text-white dark:text-gray-900">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] h-[1000px] bg-brand-500 opacity-20 blur-[120px] pointer-events-none" />
+                <div className="max-w-4xl mx-auto text-center relative z-10">
+                    <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
+                        <h2 className="text-5xl lg:text-7xl mb-10 tracking-tighter leading-[0.9]">
+                            Stop building.<br />
+                            <span className="text-brand-500">Start standing out.</span>
                         </h2>
-                        <p className="mb-10 text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
-                            Join hundreds of developers, designers, and professionals who stopped struggling with website builders and started standing out — in 60 seconds flat.
+                        <p className="mb-12 text-xl opacity-70 leading-relaxed max-w-2xl mx-auto">
+                            Join 10,000+ professionals. It takes exactly 60 seconds. No credit card required.
                         </p>
-                        <Link to={token ? "/upload" : "/register"} className="btn-brand text-xl px-12 py-5 shadow-2xl shadow-brand-500/30 hover:scale-[1.03] transition-transform inline-flex items-center gap-3">
-                            Build Your Portfolio Now <ArrowRight className="w-6 h-6" />
-                        </Link>
-                        <p className="mt-6 text-sm text-gray-400 dark:text-gray-500">Free forever • No credit card required • Takes 60 seconds</p>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                            <Link to={token ? "/upload" : "/register"} className="w-full sm:w-auto px-12 py-6 rounded-2xl bg-brand-500 text-white text-sm font-black uppercase tracking-widest shadow-2xl shadow-brand-500/30 hover:-translate-y-1 transition-all">
+                                Get Started Free
+                            </Link>
+                            <Link to="/login" className="w-full sm:w-auto px-12 py-6 rounded-2xl bg-white/10 dark:bg-gray-950/10 border border-white/20 dark:border-gray-950/20 text-sm font-black uppercase tracking-widest hover:bg-white/20 transition-all">
+                                Watch Demo
+                            </Link>
+                        </div>
                     </motion.div>
                 </div>
             </section>
 
             {/* ─── Footer ─────────────────────────────────── */}
-            <footer className="py-16 px-6 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-[#050505]" role="contentinfo">
+            <footer className="py-24 px-6 bg-white dark:bg-[#050505] border-t border-gray-100 dark:border-white/5">
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
-                        <div className="max-w-sm">
-                            <div className="flex items-center gap-2.5 mb-6">
-                                <div className="flex items-center justify-center">
-                                    <span className="text-2xl font-black tracking-tighter text-gray-900 dark:text-white">
-                                        PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
-                                    </span>
-                                </div>
-                            </div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
-                                The fastest way to turn your resume into a stunning portfolio website. Powered by AI, designed for professionals who want to lead.
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
+                        <div className="md:col-span-2">
+                            <Link to="/" className="inline-block mb-8">
+                                <span className="text-2xl font-black tracking-tighter text-gray-900 dark:text-white">
+                                    PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
+                                </span>
+                            </Link>
+                            <p className="text-gray-500 dark:text-gray-400 max-w-xs text-sm leading-relaxed">
+                                The ultimate digital identity engine for modern professionals. Powered by AI, designed by experts.
                             </p>
-                            <div className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center hover:bg-brand-500/20 hover:text-brand-500 transition-colors cursor-pointer"><Globe className="w-4 h-4" /></div>
-                                <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center hover:bg-brand-500/20 hover:text-brand-500 transition-colors cursor-pointer"><Users className="w-4 h-4" /></div>
-                            </div>
                         </div>
-                        <div className="flex gap-16">
-                            <div>
-                                <h4 className="font-bold text-sm mb-4 text-gray-900 dark:text-white">Product</h4>
-                                <ul className="space-y-2.5 text-sm text-gray-500 dark:text-gray-400">
-                                    <li><a href="#templates" className="hover:text-brand-500 transition-colors">Templates</a></li>
-                                    <li><a href="#how-it-works" className="hover:text-brand-500 transition-colors">How It Works</a></li>
-                                    <li><Link to="/register" className="hover:text-brand-500 transition-colors">Get Started</Link></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-sm mb-4 text-gray-900 dark:text-white">Legal</h4>
-                                <ul className="space-y-2.5 text-sm text-gray-500 dark:text-gray-400">
-                                    <li><Link to="/privacy" className="hover:text-brand-500 transition-colors">Privacy Policy</Link></li>
-                                    <li><Link to="/terms" className="hover:text-brand-500 transition-colors">Terms of Service</Link></li>
-                                </ul>
-                            </div>
+                        <div>
+                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-8">Product</div>
+                            <ul className="space-y-4">
+                                {['Features', 'Templates', 'API'].map(item => (
+                                    <li key={item}><a href="#" className="text-xs font-bold text-gray-600 dark:text-gray-400 hover:text-brand-500 transition-colors uppercase tracking-widest">{item}</a></li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-8">Legal</div>
+                            <ul className="space-y-4">
+                                {['Privacy', 'Terms', 'Cookies', 'Security'].map(item => (
+                                    <li key={item}><a href="#" className="text-xs font-bold text-gray-600 dark:text-gray-400 hover:text-brand-500 transition-colors uppercase tracking-widest">{item}</a></li>
+                                ))}
+                            </ul>
                         </div>
                     </div>
-                    <div className="pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400 dark:text-gray-500">
-                        <p>© {new Date().getFullYear()} PortfolioBuilder.AI. Built for the future of work.</p>
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-8 pt-12 border-t border-gray-100 dark:border-white/5">
+                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            © {new Date().getFullYear()} PortfolioBuilder.AI. All rights reserved.
+                        </div>
+                        <div className="flex gap-8">
+                            {['Twitter', 'LinkedIn', 'YouTube'].map(item => (
+                                <a key={item} href="#" className="text-[10px] font-black text-gray-400 hover:text-brand-500 uppercase tracking-widest">{item}</a>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </footer>
