@@ -1,10 +1,20 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import {
-    LayoutDashboard, Upload, Palette, Settings, LogOut,
-    Moon, Sun, Menu, TrendingUp, User, ChevronLeft, ChevronRight,
-    Shield, Lock, LogIn
-} from 'lucide-react'
+import LayoutDashboard from 'lucide-react/dist/esm/icons/layout-dashboard'
+import Upload from 'lucide-react/dist/esm/icons/upload'
+import Palette from 'lucide-react/dist/esm/icons/palette'
+import Settings from 'lucide-react/dist/esm/icons/settings'
+import LogOut from 'lucide-react/dist/esm/icons/log-out'
+import Moon from 'lucide-react/dist/esm/icons/moon'
+import Sun from 'lucide-react/dist/esm/icons/sun'
+import Menu from 'lucide-react/dist/esm/icons/menu'
+import TrendingUp from 'lucide-react/dist/esm/icons/trending-up'
+import User from 'lucide-react/dist/esm/icons/user'
+import ChevronLeft from 'lucide-react/dist/esm/icons/chevron-left'
+import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
+import Shield from 'lucide-react/dist/esm/icons/shield'
+import Lock from 'lucide-react/dist/esm/icons/lock'
+import LogIn from 'lucide-react/dist/esm/icons/log-in'
 import { useState } from 'react'
 
 const navItems = [
@@ -28,7 +38,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="flex min-h-[100dvh] bg-gray-50 dark:bg-gray-950 lg:h-[100dvh]">
             {/* Sidebar */}
             <aside className={`
-                fixed inset-y-0 left-0 z-50 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800
+                fixed inset-y-0 left-0 z-50 bg-white dark:bg-black border-r border-gray-200 dark:border-white/10
                 transform transition-all duration-200 ease-in-out
                 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
                 lg:relative lg:translate-x-0
@@ -36,17 +46,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             `}>
                 <div className="flex flex-col h-full">
                     {/* Logo + desktop collapse toggle */}
-                    <div className={`flex items-center border-b border-gray-200 dark:border-gray-800 ${collapsed ? 'justify-center px-3 py-5' : 'gap-2 px-4 py-5'}`}>
-                        {!collapsed && (
-                            <div className="flex items-center justify-center">
-                                <span className="text-xl font-black tracking-tighter text-gray-900 dark:text-white">
-                                    PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
-                                </span>
-                            </div>
-                        )}
-                        {collapsed && (
-                            <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center text-white font-black text-xs shadow-lg shadow-brand-500/20">
+                    {/* Logo + desktop collapse toggle */}
+                    <div className={`flex items-center border-b border-gray-200 dark:border-white/10 ${collapsed ? 'justify-center px-3 py-4' : 'gap-2 px-4 py-4'}`}>
+                        {collapsed ? (
+                            <div className="w-8 h-8 bg-gray-950 dark:bg-white rounded flex items-center justify-center text-white dark:text-gray-950 font-bold text-[10px]">
                                 PB
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center flex-1">
+                                <span className="text-base font-bold tracking-tight text-gray-950 dark:text-white">
+                                    PortfolioBuilder<span className="text-gray-400">.AI</span>
+                                </span>
                             </div>
                         )}
                         {/* Desktop collapse button */}
@@ -79,7 +89,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         )}
                         {navItems.map(({ to, icon: Icon, label }) => {
                             const active = location.pathname === to
-                            // These routes require auth — show lock for guests
                             const requiresAuth = ['/dashboard', '/analytics', '/profile', '/settings'].includes(to)
                             const isLocked = !user && requiresAuth
                             return (
@@ -88,18 +97,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                     to={isLocked ? '/login' : to}
                                     onClick={() => setMobileOpen(false)}
                                     title={collapsed ? (isLocked ? `${label} (Sign in required)` : label) : undefined}
-                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${collapsed ? 'justify-center' : ''} ${active
-                                        ? 'bg-brand-50 text-brand-600 dark:bg-brand-900/20 dark:text-brand-400'
+                                    className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${collapsed ? 'justify-center' : ''} ${active
+                                        ? 'bg-gray-100 text-gray-950 dark:bg-white/10 dark:text-white border border-transparent'
                                         : isLocked
-                                            ? 'text-gray-400 dark:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer'
-                                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
+                                            ? 'text-gray-400 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer'
+                                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-950 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'
                                         }`}
                                 >
                                     <Icon className="w-4 h-4 flex-shrink-0" />
-                                    {!collapsed && (
+                                    {collapsed ? null : (
                                         <span className="flex-1 flex items-center justify-between">
                                             {label}
-                                            {isLocked && <Lock className="w-3 h-3 opacity-50" />}
+                                            {isLocked ? <Lock className="w-3 h-3 opacity-50" /> : null}
                                         </span>
                                     )}
                                 </Link>
@@ -173,6 +182,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             </div>
                         )}
                     </div>
+                    {!collapsed && (
+                        <div className="px-4 py-2 text-[10px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest text-center border-t border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/[0.01]">
+                            Built by HamathOPC Pvt Ltd
+                        </div>
+                    )}
                 </div>
             </aside>
 
@@ -187,13 +201,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Main */}
             <div className="flex-1 flex min-w-0 flex-col lg:overflow-hidden">
                 {/* Top bar (mobile) */}
-                <header className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-                    <button onClick={() => setMobileOpen(true)} className="btn-ghost p-2">
+                <header className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white dark:bg-black border-b border-gray-200 dark:border-white/10">
+                    <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2">
                         <Menu className="w-5 h-5" />
                     </button>
                     <div className="flex items-center justify-center">
-                        <span className="text-lg font-black tracking-tighter text-gray-900 dark:text-white">
-                            PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
+                        <span className="text-base font-bold tracking-tight text-gray-950 dark:text-white">
+                            PortfolioBuilder<span className="text-gray-400">.AI</span>
                         </span>
                     </div>
                 </header>

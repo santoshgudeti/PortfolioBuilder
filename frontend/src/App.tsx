@@ -158,7 +158,7 @@ export default function App() {
                             <Route path="*" element={<NotFoundPage />} />
                         </Routes>
                         <CookieConsent />
-                        {showInteractiveEffects && (
+                        {showInteractiveEffects ? (
                             <>
                                 <ClickSpark
                                     sparkColor='#6366f1'
@@ -168,7 +168,7 @@ export default function App() {
                                 />
                                 <SplashCursor />
                             </>
-                        )}
+                        ) : null}
                     </BrowserRouter>
                 </ErrorBoundary>
             </GoogleOAuthProvider>

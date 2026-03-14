@@ -66,14 +66,14 @@ export default function LoginPage() {
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4">
             <div className="w-full max-w-md">
-                <div className="text-center mb-8">
-                    <Link to="/" className="inline-flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity">
-                        <span className="text-4xl font-black tracking-tighter text-gray-900 dark:text-white">
-                            PortfolioBuilder<span className="bg-gradient-to-r from-brand-500 to-indigo-500 text-transparent bg-clip-text">.AI</span>
+                <div className="text-center mb-10">
+                    <Link to="/" className="inline-flex items-center gap-2 mb-8 hover:opacity-80 transition-opacity">
+                        <span className="text-3xl font-bold tracking-tight text-gray-950 dark:text-white">
+                            PortfolioBuilder<span className="text-gray-400">.AI</span>
                         </span>
                     </Link>
-                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">Welcome back</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Sign in to your PortfolioBuilder.AI account</p>
+                    <h1 className="text-2xl font-bold text-gray-950 dark:text-white tracking-tight">Welcome back</h1>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">Sign in to your PortfolioBuilder.AI account</p>
                 </div>
 
                 <div className="card">
@@ -148,8 +148,8 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <button type="submit" disabled={loading} className="w-full mt-2 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm transition-all shadow-lg shadow-brand-500/20 disabled:opacity-60">
-                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                        <button type="submit" disabled={loading} className="w-full mt-2 btn-primary py-2.5">
+                            {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                             {loading ? 'Signing in...' : 'Sign In'}
                         </button>
                     </form>
