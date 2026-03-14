@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 export interface Project {
     title: string
@@ -58,34 +59,42 @@ interface PortfolioState {
     reset: () => void
 }
 
-export const usePortfolioStore = create<PortfolioState>((set) => ({
-    portfolioId: null,
-    slug: null,
-    customDomain: null,
-    parsedData: null,
-    theme: 'minimal',
-    templateId: 'standard',
-    mode: 'light',
-    primaryColor: '#6366f1',
-    isPublished: false,
-    isGuest: false,
+export const usePortfolioStore = create<PortfolioState>()(
+    persist(
+        (set) => ({
+            portfolioId: null,
+            slug: null,
+            customDomain: null,
+            parsedData: null,
+            theme: 'minimal',
+            templateId: 'standard',
+            mode: 'light',
+            primaryColor: '#6366f1',
+            isPublished: false,
+            isGuest: false,
 
-    setPortfolio: (data) => set((state) => ({ ...state, ...data })),
-    setParsedData: (data) => set({ parsedData: data }),
-    setTheme: (theme) => set({ theme }),
-    setTemplateId: (templateId) => set({ templateId }),
-    setMode: (mode) => set({ mode }),
-    setPrimaryColor: (color) => set({ primaryColor: color }),
-    reset: () => set({
-        portfolioId: null,
-        slug: null,
-        customDomain: null,
-        parsedData: null,
-        theme: 'minimal',
-        templateId: 'standard',
-        mode: 'light',
-        primaryColor: '#6366f1',
-        isPublished: false,
-        isGuest: false,
-    }),
-}))
+            setPortfolio: (data) => set((state) => ({ ...state, ...data })),
+            setParsedData: (data) => set({ parsedData: data }),
+            setTheme: (theme) => set({ theme }),
+            setTemplateId: (templateId) => set({ templateId }),
+            setMode: (mode) => set({ mode }),
+            setPrimaryColor: (color) => set({ primaryColor: color }),
+            reset: () => set({
+                portfolioId: null,
+                slug: null,
+                customDomain: null,
+                parsedData: null,
+                theme: 'minimal',
+                templateId: 'standard',
+                mode: 'light',
+                primaryColor: '#6366f1',
+                isPublished: false,
+                isGuest: false,
+            }),
+        }),
+        {
+            name: 'portfolio-storage',
+            storage: createJSONStorage(() => sessionStorage),
+        }
+    )
+)

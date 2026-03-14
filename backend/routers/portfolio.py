@@ -42,8 +42,26 @@ async def update_my_portfolio(
 ):
     result = await db.execute(select(Portfolio).where(Portfolio.user_id == current_user.id))
     portfolio = result.scalar_one_or_none()
+    
     if not portfolio:
-        raise HTTPException(status_code=404, detail="Portfolio not found")
+        # Create it if it doesn't exist (handle guest-to-user promotion)
+        from services.portfolio_service import create_portfolio
+        
+        # We need data to create it
+        if not updates.parsed_data:
+             raise HTTPException(status_code=404, detail="Portfolio not found and no data provided to create it.")
+
+        portfolio = await create_portfolio(
+            db,
+            user_id=current_user.id,
+            parsed_data=updates.parsed_data.model_dump() if hasattr(updates.parsed_data, 'model_dump') else updates.parsed_data,
+            theme=updates.theme or "minimal",
+            template_id=updates.template_id or "standard",
+            mode=updates.mode or "light",
+            primary_color=updates.primary_color or "#6366f1",
+        )
+        setattr(portfolio, 'avatar_url', current_user.avatar_url)
+        return portfolio
 
     update_dict = updates.model_dump(exclude_unset=True)
     if "custom_domain" in update_dict:

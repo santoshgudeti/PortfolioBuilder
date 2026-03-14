@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/store/authStore'
+import { usePortfolioStore } from '@/store/portfolioStore'
 import { Briefcase, Eye, EyeOff, Loader2, MailWarning, RefreshCw } from 'lucide-react'
 import GoogleSignInBox from '@/components/GoogleSignInBox'
 
@@ -25,7 +26,10 @@ export default function LoginPage() {
             const res = await authApi.login(data)
             setAuth(res.data.access_token, res.data.user)
             toast.success(`Welcome back, ${res.data.user.name}! 👋`)
-            navigate('/dashboard')
+            
+            // If we have guest data, go back to editor to save it
+            const hasGuestData = usePortfolioStore.getState().parsedData && usePortfolioStore.getState().isGuest
+            navigate(hasGuestData ? '/editor' : '/dashboard')
         } catch (err: any) {
             const detail = err.response?.data?.detail || 'Login failed'
             // Detect unverified email error
