@@ -1,20 +1,22 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import LayoutDashboard from 'lucide-react/dist/esm/icons/layout-dashboard'
-import Upload from 'lucide-react/dist/esm/icons/upload'
-import Palette from 'lucide-react/dist/esm/icons/palette'
-import Settings from 'lucide-react/dist/esm/icons/settings'
-import LogOut from 'lucide-react/dist/esm/icons/log-out'
-import Moon from 'lucide-react/dist/esm/icons/moon'
-import Sun from 'lucide-react/dist/esm/icons/sun'
-import Menu from 'lucide-react/dist/esm/icons/menu'
-import TrendingUp from 'lucide-react/dist/esm/icons/trending-up'
-import User from 'lucide-react/dist/esm/icons/user'
-import ChevronLeft from 'lucide-react/dist/esm/icons/chevron-left'
-import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
-import Shield from 'lucide-react/dist/esm/icons/shield'
-import Lock from 'lucide-react/dist/esm/icons/lock'
-import LogIn from 'lucide-react/dist/esm/icons/log-in'
+import { 
+    LayoutDashboard, 
+    Upload, 
+    Palette, 
+    Settings, 
+    LogOut, 
+    Moon, 
+    Sun, 
+    Menu, 
+    TrendingUp, 
+    User, 
+    ChevronLeft, 
+    ChevronRight, 
+    Shield, 
+    Lock, 
+    LogIn 
+} from 'lucide-react'
 import { useState } from 'react'
 
 const navItems = [

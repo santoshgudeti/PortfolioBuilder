@@ -1,24 +1,26 @@
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right'
-import Zap from 'lucide-react/dist/esm/icons/zap'
-import Globe from 'lucide-react/dist/esm/icons/globe'
-import Palette from 'lucide-react/dist/esm/icons/palette'
-import Edit3 from 'lucide-react/dist/esm/icons/edit-3'
-import Briefcase from 'lucide-react/dist/esm/icons/briefcase'
-import Moon from 'lucide-react/dist/esm/icons/moon'
-import Sun from 'lucide-react/dist/esm/icons/sun'
-import CheckCircle from 'lucide-react/dist/esm/icons/check-circle'
-import FileText from 'lucide-react/dist/esm/icons/file-text'
-import Sparkles from 'lucide-react/dist/esm/icons/sparkles'
-import LayoutTemplate from 'lucide-react/dist/esm/icons/layout-template'
-import Shield from 'lucide-react/dist/esm/icons/shield'
-import BarChart3 from 'lucide-react/dist/esm/icons/bar-chart-3'
-import Users from 'lucide-react/dist/esm/icons/users'
-import Star from 'lucide-react/dist/esm/icons/star'
-import Clock from 'lucide-react/dist/esm/icons/clock'
-import Wand2 from 'lucide-react/dist/esm/icons/wand-2'
-import Download from 'lucide-react/dist/esm/icons/download'
+import { 
+    ArrowRight, 
+    Zap, 
+    Globe, 
+    Palette, 
+    Edit3, 
+    Briefcase, 
+    Moon, 
+    Sun, 
+    CheckCircle, 
+    FileText, 
+    Sparkles, 
+    LayoutTemplate, 
+    Shield, 
+    BarChart3, 
+    Users, 
+    Star, 
+    Clock, 
+    Wand2, 
+    Download 
+} from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { useState } from 'react'
 
