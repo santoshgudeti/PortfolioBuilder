@@ -1,4 +1,5 @@
 import requests
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from loguru import logger
 from sqlalchemy import select
@@ -25,6 +26,7 @@ from utils.auth import (
     create_refresh_token,
     decode_token,
     get_current_user,
+    get_optional_user,
     hash_password,
     verify_password,
 )
@@ -361,10 +363,15 @@ async def refresh_token(
 
 
 @router.post("/logout")
-async def logout(response: Response, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
-    # Invalidate refresh token in DB
-    current_user.refresh_token = None
-    await db.commit()
+async def logout(
+    response: Response, 
+    db: AsyncSession = Depends(get_db), 
+    current_user: Optional[User] = Depends(get_optional_user)
+):
+    # Invalidate refresh token in DB if user was found
+    if current_user:
+        current_user.refresh_token = None
+        await db.commit()
     
     response.delete_cookie(key="access_token")
     response.delete_cookie(key="refresh_token", path="/api/auth/refresh")

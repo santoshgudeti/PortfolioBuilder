@@ -33,10 +33,14 @@ apiClient.interceptors.response.use(
             const isUploadRequest = originalRequest.url?.includes('/resume/upload')
             const isRefreshRequest = originalRequest.url?.includes('/auth/refresh')
             const isLoginRequest = originalRequest.url?.includes('/auth/login')
+            const isLogoutRequest = originalRequest.url?.includes('/auth/logout')
 
-            if (isRefreshRequest || isLoginRequest) {
-                // If the refresh token itself is expired, logout
-                useAuthStore.getState().logout()
+            if (isRefreshRequest || isLoginRequest || isLogoutRequest) {
+                // If these fail, we don't want to loop. Just clear local state.
+                if (isLogoutRequest || isRefreshRequest) {
+                    useAuthStore.getState().setAuth(null)
+                    useAuthStore.getState().setInitialized(true)
+                }
                 return Promise.reject(error)
             }
 
@@ -59,7 +63,18 @@ apiClient.interceptors.response.use(
                     return apiClient(originalRequest)
                 } catch (refreshError) {
                     isRefreshing = false
-                    useAuthStore.getState().logout()
+                    
+                    // Critical: If refresh fails, we clear state but only call 
+                    // the logout (with redirect) if we aren't already on a guest page.
+                    const { user } = useAuthStore.getState()
+                    useAuthStore.getState().setAuth(null)
+                    useAuthStore.getState().setInitialized(true)
+                    
+                    const path = window.location.pathname
+                    if (user && path !== '/' && path !== '/login') {
+                        useAuthStore.getState().logout()
+                    }
+                    
                     return Promise.reject(refreshError)
                 }
             }
