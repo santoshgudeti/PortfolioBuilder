@@ -21,11 +21,18 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Starting up and checking database connection...")
+    logger.info("Starting up...")
     try:
-        await init_db()
+        # We rely on Alembic migrations in start.sh for schema
+        # but we still need to verify the connection is alive
+        from sqlalchemy import text
+        from database import AsyncSessionLocal
+        
+        async with AsyncSessionLocal() as session:
+            await session.execute(text("SELECT 1"))
+            
         app.state.db_ready = True
-        logger.info("Database initialized successfully")
+        logger.info("Database connection verified")
         
         # Ensure initial admin exists
         from create_admin import make_admin
@@ -33,7 +40,9 @@ async def lifespan(app: FastAPI):
         
     except Exception:
         app.state.db_ready = False
-        logger.exception("Database initialization failed")
+        logger.exception("Startup checks failed")
+        # In production, we might want to continue even if DB is transiently down
+        # but for initialization, it's safer to let it restart
         raise
 
     try:
@@ -124,24 +133,19 @@ async def root():
     return {"status": "ok", "message": "Resume2Portfolio AI API is running"}
 
 
+@app.get("/health", tags=["Health"])
 @app.get("/api/health", tags=["Health"])
 async def health(db: AsyncSession = Depends(get_db)):
+    """Liveness probe for cloud platforms."""
     if not app.state.db_ready:
-        return JSONResponse(
-            status_code=503,
-            content={"status": "unhealthy", "database": "unavailable"},
-        )
-
+        return JSONResponse(status_code=503, content={"status": "unhealthy", "db": "not_ready"})
+    
     try:
         await db.execute(text("SELECT 1"))
-        return {"status": "healthy", "database": "connected"}
-    except Exception:
-        app.state.db_ready = False
-        logger.exception("Database health check failed")
-        return JSONResponse(
-            status_code=503,
-            content={"status": "unhealthy", "database": "disconnected"},
-        )
+        return {"status": "healthy", "database": "connected", "port": os.environ.get("PORT", "8000")}
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
+        return JSONResponse(status_code=503, content={"status": "unhealthy", "detail": str(e)})
 
 
 frontend_dist = os.path.join(os.path.dirname(__file__), "static")
