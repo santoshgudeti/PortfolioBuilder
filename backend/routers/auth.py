@@ -200,15 +200,16 @@ async def google_auth(
         user.refresh_token = refresh_token
         await db.commit()
         
-        # Set HttpOnly cookies
+            # Set HttpOnly cookies
+        is_prod = settings.env == "production"
         response.set_cookie(
             key="access_token",
             value=access_token,
             httponly=True,
             max_age=settings.access_token_expire_minutes * 60,
             expires=settings.access_token_expire_minutes * 60,
-            samesite="lax",
-            secure=settings.env == "production",
+            samesite="none" if is_prod else "lax",
+            secure=is_prod,
         )
         response.set_cookie(
             key="refresh_token",
@@ -216,8 +217,8 @@ async def google_auth(
             httponly=True,
             max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
             expires=settings.refresh_token_expire_days * 24 * 60 * 60,
-            samesite="strict",
-            secure=settings.env == "production",
+            samesite="none" if is_prod else "strict",
+            secure=is_prod,
             path="/api/auth/refresh", # Only send to refresh endpoint for extra security
         )
         
@@ -276,14 +277,15 @@ async def login(
     await db.commit()
     
     # Set HttpOnly cookies
+    is_prod = settings.env == "production"
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
         max_age=settings.access_token_expire_minutes * 60,
         expires=settings.access_token_expire_minutes * 60,
-        samesite="lax",
-        secure=settings.env == "production",
+        samesite="none" if is_prod else "lax",
+        secure=is_prod,
     )
     response.set_cookie(
         key="refresh_token",
@@ -291,8 +293,8 @@ async def login(
         httponly=True,
         max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
         expires=settings.refresh_token_expire_days * 24 * 60 * 60,
-        samesite="strict",
-        secure=settings.env == "production",
+        samesite="none" if is_prod else "strict",
+        secure=is_prod,
         path="/api/auth/refresh",
     )
     
@@ -330,14 +332,15 @@ async def refresh_token(
     user.refresh_token = new_refresh_token
     await db.commit()
     
+    is_prod = settings.env == "production"
     response.set_cookie(
         key="access_token",
         value=new_access_token,
         httponly=True,
         max_age=settings.access_token_expire_minutes * 60,
         expires=settings.access_token_expire_minutes * 60,
-        samesite="lax",
-        secure=settings.env == "production",
+        samesite="none" if is_prod else "lax",
+        secure=is_prod,
     )
     response.set_cookie(
         key="refresh_token",
@@ -345,8 +348,8 @@ async def refresh_token(
         httponly=True,
         max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
         expires=settings.refresh_token_expire_days * 24 * 60 * 60,
-        samesite="strict",
-        secure=settings.env == "production",
+        samesite="none" if is_prod else "strict",
+        secure=is_prod,
         path="/api/auth/refresh",
     )
     
