@@ -30,6 +30,35 @@ from utils.auth import (
     hash_password,
     verify_password,
 )
+
+def set_auth_cookies(response: Response, access_token: str, refresh_token: str, request: Request, settings):
+    """Utility to set both cookies with HTTPS detection."""
+    is_https = request.url.scheme == "https" or request.headers.get("x-forwarded-proto") == "https"
+    
+    cookie_common = {
+        "httponly": True,
+        "samesite": "none" if is_https else "lax",
+        "secure": is_https,
+    }
+    
+    # Access Token
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        max_age=settings.access_token_expire_minutes * 60,
+        expires=settings.access_token_expire_minutes * 60,
+        **cookie_common
+    )
+    
+    # Refresh Token
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
+        expires=settings.refresh_token_expire_days * 24 * 60 * 60,
+        path="/api/auth/refresh",
+        **cookie_common
+    )
 from utils.rate_limit import rate_limiter
 
 settings = get_settings()
@@ -202,27 +231,7 @@ async def google_auth(
         user.refresh_token = refresh_token
         await db.commit()
         
-        # Set HttpOnly cookies
-        is_prod = settings.env == "production"
-        response.set_cookie(
-            key="access_token",
-            value=access_token,
-            httponly=True,
-            max_age=settings.access_token_expire_minutes * 60,
-            expires=settings.access_token_expire_minutes * 60,
-            samesite="none" if is_prod else "lax",
-            secure=is_prod,
-        )
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
-            expires=settings.refresh_token_expire_days * 24 * 60 * 60,
-            samesite="none" if is_prod else "strict",
-            secure=is_prod,
-            path="/api/auth/refresh", # Only send to refresh endpoint for extra security
-        )
+        set_auth_cookies(response, access_token, refresh_token, request, settings)
         
         return Token(
             access_token=access_token,
@@ -279,26 +288,7 @@ async def login(
     await db.commit()
     
     # Set HttpOnly cookies
-    is_prod = settings.env == "production"
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        max_age=settings.access_token_expire_minutes * 60,
-        expires=settings.access_token_expire_minutes * 60,
-        samesite="none" if is_prod else "lax",
-        secure=is_prod,
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
-        expires=settings.refresh_token_expire_days * 24 * 60 * 60,
-        samesite="none" if is_prod else "strict",
-        secure=is_prod,
-        path="/api/auth/refresh",
-    )
+    set_auth_cookies(response, access_token, refresh_token, request, settings)
     
     return Token(
         access_token=access_token,
@@ -334,26 +324,7 @@ async def refresh_token(
     user.refresh_token = new_refresh_token
     await db.commit()
     
-    is_prod = settings.env == "production"
-    response.set_cookie(
-        key="access_token",
-        value=new_access_token,
-        httponly=True,
-        max_age=settings.access_token_expire_minutes * 60,
-        expires=settings.access_token_expire_minutes * 60,
-        samesite="none" if is_prod else "lax",
-        secure=is_prod,
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=new_refresh_token,
-        httponly=True,
-        max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
-        expires=settings.refresh_token_expire_days * 24 * 60 * 60,
-        samesite="none" if is_prod else "strict",
-        secure=is_prod,
-        path="/api/auth/refresh",
-    )
+    set_auth_cookies(response, new_access_token, new_refresh_token, request, settings)
     
     return Token(
         access_token=new_access_token,
