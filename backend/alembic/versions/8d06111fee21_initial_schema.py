@@ -32,7 +32,15 @@ def upgrade() -> None:
                existing_type=sa.VARCHAR(),
                nullable=False,
                existing_server_default=sa.text("''::character varying"))
-    op.create_index(op.f('ix_portfolios_custom_domain'), 'portfolios', ['custom_domain'], unique=True)
+    # Check if index exists before creating
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    indexes = inspector.get_indexes('portfolios')
+    index_names = [idx['name'] for idx in indexes]
+    
+    if 'ix_portfolios_custom_domain' not in index_names:
+        op.create_index(op.f('ix_portfolios_custom_domain'), 'portfolios', ['custom_domain'], unique=True)
+        
     op.drop_constraint('portfolios_user_id_fkey', 'portfolios', type_='foreignkey')
     op.create_foreign_key(None, 'portfolios', 'users', ['user_id'], ['id'])
     op.alter_column('users', 'is_verified',
