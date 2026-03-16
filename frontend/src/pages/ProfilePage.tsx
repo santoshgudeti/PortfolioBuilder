@@ -11,7 +11,7 @@ interface NameFormData { name: string }
 interface PasswordFormData { current_password: string; new_password: string; confirm_password: string }
 
 export default function ProfilePage() {
-    const { user, setAuth, token } = useAuthStore()
+    const { user, setAuth } = useAuthStore()
     const [avatarUploading, setAvatarUploading] = useState(false)
     const [nameSaving, setNameSaving] = useState(false)
     const [showPass, setShowPass] = useState(false)
@@ -37,7 +37,7 @@ export default function ProfilePage() {
             const dataUrl = ev.target?.result as string
             try {
                 const res = await apiClient.patch('/auth/me', { avatar_url: dataUrl })
-                setAuth(token!, { ...user, avatar_url: res.data.avatar_url })
+                setAuth({ ...user, avatar_url: res.data.avatar_url })
                 toast.success('Profile photo updated!')
             } catch {
                 toast.error('Failed to update photo')
@@ -51,7 +51,7 @@ export default function ProfilePage() {
         setNameSaving(true)
         try {
             const res = await apiClient.patch('/auth/me', { name: data.name.trim() })
-            setAuth(token!, { ...user, name: res.data.name })
+            setAuth({ ...user, name: res.data.name })
             toast.success('Name updated!')
         } catch {
             toast.error('Failed to update name')
