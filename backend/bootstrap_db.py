@@ -20,13 +20,13 @@ async def _existing_tables() -> set[str]:
         return set(await conn.run_sync(lambda sync_conn: inspect(sync_conn).get_table_names()))
 
 
-async def bootstrap_database() -> None:
-    tables = await _existing_tables()
+def bootstrap_database() -> None:
+    tables = asyncio.run(_existing_tables())
     app_tables = {"users", "portfolios", "page_views", "audit_logs"}
     alembic_config = _alembic_config()
 
     if not tables or tables.issubset({"alembic_version"}) or not (tables & app_tables):
-        await init_db()
+        asyncio.run(init_db())
         command.stamp(alembic_config, "head")
         return
 
@@ -34,4 +34,4 @@ async def bootstrap_database() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(bootstrap_database())
+    bootstrap_database()
