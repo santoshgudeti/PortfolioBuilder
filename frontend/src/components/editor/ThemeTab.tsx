@@ -80,8 +80,8 @@ export function ThemeTab({
                         <LayoutTemplate className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Architecture</h2>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Choose your structural template</p>
+                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Choose Template</h2>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Select how your portfolio looks</p>
                     </div>
                 </div>
                 
@@ -120,8 +120,8 @@ export function ThemeTab({
                             <SunMoon className="w-5 h-5" />
                         </div>
                         <div>
-                            <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Atmosphere</h2>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Visual appearance mode</p>
+                            <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Color Theme</h2>
+                            <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Dark or Light appearance</p>
                         </div>
                     </div>
                     <div className="flex gap-2 p-1.5 bg-gray-100 dark:bg-white/[0.03] rounded-2xl border border-gray-200 dark:border-white/5">
@@ -146,8 +146,8 @@ export function ThemeTab({
                             <Palette className="w-5 h-5" />
                         </div>
                         <div>
-                            <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Signature</h2>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Primary brand color</p>
+                            <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Brand Color</h2>
+                            <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Choose your highlight color</p>
                         </div>
                     </div>
                     <div className="flex flex-wrap gap-3">

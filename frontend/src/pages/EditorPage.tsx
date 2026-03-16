@@ -224,9 +224,9 @@ export default function EditorPage() {
                     {/* Tabs */}
                     <div className="flex gap-2 mb-8 bg-gray-100 dark:bg-white/[0.03] rounded-2xl p-1.5 w-fit border border-gray-200 dark:border-white/5 shadow-inner">
                         {[
-                            { id: 'content', label: 'Narrative', icon: PenTool },
-                            { id: 'theme', label: 'Aesthetics', icon: Palette },
-                            { id: 'sections', label: 'Visibility', icon: Layout }
+                            { id: 'content', label: 'Content', icon: PenTool },
+                            { id: 'theme', label: 'Design', icon: Palette },
+                            { id: 'sections', label: 'Sections', icon: Layout }
                         ].map(tab => (
                             <button
                                 key={tab.id}

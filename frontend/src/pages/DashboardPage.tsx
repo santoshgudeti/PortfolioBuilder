@@ -73,7 +73,7 @@ export default function DashboardPage() {
 
             {/* Header */}
             <div className="mb-10">
-                <h1 className="uppercase">
+                <h1 className="uppercase tracking-tighter">
                     Welcome Back, {firstName}
                 </h1>
                 <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg font-medium">
@@ -91,7 +91,7 @@ export default function DashboardPage() {
                         {hasPortfolio ? <CheckCircle className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
                     </div>
                     <div className="flex-1">
-                        <p className="font-bold text-gray-950 dark:text-white text-lg tracking-tight uppercase">
+                        <p className="font-bold text-gray-950 dark:text-white text-base sm:text-lg tracking-tight uppercase">
                             {hasPortfolio ? 'Digital Presence Active' : 'Setup Required'}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
@@ -120,7 +120,7 @@ export default function DashboardPage() {
                     <div className="w-14 h-14 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6 group-hover:bg-brand-500 group-hover:scale-110 transition-[transform,background-color] duration-300 shadow-sm">
                         <Upload className="w-7 h-7 text-brand-600 dark:text-brand-400 group-hover:text-white" />
                     </div>
-                    <h3 className="font-black text-gray-900 dark:text-white mb-2 text-xl tracking-tight uppercase">Upload History</h3>
+                    <h3 className="font-black text-gray-900 dark:text-white mb-2 text-lg sm:text-xl tracking-tight uppercase">Upload History</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium mb-6">Import your professional story and let AI curate your brand</p>
                     <div className="flex items-center gap-2 text-brand-600 dark:text-brand-400 text-xs font-black uppercase tracking-widest mt-auto">
                         New Generation <ArrowRight className="w-4 h-4 translate-x-0 group-hover:translate-x-1 transition-transform" />
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                     <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:bg-purple-500 group-hover:scale-110 transition-[transform,background-color] duration-300 shadow-sm">
                         <Edit3 className="w-7 h-7 text-purple-600 dark:text-purple-400 group-hover:text-white" />
                     </div>
-                    <h3 className="font-black text-gray-900 dark:text-white mb-2 text-xl tracking-tight uppercase">Aesthetics</h3>
+                    <h3 className="font-black text-gray-900 dark:text-white mb-2 text-lg sm:text-xl tracking-tight uppercase">Aesthetics</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium mb-6">Fine-tune your narrative, colors, and layout templates</p>
                     <div className="flex items-center gap-2 text-brand-600 dark:text-brand-400 text-xs font-black uppercase tracking-widest mt-auto">
                         Launch Designer <ArrowRight className="w-4 h-4 translate-x-0 group-hover:translate-x-1 transition-transform" />
@@ -145,7 +145,7 @@ export default function DashboardPage() {
                         <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mb-6 group-hover:bg-green-500 group-hover:scale-110 transition-all duration-300 shadow-sm">
                             <Eye className="w-7 h-7 text-green-600 dark:text-green-400 group-hover:text-white" />
                         </div>
-                        <h3 className="font-black text-gray-900 dark:text-white mb-2 text-xl tracking-tight uppercase">Public View</h3>
+                        <h3 className="font-black text-gray-900 dark:text-white mb-2 text-lg sm:text-xl tracking-tight uppercase">Public View</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium mb-6">Experience your identity exactly as recruiters see it</p>
                         <div className="flex items-center gap-2 text-brand-600 dark:text-brand-400 text-xs font-black uppercase tracking-widest mt-auto">
                             Visit Site <ArrowRight className="w-4 h-4 translate-x-0 group-hover:translate-x-1 transition-transform" />
@@ -178,8 +178,8 @@ export default function DashboardPage() {
                                 { label: 'Layout Theme', value: (data.theme || 'minimal').toUpperCase() },
                             ].map(({ label, value }) => (
                                 <div key={label} className="text-center">
-                                    <p className="text-3xl font-black text-brand-500 dark:text-brand-500 tracking-tighter tabular-nums">{value}</p>
-                                    <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2 font-black uppercase tracking-widest leading-none">{label}</p>
+                                    <p className="text-2xl sm:text-3xl font-black text-brand-500 dark:text-brand-500 tracking-tighter tabular-nums">{value}</p>
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2 font-black uppercase tracking-widest leading-none text-pretty">{label}</p>
                                 </div>
                             ))}
                         </div>

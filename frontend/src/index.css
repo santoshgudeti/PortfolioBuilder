@@ -95,6 +95,9 @@
     font-size: 16px;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
@@ -106,11 +109,11 @@
     text-wrap: balance;
   }
 
-  h1 { @apply leading-[1.05] tracking-tighter font-black; font-size: clamp(2.75rem, 9vw, 6rem); }
-  h2 { @apply leading-[1.15] tracking-tight font-black; font-size: clamp(2.25rem, 6vw, 4rem); }
-  h3 { @apply leading-snug tracking-tight font-bold; font-size: clamp(1.75rem, 4vw, 2.5rem); }
-  h4 { @apply leading-normal tracking-normal font-bold; font-size: clamp(1.25rem, 2.5vw, 1.75rem); }
-  p { @apply leading-relaxed; font-size: clamp(1rem, 1.1vw, 1.125rem); }
+  h1 { @apply leading-[1.1] tracking-tighter font-black; font-size: clamp(2.25rem, 8vw, 5rem); }
+  h2 { @apply leading-[1.2] tracking-tight font-black; font-size: clamp(1.85rem, 5vw, 3.5rem); }
+  h3 { @apply leading-snug tracking-tight font-bold; font-size: clamp(1.5rem, 3.5vw, 2.25rem); }
+  h4 { @apply leading-normal tracking-normal font-bold; font-size: clamp(1.125rem, 2vw, 1.5rem); }
+  p { @apply leading-relaxed; font-size: clamp(0.9375rem, 1vw, 1.0625rem); }
   
   /* Focus States Compliance */
   :focus-visible {

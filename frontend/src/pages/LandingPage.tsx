@@ -123,12 +123,12 @@ const TemplateCard = ({ tmpl }: { tmpl: typeof TEMPLATES[0] }) => (
 )
 
 const FeatureCard = ({ icon: Icon, title, desc, color }: typeof FEATURES[0]) => (
-    <div className="card group relative overflow-hidden">
+    <div className="card group relative overflow-hidden p-6 sm:p-8">
         <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${color} flex items-center justify-center text-white mb-6 shadow-sm`}>
             <Icon className="w-5 h-5" />
         </div>
-        <h3 className="text-lg font-bold mb-3 tracking-tight">{title}</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed font-medium text-pretty">{desc}</p>
+        <h3 className="text-lg sm:text-xl font-bold mb-3 tracking-tight">{title}</h3>
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed font-medium text-pretty">{desc}</p>
     </div>
 )
 
@@ -236,9 +236,9 @@ export default function LandingPage() {
             <section className="py-20 px-6 border-y border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                 <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-between items-center gap-12">
                     {STATS.map(({ value, label }) => (
-                        <div key={label} className="text-center md:text-left">
-                            <div className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 tabular-nums">{value}</div>
-                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">{label}</div>
+                        <div key={label} className="text-center md:text-left min-w-[140px]">
+                            <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 tabular-nums tracking-tighter">{value}</div>
+                            <div className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest leading-none">{label}</div>
                         </div>
                     ))}
                 </div>

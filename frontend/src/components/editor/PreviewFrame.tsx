@@ -45,15 +45,15 @@ export function PreviewFrame({
                 <div className="flex items-center gap-1.5 bg-gray-100/80 dark:bg-white/[0.03] p-1.5 rounded-2xl border border-gray-100 dark:border-white/5 backdrop-blur-xl">
                     <button onClick={() => onSetDevice('desktop')} className={`px-3 py-2 rounded-xl transition-all flex items-center gap-2 ${previewDevice === 'desktop' ? 'bg-white dark:bg-brand-500 shadow-md text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-600'}`}>
                         <Monitor className="w-4 h-4" />
-                        <span className="text-[10px] font-black uppercase tracking-widest hidden xl:inline">Portal</span>
+                        <span className="text-[11px] font-bold hidden xl:inline">Desktop</span>
                     </button>
                     <button onClick={() => onSetDevice('tablet')} className={`px-3 py-2 rounded-xl transition-all flex items-center gap-2 ${previewDevice === 'tablet' ? 'bg-white dark:bg-brand-500 shadow-md text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-600'}`}>
                         <Tablet className="w-4 h-4" />
-                        <span className="text-[10px] font-black uppercase tracking-widest hidden xl:inline">Tablet</span>
+                        <span className="text-[11px] font-bold hidden xl:inline">Tablet</span>
                     </button>
                     <button onClick={() => onSetDevice('mobile')} className={`px-3 py-2 rounded-xl transition-all flex items-center gap-2 ${previewDevice === 'mobile' ? 'bg-white dark:bg-brand-500 shadow-md text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-600'}`}>
                         <Smartphone className="w-4 h-4" />
-                        <span className="text-[10px] font-black uppercase tracking-widest hidden xl:inline">Mobile</span>
+                        <span className="text-[11px] font-bold hidden xl:inline">Mobile</span>
                     </button>
                 </div>
                 <div className="flex items-center gap-2">
@@ -61,7 +61,7 @@ export function PreviewFrame({
                         {previewFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                     </button>
                     {previewFullscreen ? (
-                        <button onClick={() => onSetFullscreen(false)} className="btn-primary !py-2.5 !px-6 text-[10px]">Close Preview</button>
+                        <button onClick={() => onSetFullscreen(false)} className="btn-primary !py-2.5 !px-6 text-xs">Close Preview</button>
                     ) : (
                         <button onClick={() => onSetShowPreview(false)} className="p-2.5 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl text-gray-400 transition-all border border-transparent hover:border-gray-200 dark:hover:border-white/10" title="Collapse Preview Panel"><EyeOff className="w-4 h-4" /></button>
                     )}

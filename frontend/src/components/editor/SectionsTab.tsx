@@ -21,8 +21,8 @@ export function SectionsTab({ hiddenSections, onToggleSection }: SectionsTabProp
                     <Layout className="w-5 h-5" />
                 </div>
                 <div>
-                    <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Visibility</h2>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Show or hide portfolio sections</p>
+                    <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Manage Sections</h2>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Choose which parts of your profile are public</p>
                 </div>
             </div>
             
@@ -36,10 +36,10 @@ export function SectionsTab({ hiddenSections, onToggleSection }: SectionsTabProp
                                 : 'border-gray-100 dark:border-white/5 text-gray-400 dark:text-gray-600'
                             }`}
                     >
-                        <span className={`text-sm font-black uppercase tracking-[0.1em] ${!hiddenSections.has(s.key) ? 'text-brand-600 dark:text-brand-400' : ''}`}>{s.label}</span>
+                        <span className={`text-sm font-bold ${!hiddenSections.has(s.key) ? 'text-brand-600 dark:text-brand-400' : ''}`}>{s.label}</span>
                         {!hiddenSections.has(s.key) ? (
                             <div className="flex items-center gap-3 text-brand-500">
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Live</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">Visible</span>
                                 <div className="p-2 rounded-lg bg-brand-500/10">
                                     <Eye className="w-4 h-4" />
                                 </div>

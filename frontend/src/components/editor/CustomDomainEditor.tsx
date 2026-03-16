@@ -42,7 +42,7 @@ export function CustomDomainEditor({ currentDomain, onUpdated }: CustomDomainEdi
     return (
         <div className="card mt-4">
             <h2 className="font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-                <Globe className="w-4 h-4" /> Custom Domain
+                <Globe className="w-4 h-4" /> Use My Own Domain
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                 Connect your own domain. Point a CNAME record from your domain to <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">yourapp.vercel.app</code>

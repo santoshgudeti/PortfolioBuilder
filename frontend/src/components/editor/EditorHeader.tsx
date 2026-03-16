@@ -38,7 +38,7 @@ export function EditorHeader({
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div className="space-y-1">
                     <div className="flex items-center gap-3">
-                        <h1 className="text-editor-title m-0">Editor</h1>
+                        <h1 className="text-editor-title m-0">Portfolio Editor</h1>
                         <div className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${isDirty
                                 ? 'border-amber-200 bg-amber-50 text-amber-700 animate-pulse'
                                 : isPublished
@@ -56,7 +56,7 @@ export function EditorHeader({
                         </a>
                     ) : (
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
-                            Workspace / Narrative Design
+                            Update your content and design
                         </p>
                     )}
                 </div>
@@ -90,7 +90,7 @@ export function EditorHeader({
                                 }`}
                             >
                                 {isPublishPending ? <Loader2 className="w-3 h-3 animate-spin" /> : isPublished ? <EyeOff className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
-                                {isPublished ? 'Go Offline' : 'Go Live'}
+                                {isPublished ? 'Unpublish' : 'Publish Site'}
                             </button>
                             <button
                                 onClick={onSave}
@@ -98,7 +98,7 @@ export function EditorHeader({
                                 className={`btn-primary !py-2.5 !px-5 text-[10px] ${isDirty ? 'shadow-glow-brand ring-4 ring-brand-500/10' : 'opacity-80'}`}
                             >
                                 {isSavePending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                                {isSavePending ? 'Syncing...' : 'Sync Changes'}
+                                {isSavePending ? 'Saving...' : 'Save Changes'}
                             </button>
                         </div>
                 </div>
@@ -107,7 +107,7 @@ export function EditorHeader({
             {isDirty && (
                 <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-widest animate-pulse">
                     <AlertCircle className="w-3 h-3" />
-                    <span>Unsaved changes in workspace</span>
+                    <span>You have unsaved changes</span>
                 </div>
             )}
         </div>

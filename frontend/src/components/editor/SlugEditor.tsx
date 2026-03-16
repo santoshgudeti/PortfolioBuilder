@@ -53,9 +53,9 @@ export function SlugEditor({ currentSlug, onUpdated }: SlugEditorProps) {
     return (
         <div className="card">
             <h2 className="font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-                <Link2 className="w-4 h-4" /> Portfolio URL
+                <Link2 className="w-4 h-4" /> Personal Link
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Customise your public portfolio link. Lowercase letters, numbers, and hyphens only.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Choose a unique web address for your site. Use lowercase letters, numbers, and hyphens.</p>
             <div className="flex items-center gap-2">
                 <div className="flex flex-1 items-center rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 overflow-hidden">
                     <span className="px-3 py-2.5 text-sm text-gray-400 dark:text-gray-500 border-r border-gray-200 dark:border-gray-700 whitespace-nowrap">/u/</span>

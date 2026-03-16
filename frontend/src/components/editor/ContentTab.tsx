@@ -17,8 +17,8 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                         <User className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Identity</h2>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Personal details & socials</p>
+                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">About Me</h2>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Your name, role, and links</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
@@ -33,8 +33,8 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                         { key: 'website', label: 'Website URL', icon: Globe },
                     ].map(({ key, label, icon: Icon }) => (
                         <div key={key} className="space-y-1.5">
-                            <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
-                                <Icon className="w-3 h-3" />
+                            <label className="flex items-center gap-2 text-[11px] font-bold text-gray-500 dark:text-gray-400">
+                                <Icon className="w-3.5 h-3.5" />
                                 {label}
                             </label>
                             <input
@@ -56,17 +56,17 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                         <PenTool className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Elevated Narrative</h2>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Tagline & Professional Summary</p>
+                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Bio & Headline</h2>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">A short tagline and summary</p>
                     </div>
                 </div>
                 
                 <div className="space-y-6">
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
-                                <Type className="w-3 h-3" />
-                                Brand Tagline
+                            <label className="flex items-center gap-2 text-[11px] font-bold text-gray-500 dark:text-gray-400">
+                                <Type className="w-3.5 h-3.5" />
+                                Short Tagline
                             </label>
                             <AIButton
                                 field="tagline"
@@ -86,8 +86,8 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                     
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
-                                <AlignLeft className="w-3 h-3" />
+                            <label className="flex items-center gap-2 text-[11px] font-bold text-gray-500 dark:text-gray-400">
+                                <AlignLeft className="w-3.5 h-3.5" />
                                 Professional Summary
                             </label>
                             <AIButton
@@ -114,8 +114,8 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                         <Cpu className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Expertise</h2>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Core skills & tools</p>
+                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Skills</h2>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">What you’re good at</p>
                     </div>
                 </div>
                 
@@ -153,8 +153,8 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                         <FolderOpen className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Portfolio Pieces</h2>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Showcase your best work ({localData.projects?.length || 0})</p>
+                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Projects</h2>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">List your best work ({localData.projects?.length || 0})</p>
                     </div>
                 </div>
                 
@@ -228,8 +228,8 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                         <History className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Professional Timeline</h2>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Your career journey ({localData.experience?.length || 0})</p>
+                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Experience</h2>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Your work history ({localData.experience?.length || 0})</p>
                     </div>
                 </div>
                 
