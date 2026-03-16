@@ -216,7 +216,7 @@ async def google_auth(
             httponly=True,
             max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
             expires=settings.refresh_token_expire_days * 24 * 60 * 60,
-            samesite="lax",
+            samesite="strict",
             secure=settings.env == "production",
             path="/api/auth/refresh", # Only send to refresh endpoint for extra security
         )
@@ -291,7 +291,7 @@ async def login(
         httponly=True,
         max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
         expires=settings.refresh_token_expire_days * 24 * 60 * 60,
-        samesite="lax",
+        samesite="strict",
         secure=settings.env == "production",
         path="/api/auth/refresh",
     )
@@ -345,7 +345,7 @@ async def refresh_token(
         httponly=True,
         max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
         expires=settings.refresh_token_expire_days * 24 * 60 * 60,
-        samesite="lax",
+        samesite="strict",
         secure=settings.env == "production",
         path="/api/auth/refresh",
     )

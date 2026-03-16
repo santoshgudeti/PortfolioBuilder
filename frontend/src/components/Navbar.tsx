@@ -4,7 +4,7 @@ import { Sun, Moon } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 
 const Navbar: React.FC = () => {
-    const { theme, toggleTheme, token } = useAuthStore()
+    const { theme, toggleTheme, user } = useAuthStore()
 
     return (
         <div className="fixed top-8 inset-x-0 z-50 flex justify-center px-6 pointer-events-none">
@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
                     <button onClick={toggleTheme} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors" aria-label="Toggle theme">
                         {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                     </button>
-                    {token ? (
+                    {user ? (
                         <Link to="/dashboard" className="btn-primary py-1.5 px-4 text-xs">Dashboard</Link>
                     ) : (
                         <>

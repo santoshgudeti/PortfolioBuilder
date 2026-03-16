@@ -28,6 +28,16 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        extra = "ignore" # Allow extra env vars without failing
+
+    @property
+    def is_production(self) -> bool:
+        return self.env.lower() == "production"
+
+    @property
+    def api_base_url(self) -> str:
+        # Useful for generating absolute links in emails
+        return f"{self.frontend_url}/api"
 
 
 @lru_cache()

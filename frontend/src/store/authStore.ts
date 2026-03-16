@@ -13,10 +13,9 @@ interface User {
 }
 
 interface AuthState {
-    token: string | null
     user: User | null
     theme: 'light' | 'dark'
-    setAuth: (token: string | null, user: User) => void
+    setAuth: (user: User | null) => void
     logout: () => Promise<void>
     setTheme: (theme: 'light' | 'dark') => void
     toggleTheme: () => void
@@ -26,11 +25,10 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
     persist(
         (set, get) => ({
-            token: null,
             user: null,
             theme: 'light',
 
-            setAuth: (token, user) => set({ token, user }),
+            setAuth: (user) => set({ user }),
 
             logout: async () => {
                 try {
@@ -40,7 +38,7 @@ export const useAuthStore = create<AuthState>()(
                 } catch (e) {
                     console.error("Logout cookie clear failed", e)
                 }
-                set({ token: null, user: null })
+                set({ user: null })
                 window.location.href = '/login'
             },
 

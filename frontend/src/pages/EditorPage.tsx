@@ -15,7 +15,7 @@ import { PenTool, Palette, Eye, Layout } from 'lucide-react'
 
 export default function EditorPage() {
     const queryClient = useQueryClient()
-    const { token } = useAuthStore()
+    const { user } = useAuthStore()
     const {
         parsedData, theme, templateId, mode, primaryColor, isPublished,
         slug, customDomain, setPortfolio, setTheme, setTemplateId,
@@ -44,7 +44,7 @@ export default function EditorPage() {
         queryKey: ['portfolio'],
         queryFn: () => portfolioApi.getMyPortfolio().then(r => r.data),
         retry: false,
-        enabled: !!token,
+        enabled: !!user,
     })
 
     useEffect(() => {

@@ -52,7 +52,7 @@ export default function GoogleSignInBox({ text = "Continue with Google" }: Props
                 // If it fails, we will need to adjust the backend.
                 const res = await authApi.googleLogin(codeResponse.access_token)
 
-                setAuth(res.data.access_token, res.data.user)
+                setAuth(res.data.user)
                 toast.success(`Welcome back, ${res.data.user.name}!`)
                 navigate('/dashboard')
             } catch (error: any) {

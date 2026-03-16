@@ -34,7 +34,7 @@ function formatUnknownError(reason: unknown): string {
 export default function UploadPage() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const { token } = useAuthStore()
+    const { user } = useAuthStore()
     const { setParsedData, setPortfolio } = usePortfolioStore()
 
     const [file, setFileState] = useState<File | null>(() => cachedSelectedFile)
@@ -135,7 +135,7 @@ export default function UploadPage() {
             }
         },
         retry: false,
-        enabled: !!token,
+        enabled: !!user,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
         staleTime: 5 * 60 * 1000,

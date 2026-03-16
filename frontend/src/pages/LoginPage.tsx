@@ -24,7 +24,7 @@ export default function LoginPage() {
         setUnverifiedEmail(null)
         try {
             const res = await authApi.login(data)
-            setAuth(res.data.access_token, res.data.user)
+            setAuth(res.data.user)
             toast.success(`Welcome back, ${res.data.user.name}! 👋`)
             
             navigate('/dashboard')

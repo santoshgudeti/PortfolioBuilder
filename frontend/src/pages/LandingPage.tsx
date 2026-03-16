@@ -150,7 +150,7 @@ const HowItWorksStep = ({ step, title, desc, icon: Icon, color }: typeof HOW_IT_
 )
 
 export default function LandingPage() {
-    const { theme, toggleTheme, token } = useAuthStore()
+    const { theme, toggleTheme, user } = useAuthStore()
 
     return (
         <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-900 dark:text-white overflow-x-hidden selection:bg-brand-500/30">
@@ -449,7 +449,7 @@ export default function LandingPage() {
                         Join 10,000+ professionals. It takes exactly 60 seconds. No credit card required.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link to={token ? "/upload" : "/register"} className="w-full sm:w-auto btn-brand px-12">
+                        <Link to={user ? "/upload" : "/register"} className="w-full sm:w-auto btn-brand px-12">
                             Get Started Free
                         </Link>
                         <Link to="/login" className="w-full sm:w-auto btn-secondary px-12 bg-white/5 border-white/10 text-white hover:bg-white/10">

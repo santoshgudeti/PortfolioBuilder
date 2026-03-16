@@ -2,7 +2,7 @@
 set -e
 
 echo "Running database migrations..."
-python migrate_prod_pg.py
+python -m alembic upgrade head
 
 echo "Starting FastAPI server..."
 exec uvicorn main:app --host 0.0.0.0 --port 8000
