@@ -295,15 +295,12 @@ async def analyze_portfolio_for_spam_action(
     if not portfolio:
         raise HTTPException(status_code=404, detail="Portfolio not found")
     
-    # Extract data for analysis
+    # Use the stored parsed payload instead of non-existent ORM fields.
+    parsed_data = json.loads(portfolio.parsed_data) if portfolio.parsed_data else {}
     analysis_data = {
         "slug": portfolio.slug,
-        "name": portfolio.name,
-        "bio": portfolio.bio,
-        "summary": portfolio.summary,
-        "experience": portfolio.experience,
-        "projects": portfolio.projects,
-        "skills": portfolio.skills,
+        "name": parsed_data.get("name", ""),
+        "parsed_data": parsed_data,
     }
     
     analysis = await analyze_portfolio_spam(analysis_data)

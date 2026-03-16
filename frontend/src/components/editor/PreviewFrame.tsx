@@ -38,7 +38,7 @@ export function PreviewFrame({
 
     return (
         <div className={`
-            ${previewFullscreen ? 'fixed inset-0 z-[100] flex flex-col bg-white dark:bg-gray-900 p-6' : 'hidden lg:flex lg:w-[48%] flex-col'} 
+            ${previewFullscreen ? 'fixed inset-0 z-[100] flex flex-col bg-white dark:bg-gray-900 p-6' : 'w-full h-full flex flex-col'} 
             transition-all duration-500 ease-in-out
         `}>
             <div className="flex items-center justify-between mb-6">

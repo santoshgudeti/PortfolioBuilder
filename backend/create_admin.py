@@ -2,26 +2,29 @@ import asyncio
 from database import AsyncSessionLocal
 from sqlalchemy import select
 from models.user import User
-from models.portfolio import Portfolio
 from utils.auth import hash_password
 
 from config import get_settings
 
 async def make_admin():
     settings = get_settings()
-    admin_email = "hamathopc@gmail.com"
-    
+    admin_email = settings.admin_email.strip().lower()
+
+    if not admin_email:
+        return
+
     async with AsyncSessionLocal() as db:
         res = await db.execute(select(User).where(User.email == admin_email))
         u = res.scalar_one_or_none()
         if not u:
-            # Create new admin if doesn't exist
-            # Note: We use a random/secure default password if not provided, 
-            # but usually for the first admin, we can use a known one or just rely on Google Auth
+            if not settings.admin_bootstrap_password:
+                print(f"Admin bootstrap skipped for {admin_email}: no ADMIN_BOOTSTRAP_PASSWORD configured.")
+                return
+
             u = User(
                 name='Senior Admin', 
                 email=admin_email, 
-                hashed_password=hash_password('Admin@2024!'), # Change on first login
+                hashed_password=hash_password(settings.admin_bootstrap_password),
                 is_admin=True, 
                 is_verified=True,
                 auth_provider="email"

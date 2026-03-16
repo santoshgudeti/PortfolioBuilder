@@ -43,9 +43,7 @@ class UserOut(BaseModel):
         from_attributes = True
 
 
-class Token(BaseModel):
-    access_token: Optional[str] = None
-    refresh_token: Optional[str] = None
+class SessionOut(BaseModel):
     token_type: str = "bearer"
     user: UserOut
 

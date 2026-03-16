@@ -15,7 +15,7 @@ from schemas.user import (
     ProfileUpdate,
     ResendVerification,
     ResetPassword,
-    Token,
+    SessionOut,
     UserCreate,
     UserLogin,
     UserOut,
@@ -126,7 +126,7 @@ async def register(
     return {"message": "Registration successful. Please check your email to verify your account."}
 
 
-@router.post("/google", response_model=Token)
+@router.post("/google", response_model=SessionOut)
 async def google_auth(
     data: GoogleAuth,
     request: Request,
@@ -170,10 +170,8 @@ async def google_auth(
         logger.info(f"Target Client ID: {settings.google_client_id}")
 
         if settings.google_client_id not in token_audiences:
-            # Some tokens might not have the full audience in these fields, 
-            # so we log a warning but maybe we should be strict in production.
             logger.warning(f"Google token audience mismatch. Expected {settings.google_client_id}")
-            # raise ValueError("Google token audience mismatch")
+            raise ValueError("Google token audience mismatch")
 
         # Get profile info
         profile_response = requests.get(
@@ -233,11 +231,7 @@ async def google_auth(
         
         set_auth_cookies(response, access_token, refresh_token, request, settings)
         
-        return Token(
-            access_token=access_token,
-            refresh_token=refresh_token,
-            user=UserOut.model_validate(user)
-        )
+        return SessionOut(user=UserOut.model_validate(user))
     except requests.RequestException as e:
         logger.error(f"Google auth request failed: {str(e)}")
         raise HTTPException(status_code=502, detail="Google authentication is temporarily unavailable")
@@ -248,7 +242,7 @@ async def google_auth(
         raise HTTPException(status_code=401, detail=f"Invalid Google token: {str(e)}")
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=SessionOut)
 async def login(
     credentials: UserLogin,
     request: Request,
@@ -290,14 +284,10 @@ async def login(
     # Set HttpOnly cookies
     set_auth_cookies(response, access_token, refresh_token, request, settings)
     
-    return Token(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        user=UserOut.model_validate(user)
-    )
+    return SessionOut(user=UserOut.model_validate(user))
 
 
-@router.post("/refresh", response_model=Token)
+@router.post("/refresh", response_model=SessionOut)
 async def refresh_token(
     request: Request,
     response: Response,
@@ -307,7 +297,7 @@ async def refresh_token(
     if not refresh_token:
         raise HTTPException(status_code=401, detail="Refresh token missing")
     
-    user_id = decode_token(refresh_token)
+    user_id = decode_token(refresh_token, expected_type="refresh")
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
         
@@ -326,11 +316,7 @@ async def refresh_token(
     
     set_auth_cookies(response, new_access_token, new_refresh_token, request, settings)
     
-    return Token(
-        access_token=new_access_token,
-        refresh_token=new_refresh_token,
-        user=UserOut.model_validate(user)
-    )
+    return SessionOut(user=UserOut.model_validate(user))
 
 
 @router.post("/logout")

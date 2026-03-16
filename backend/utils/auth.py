@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Any, Optional
 from jose import JWTError, jwt
 import bcrypt
 from fastapi import Depends, HTTPException, status, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from config import get_settings
@@ -11,7 +10,6 @@ from database import get_db
 from models.user import User
 
 settings = get_settings()
-bearer_scheme = HTTPBearer()
 
 
 def hash_password(password: str) -> str:
@@ -29,6 +27,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=settings.access_token_expire_minutes))
+    to_encode.setdefault("type", "access")
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
 
@@ -40,13 +39,24 @@ def create_refresh_token(data: dict) -> str:
     return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
 
 
-def decode_token(token: str) -> Optional[str]:
+def decode_token_payload(token: str) -> Optional[dict[str, Any]]:
     try:
-        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
-        user_id: str = payload.get("sub")
-        return user_id
+        return jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
     except JWTError:
         return None
+
+
+def decode_token(token: str, expected_type: Optional[str] = None) -> Optional[str]:
+    payload = decode_token_payload(token)
+    if not payload:
+        return None
+
+    token_type = payload.get("type", "access")
+    if expected_type and token_type != expected_type:
+        return None
+
+    user_id: str = payload.get("sub")
+    return user_id
 
 
 async def get_current_user(
@@ -68,7 +78,7 @@ async def get_current_user(
             detail="Not authenticated. Please log in.",
         )
     
-    user_id = decode_token(token)
+    user_id = decode_token(token, expected_type="access")
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -101,7 +111,7 @@ async def get_optional_user(
     if not token:
         return None
     
-    user_id = decode_token(token)
+    user_id = decode_token(token, expected_type="access")
     if not user_id:
         return None
         

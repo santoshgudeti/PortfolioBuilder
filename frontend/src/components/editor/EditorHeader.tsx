@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import {
     Link2, FileDown, ExternalLink, ToggleRight, ToggleLeft, Eye,
-    EyeOff, Globe, Save, Loader2, AlertCircle, CheckCircle2
+    EyeOff, Globe, Save, Loader2, AlertCircle, CheckCircle2, PenTool
 } from 'lucide-react'
 
 interface EditorHeaderProps {
@@ -71,10 +71,13 @@ export function EditorHeader({
                         )}
                         <button
                             onClick={onTogglePreview}
-                            className={`p-2.5 rounded-xl transition-all ${showPreview ? 'bg-brand-500/10 text-brand-500' : 'hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400'}`}
-                            title={showPreview ? "Hide Live Preview" : "Show Live Preview"}
+                            className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all ${showPreview ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-brand-500/10 text-brand-500'}`}
+                            title={showPreview ? "Switch to Editor" : "Switch to Preview"}
                         >
-                            {showPreview ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
+                            {showPreview ? <PenTool className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            <span className="text-[10px] font-black uppercase tracking-widest">
+                                {showPreview ? 'Edit Content' : 'Live Preview'}
+                            </span>
                         </button>
                     </div>
 

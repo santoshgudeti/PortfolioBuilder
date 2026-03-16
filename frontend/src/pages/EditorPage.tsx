@@ -30,7 +30,7 @@ export default function EditorPage() {
     const [isExportingPDF, setIsExportingPDF] = useState(false)
     const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
     const [previewFullscreen, setPreviewFullscreen] = useState(false)
-    const [showPreview, setShowPreview] = useState(true)
+    const [showPreview, setShowPreview] = useState(false)
     const [isMobile, setIsMobile] = useState(() => window.innerWidth < 1024)
     const initializedRef = useRef(false)
 
@@ -199,30 +199,27 @@ export default function EditorPage() {
     }
 
     return (
-        <div className={`max-w-[1600px] mx-auto animate-fade-in flex flex-col lg:flex-row ${showPreview ? 'gap-10' : 'gap-0'} lg:h-[calc(100vh-5rem)]`}>
-            {/* Editor Side */}
-            <div className={`w-full ${showPreview ? 'lg:w-[50%]' : 'lg:w-full'} flex flex-col overflow-hidden transition-all duration-500 ease-in-out`}>
-                <div className="flex-1 overflow-y-auto pr-4 pb-20 space-y-8 custom-scrollbar">
-                    <EditorHeader
-                        slug={slug}
-                        isPublished={isPublished}
-                        isDirty={isDirty}
-                        savedOnce={savedOnce}
-                        isExportingPDF={isExportingPDF}
-                        showPreview={showPreview}
-                        onDownloadPDF={handleDownloadPDF}
-                        onTogglePreview={() => {
-                            if (window.innerWidth < 1024) setPreviewFullscreen(true)
-                            else setShowPreview(s => !s)
-                        }}
-                        onPublish={() => publishMutation.mutate()}
-                        onSave={() => saveMutation.mutate()}
-                        isPublishPending={publishMutation.isPending}
-                        isSavePending={saveMutation.isPending}
-                    />
+        <div className="max-w-[1600px] mx-auto animate-fade-in flex flex-col h-[calc(100vh-5rem)] overflow-hidden">
+            <EditorHeader
+                slug={slug}
+                isPublished={isPublished}
+                isDirty={isDirty}
+                savedOnce={savedOnce}
+                isExportingPDF={isExportingPDF}
+                showPreview={showPreview}
+                onDownloadPDF={handleDownloadPDF}
+                onTogglePreview={() => setShowPreview(s => !s)}
+                onPublish={() => publishMutation.mutate()}
+                onSave={() => saveMutation.mutate()}
+                isPublishPending={publishMutation.isPending}
+                isSavePending={saveMutation.isPending}
+            />
 
+            <div className="flex-1 relative overflow-hidden">
+                {/* Editor Side */}
+                <div className={`absolute inset-0 w-full h-full flex flex-col overflow-y-auto pr-4 pb-20 space-y-8 custom-scrollbar transition-all duration-500 ease-in-out ${showPreview ? 'opacity-0 -translate-x-full pointer-events-none' : 'opacity-100 translate-x-0'}`}>
                     {/* Tabs */}
-                    <div className="flex gap-2 mb-8 bg-gray-100 dark:bg-white/[0.03] rounded-2xl p-1.5 w-fit border border-gray-200 dark:border-white/5 shadow-inner">
+                    <div className="flex gap-2 mb-8 bg-gray-100 dark:bg-white/[0.03] rounded-2xl p-1.5 w-fit border border-gray-200 dark:border-white/5 shadow-inner flex-shrink-0">
                         {[
                             { id: 'content', label: 'Content', icon: PenTool },
                             { id: 'theme', label: 'Design', icon: Palette },
@@ -268,25 +265,27 @@ export default function EditorPage() {
                         />
                     )}
                 </div>
-            </div>
 
-            {/* Preview Side */}
-            <PreviewFrame
-                slug={slug}
-                previewDevice={previewDevice}
-                previewFullscreen={previewFullscreen}
-                showPreview={showPreview}
-                isMobile={isMobile}
-                localData={localData}
-                theme={theme}
-                templateId={templateId}
-                mode={mode}
-                primaryColor={primaryColor}
-                hiddenSections={hiddenSections}
-                onSetDevice={setPreviewDevice}
-                onSetFullscreen={setPreviewFullscreen}
-                onSetShowPreview={setShowPreview}
-            />
+                {/* Preview Side */}
+                <div className={`absolute inset-0 w-full h-full transition-all duration-500 ease-in-out ${!showPreview ? 'opacity-0 translate-x-full pointer-events-none' : 'opacity-100 translate-x-0'}`}>
+                    <PreviewFrame
+                        slug={slug}
+                        previewDevice={previewDevice}
+                        previewFullscreen={previewFullscreen}
+                        showPreview={showPreview}
+                        isMobile={isMobile}
+                        localData={localData}
+                        theme={theme}
+                        templateId={templateId}
+                        mode={mode}
+                        primaryColor={primaryColor}
+                        hiddenSections={hiddenSections}
+                        onSetDevice={setPreviewDevice}
+                        onSetFullscreen={setPreviewFullscreen}
+                        onSetShowPreview={setShowPreview}
+                    />
+                </div>
+            </div>
         </div>
     )
 }
