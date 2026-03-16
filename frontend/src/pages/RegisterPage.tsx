@@ -78,10 +78,10 @@ export default function RegisterPage() {
                             <button
                                 onClick={handleResend}
                                 disabled={resending}
-                                className="btn-secondary w-full flex items-center justify-center gap-2"
+                                className="btn-secondary w-full flex items-center justify-center gap-2 transition-[transform,background-color,border-color,box-shadow]"
                             >
                                 {resending ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                                {resending ? 'Resending...' : "Didn't receive it? Resend"}
+                                {resending ? 'Resending…' : "Didn't receive it? Resend"}
                             </button>
 
                             <button
@@ -137,12 +137,14 @@ export default function RegisterPage() {
                         </div>
 
                         <div>
-                            <label className="label mb-1.5">Email</label>
+                            <label className="label mb-1.5" htmlFor="email">Email</label>
                             <input
+                                id="email"
                                 type="email"
                                 className="input"
                                 placeholder="you@example.com"
                                 autoComplete="email"
+                                spellCheck={false}
                                 {...register('email', { required: 'Email is required' })}
                             />
                             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
@@ -197,9 +199,9 @@ export default function RegisterPage() {
                             {errors.consent && <p className="text-red-500 text-[10px] mt-1 ml-9">{errors.consent.message}</p>}
                         </div>
 
-                        <button type="submit" disabled={loading} className="w-full mt-2 btn-primary py-2.5">
+                        <button type="submit" disabled={loading} className="w-full mt-2 btn-primary py-2.5 transition-[transform,background-color,box-shadow]">
                             {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-                            {loading ? 'Creating account...' : 'Create Account'}
+                            {loading ? 'Creating account…' : 'Create Account'}
                         </button>
                     </form>
 

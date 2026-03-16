@@ -42,7 +42,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Sidebar */}
             <aside className={`
                 fixed inset-y-0 left-0 z-50 bg-white dark:bg-black border-r border-gray-200 dark:border-white/10
-                transform transition-all duration-200 ease-in-out
+                transform transition-[transform,width] duration-200 ease-in-out
                 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
                 lg:relative lg:translate-x-0
                 ${collapsed ? 'lg:w-16' : 'lg:w-64'}
@@ -80,7 +80,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                     to="/admin"
                                     onClick={() => setMobileOpen(false)}
                                     title={collapsed ? "Admin Dashboard" : undefined}
-                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm ${collapsed ? 'justify-center' : ''} ${location.pathname === '/admin'
+                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-[background-color,color,border-color,box-shadow] shadow-sm focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 ${collapsed ? 'justify-center' : ''} ${location.pathname === '/admin'
                                         ? 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800/30'
                                         : 'bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/10 dark:text-indigo-400 dark:hover:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/30'
                                         }`}
@@ -100,7 +100,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                     to={isLocked ? '/login' : to}
                                     onClick={() => setMobileOpen(false)}
                                     title={collapsed ? (isLocked ? `${label} (Sign in required)` : label) : undefined}
-                                    className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${collapsed ? 'justify-center' : ''} ${active
+                                    className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-[background-color,color] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${collapsed ? 'justify-center' : ''} ${active
                                         ? 'bg-gray-100 text-gray-950 dark:bg-white/10 dark:text-white border border-transparent'
                                         : isLocked
                                             ? 'text-gray-400 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer'
@@ -125,7 +125,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         <button
                             onClick={toggleTheme}
                             title={collapsed ? (theme === 'dark' ? 'Light Mode' : 'Dark Mode') : undefined}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all w-full hover:bg-gray-100 dark:hover:bg-white/5 ${collapsed ? 'justify-center px-3' : 'justify-start'}`}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-[background-color] w-full hover:bg-gray-100 dark:hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${collapsed ? 'justify-center px-3' : 'justify-start'}`}
                         >
                             {theme === 'dark' ? <Sun className="w-4 h-4 flex-shrink-0" /> : <Moon className="w-4 h-4 flex-shrink-0" />}
                             {!collapsed && (theme === 'dark' ? 'Light Mode' : 'Dark Mode')}
@@ -134,7 +134,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             <button
                                 onClick={logout}
                                 title={collapsed ? 'Sign Out' : undefined}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 ${collapsed ? 'justify-center px-3' : 'justify-start'}`}
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-[background-color] w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 ${collapsed ? 'justify-center px-3' : 'justify-start'}`}
                             >
                                 <LogOut className="w-4 h-4 flex-shrink-0" />
                                 {!collapsed && 'Sign Out'}

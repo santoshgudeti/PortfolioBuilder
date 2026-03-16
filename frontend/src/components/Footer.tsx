@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
                                 PortfolioBuilder.AI
                             </span>
                         </Link>
-                        <p className="text-gray-600 dark:text-gray-400 max-w-xs text-sm leading-relaxed">
+                        <p className="text-gray-600 dark:text-gray-400 max-w-xs text-sm leading-relaxed text-pretty">
                             The ultimate digital identity engine for modern professionals. Powered by AI, designed by experts.
                         </p>
                     </div>
@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
                         <div className="text-xs font-semibold text-gray-500 dark:text-gray-500 uppercase tracking-wide mb-8">Product</div>
                         <ul className="space-y-4">
                             {['Features', 'Templates', 'API'].map(item => (
-                                <li key={item}><a href="#" className="text-sm text-gray-600 dark:text-gray-400 hover:text-brand-500 transition-colors">{item}</a></li>
+                                <li key={item}><a href="#" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white transition-[color,transform] focus-visible:text-brand-500 outline-none">{item}</a></li>
                             ))}
                         </ul>
                     </div>
@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
                 </div>
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8 pt-12 border-t border-gray-200 dark:border-gray-700">
                     <div className="text-xs text-gray-500 dark:text-gray-500 space-y-2">
-                        <div>© {new Date().getFullYear()} PortfolioBuilder.AI. All rights reserved.</div>
+                        <div>© <span className="tabular-nums">{new Date().getFullYear()}</span> PortfolioBuilder.AI. All rights reserved.</div>
                         <div className="font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest text-[10px]">Built by HamathOPC Pvt Ltd</div>
                     </div>
                     <div className="flex gap-8">

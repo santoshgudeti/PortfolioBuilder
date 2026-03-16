@@ -105,7 +105,7 @@ export default function DashboardPage() {
                             href={`/u/${data.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-gray-100 dark:bg-white/5 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-sm"
+                            className="bg-gray-100 dark:bg-white/5 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 px-5 py-2.5 rounded-xl text-xs font-bold transition-[background-color,color,transform] flex items-center gap-2 shadow-sm focus-visible:ring-2 focus-visible:ring-brand-500"
                         >
                             <Globe className="w-3.5 h-3.5" /> View Portfolio
                         </a>
@@ -115,9 +115,9 @@ export default function DashboardPage() {
 
             {/* Quick actions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <Link to="/upload" className="group relative card p-8 overflow-hidden border-0 bg-white dark:bg-white/[0.03] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:-translate-y-1 transition-all">
+                <Link to="/upload" className="group relative card p-8 overflow-hidden border-0 bg-white dark:bg-white/[0.03] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:-translate-y-1 transition-[transform,background-color,box-shadow] focus-visible:ring-2 focus-visible:ring-brand-500">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-brand-500/10 transition-colors" />
-                    <div className="w-14 h-14 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6 group-hover:bg-brand-500 group-hover:scale-110 transition-all duration-300 shadow-sm">
+                    <div className="w-14 h-14 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6 group-hover:bg-brand-500 group-hover:scale-110 transition-[transform,background-color] duration-300 shadow-sm">
                         <Upload className="w-7 h-7 text-brand-600 dark:text-brand-400 group-hover:text-white" />
                     </div>
                     <h3 className="font-black text-gray-900 dark:text-white mb-2 text-xl tracking-tight uppercase">Upload History</h3>
@@ -127,9 +127,9 @@ export default function DashboardPage() {
                     </div>
                 </Link>
 
-                <Link to="/editor" className="group relative card p-8 overflow-hidden border-0 bg-white dark:bg-white/[0.03] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:-translate-y-1 transition-all">
+                <Link to="/editor" className="group relative card p-8 overflow-hidden border-0 bg-white dark:bg-white/[0.03] shadow-[0_8px_30_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:-translate-y-1 transition-[transform,background-color,box-shadow] focus-visible:ring-2 focus-visible:ring-purple-500">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-purple-500/10 transition-colors" />
-                    <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:bg-purple-500 group-hover:scale-110 transition-all duration-300 shadow-sm">
+                    <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:bg-purple-500 group-hover:scale-110 transition-[transform,background-color] duration-300 shadow-sm">
                         <Edit3 className="w-7 h-7 text-purple-600 dark:text-purple-400 group-hover:text-white" />
                     </div>
                     <h3 className="font-black text-gray-900 dark:text-white mb-2 text-xl tracking-tight uppercase">Aesthetics</h3>
@@ -178,7 +178,7 @@ export default function DashboardPage() {
                                 { label: 'Layout Theme', value: (data.theme || 'minimal').toUpperCase() },
                             ].map(({ label, value }) => (
                                 <div key={label} className="text-center">
-                                    <p className="text-3xl font-black text-brand-500 dark:text-brand-500 tracking-tighter">{value}</p>
+                                    <p className="text-3xl font-black text-brand-500 dark:text-brand-500 tracking-tighter tabular-nums">{value}</p>
                                     <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2 font-black uppercase tracking-widest leading-none">{label}</p>
                                 </div>
                             ))}

@@ -101,7 +101,7 @@ export default function LoginPage() {
                                     className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors"
                                 >
                                     {resending ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
-                                    {resending ? 'Sending...' : 'Resend verification email'}
+                                    {resending ? 'Sending…' : 'Resend verification email'}
                                 </button>
                             </div>
                         </div>
@@ -109,12 +109,14 @@ export default function LoginPage() {
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div>
-                            <label className="label mb-1.5">Email</label>
+                            <label className="label mb-1.5" htmlFor="email">Email</label>
                             <input
+                                id="email"
                                 type="email"
                                 className="input"
                                 placeholder="you@example.com"
                                 autoComplete="email"
+                                spellCheck={false}
                                 {...register('email', { required: 'Email is required' })}
                             />
                             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
@@ -146,9 +148,9 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <button type="submit" disabled={loading} className="w-full mt-2 btn-primary py-2.5">
+                        <button type="submit" disabled={loading} className="w-full mt-2 btn-primary py-2.5 transition-[transform,background-color,box-shadow]">
                             {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-                            {loading ? 'Signing in...' : 'Sign In'}
+                            {loading ? 'Signing in…' : 'Sign In'}
                         </button>
                     </form>
 

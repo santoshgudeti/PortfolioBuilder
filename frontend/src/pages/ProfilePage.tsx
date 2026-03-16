@@ -140,9 +140,9 @@ export default function ProfilePage() {
                                 className="input flex-1"
                                 {...registerName('name', { required: 'Name is required', minLength: { value: 2, message: 'Min 2 characters' } })}
                             />
-                            <button type="submit" disabled={nameSaving} className="btn-primary text-sm flex-shrink-0">
+                            <button type="submit" disabled={nameSaving} className="btn-primary text-sm flex-shrink-0 transition-[background-color,transform,box-shadow]">
                                 {nameSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                                {nameSaving ? 'Saving...' : 'Save'}
+                                {nameSaving ? 'Saving…' : 'Save'}
                             </button>
                         </div>
                         {nameErrors.name && <p className="text-red-500 text-xs mt-1">{nameErrors.name.message}</p>}
@@ -219,9 +219,9 @@ export default function ProfilePage() {
                             />
                             {pwdErrors.confirm_password && <p className="text-red-500 text-xs mt-1">{pwdErrors.confirm_password.message}</p>}
                         </div>
-                        <button type="submit" disabled={passwordSaving} className="btn-primary text-sm">
+                        <button type="submit" disabled={passwordSaving} className="btn-primary text-sm transition-[background-color,transform,box-shadow]">
                             {passwordSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-                            {passwordSaving ? 'Saving...' : 'Change Password'}
+                            {passwordSaving ? 'Saving…' : 'Change Password'}
                         </button>
                     </form>
                 </div>

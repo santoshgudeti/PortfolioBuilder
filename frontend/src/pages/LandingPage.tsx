@@ -193,14 +193,14 @@ export default function LandingPage() {
                     <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in [animation-delay:400ms] mb-20 sm:mb-28">
                         <Link
                             to="/upload"
-                            className="w-full sm:w-auto btn-primary px-10 py-3.5 flex items-center justify-center gap-2 group"
+                            className="w-full sm:w-auto btn-primary px-10 py-3.5 flex items-center justify-center gap-2 group transition-[transform,background-color,box-shadow]"
                         >
                             Build Your Story
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Link>
                         <Link
                             to="/login"
-                            className="w-full sm:w-auto btn-secondary px-10 py-3.5 bg-white dark:bg-white/5"
+                            className="w-full sm:w-auto btn-secondary px-10 py-3.5 bg-white dark:bg-white/5 transition-[transform,background-color,border-color]"
                         >
                             Watch Demo
                         </Link>
@@ -223,6 +223,9 @@ export default function LandingPage() {
                                 src="/images/landing/portfolio-mockup.png" 
                                 alt="PortfolioBuilder.AI Interface" 
                                 className="w-full h-auto"
+                                width={1200}
+                                height={800}
+                                fetchPriority="high"
                             />
                         </div>
                     </div>
@@ -234,7 +237,7 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-between items-center gap-12">
                     {STATS.map(({ value, label }) => (
                         <div key={label} className="text-center md:text-left">
-                            <div className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1">{value}</div>
+                            <div className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 tabular-nums">{value}</div>
                             <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">{label}</div>
                         </div>
                     ))}
@@ -262,6 +265,9 @@ export default function LandingPage() {
                                 src="/images/landing/ai-editor.png" 
                                 alt="AI Editor Preview" 
                                 className="relative rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl"
+                                width={800}
+                                height={600}
+                                loading="lazy"
                             />
                         </div>
                     </div>
@@ -276,6 +282,9 @@ export default function LandingPage() {
                             src="/images/landing/resume-analysis.png" 
                             alt="AI Resume Analysis Visual" 
                             className="rounded-3xl shadow-2xl"
+                            width={800}
+                            height={600}
+                            loading="lazy"
                         />
                     </div>
                     <div className="order-1 lg:order-2">
@@ -319,6 +328,9 @@ export default function LandingPage() {
                             src="/images/landing/portfolio-mockup.png" 
                             alt="Portfolio Showcase Mockup" 
                             className="rounded-3xl border border-gray-200 dark:border-white/10 shadow-xl"
+                            width={1200}
+                            height={800}
+                            loading="lazy"
                         />
                     </div>
 
@@ -361,6 +373,9 @@ export default function LandingPage() {
                             src="/images/landing/success-impact.png" 
                             alt="Professional Success Impact" 
                             className="rounded-3xl shadow-2xl"
+                            width={800}
+                            height={600}
+                            loading="lazy"
                         />
                     </div>
                 </div>

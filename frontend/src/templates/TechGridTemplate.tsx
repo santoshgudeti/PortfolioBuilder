@@ -93,7 +93,7 @@ export default function TechGridTemplate({ pd, data, color, rgb, mode, hiddenSec
         const subject = encodeURIComponent(`Portfolio inquiry from ${contactForm.name}`)
         const body = encodeURIComponent(`Hi ${pd.name},\n\n${contactForm.message}\n\nBest regards,\n${contactForm.name}\n${contactForm.email}`)
         window.open(`mailto:${pd.email}?subject=${subject}&body=${body}`)
-        toast.success('Opening your email client...')
+        toast.success('Opening your email client…')
     }
 
     return (
@@ -137,17 +137,17 @@ export default function TechGridTemplate({ pd, data, color, rgb, mode, hiddenSec
                             Building things <br />
                             <span style={{ color }}>that matter.</span>
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-md">
+                        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-md text-pretty">
                             {pd.tagline || pd.summary}
                         </p>
                         <div className="flex flex-wrap gap-3 mt-auto">
                             {pd.email && (
-                                <a href={`mailto:${pd.email}`} style={{ backgroundColor: color }} className="px-6 py-3 rounded-2xl text-white font-semibold text-sm flex items-center gap-2 shadow-lg hover:brightness-110 transition-all">
+                                <a href={`mailto:${pd.email}`} style={{ backgroundColor: color }} className="px-6 py-3 rounded-2xl text-white font-semibold text-sm flex items-center gap-2 shadow-lg hover:brightness-110 transition-[background-color,filter,transform] focus-visible:ring-2 focus-visible:ring-offset-2">
                                     <Send className="w-4 h-4" /> Hire Me
                                 </a>
                             )}
                             {pd.github && (
-                                <a href={pd.github} target="_blank" rel="noopener noreferrer" className="px-6 py-3 rounded-2xl bg-gray-100 dark:bg-white/5 border border-black/5 dark:border-white/10 text-gray-900 dark:text-white font-semibold text-sm flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-white/10 transition-all">
+                                <a href={pd.github} target="_blank" rel="noopener noreferrer" className="px-6 py-3 rounded-2xl bg-gray-100 dark:bg-white/5 border border-black/5 dark:border-white/10 text-gray-900 dark:text-white font-semibold text-sm flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-white/10 transition-[background-color,border-color] focus-visible:ring-2 focus-visible:ring-offset-2">
                                     <Github className="w-4 h-4" /> GitHub
                                 </a>
                             )}
@@ -159,7 +159,7 @@ export default function TechGridTemplate({ pd, data, color, rgb, mode, hiddenSec
                         <div className="md:col-span-1 rounded-3xl p-6 bg-white dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-sm flex flex-col gap-4 justify-center">
                             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Connect</h3>
                             {pd.location && <div className="flex gap-3 text-sm dark:text-gray-300 font-mono items-center"><MapPin className="w-4 h-4 text-gray-400" /> {pd.location}</div>}
-                            {pd.phone && <div className="flex gap-3 text-sm dark:text-gray-300 font-mono items-center"><Phone className="w-4 h-4 text-gray-400" /> {pd.phone}</div>}
+                            {pd.phone && <div className="flex gap-3 text-sm dark:text-gray-300 font-mono items-center tabular-nums"><Phone className="w-4 h-4 text-gray-400" /> {pd.phone}</div>}
                             {pd.linkedin && <a href={pd.linkedin} target="_blank" rel="noopener noreferrer" className="flex gap-3 text-sm dark:text-gray-300 font-mono items-center hover:text-brand-500 transition-colors"><Linkedin className="w-4 h-4 text-gray-400" /> LinkedIn <ArrowUpRight className="w-3 h-3 ml-auto" /></a>}
                             {pd.website && <a href={pd.website} target="_blank" rel="noopener noreferrer" className="flex gap-3 text-sm dark:text-gray-300 font-mono items-center hover:text-brand-500 transition-colors"><Globe className="w-4 h-4 text-gray-400" /> Website <ArrowUpRight className="w-3 h-3 ml-auto" /></a>}
                         </div>
@@ -207,7 +207,7 @@ export default function TechGridTemplate({ pd, data, color, rgb, mode, hiddenSec
                                 {pd.education.map((edu: any, i: number) => (
                                     <div key={i}>
                                         <h4 className="font-bold dark:text-white text-sm">{edu.degree}</h4>
-                                        <p className="text-xs text-gray-500 font-mono mt-1">{edu.institution} • {edu.year}</p>
+                                        <p className="text-xs text-gray-500 font-mono mt-1 tabular-nums">{edu.institution} • {edu.year}</p>
                                     </div>
                                 ))}
                             </div>
@@ -218,7 +218,7 @@ export default function TechGridTemplate({ pd, data, color, rgb, mode, hiddenSec
                     {pd.projects?.length > 0 && !hiddenSections.has('projects') && pd.projects.map((proj: any, i: number) => {
                         const colSpanClass = i % 3 === 0 ? 'md:col-span-2' : 'md:col-span-1';
                         return (
-                            <div key={`proj-${i}`} className={`${colSpanClass} rounded-3xl p-6 border border-black/5 dark:border-white/5 shadow-sm flex flex-col relative group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${i % 2 === 0 ? 'bg-white dark:bg-white/5' : 'bg-gray-50 dark:bg-black'}`}>
+                            <div key={`proj-${i}`} className={`${colSpanClass} rounded-3xl p-6 border border-black/5 dark:border-white/5 shadow-sm flex flex-col relative group overflow-hidden transition-[transform,background-color,border-color,box-shadow] duration-300 hover:shadow-lg hover:-translate-y-1 ${i % 2 === 0 ? 'bg-white dark:bg-white/5' : 'bg-gray-50 dark:bg-black'} focus-within:ring-2 focus-within:ring-brand-500`}>
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="w-10 h-10 rounded-2xl flex items-center justify-center font-bold" style={{ backgroundColor: `rgba(${rgb},0.1)`, color }}>
                                         {proj.title?.[0]?.toUpperCase()}
@@ -248,7 +248,7 @@ export default function TechGridTemplate({ pd, data, color, rgb, mode, hiddenSec
                                     <div key={i} className="relative pl-6 border-l-2" style={{ borderColor: `rgba(${rgb},0.3)` }}>
                                         <div className="absolute top-0 -left-[9px] w-4 h-4 rounded-full border-4 border-gray-100 dark:border-gray-900 bg-white" style={{ borderColor: color }} />
                                         <h4 className="font-bold dark:text-white">{exp.role}</h4>
-                                        <p className="text-sm text-gray-500 font-mono mb-2">{exp.company} • {exp.duration}</p>
+                                        <p className="text-sm text-gray-500 font-mono mb-2 tabular-nums">{exp.company} • {exp.duration}</p>
                                         <p className="text-sm text-gray-600 dark:text-gray-400">{exp.description}</p>
                                     </div>
                                 ))}

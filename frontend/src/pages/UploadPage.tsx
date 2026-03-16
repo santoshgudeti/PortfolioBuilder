@@ -160,7 +160,7 @@ export default function UploadPage() {
                 slug: data.slug,
             })
             queryClient.invalidateQueries({ queryKey: ['portfolio'] })
-            toast.success('Resume parsed successfully! Redirecting to editor...')
+            toast.success('Resume parsed successfully! Redirecting to editor…')
             setTimeout(() => navigate('/editor'), 1500)
         },
         onError: (err: any) => {
@@ -336,7 +336,7 @@ export default function UploadPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{file.name || 'Selected file'}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{(file.size / 1024).toFixed(1)} KB</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 tabular-nums">{(file.size / 1024).toFixed(1)} KB</p>
                     </div>
                     <button onClick={() => setSelectedFile(null)} className="self-start rounded-full p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 sm:self-auto">
                         <X className="w-4 h-4" />
@@ -398,7 +398,7 @@ export default function UploadPage() {
                 <>
                     {mutation.isPending && (
                         <p className="text-xs text-amber-600 dark:text-amber-400 text-center mt-2 font-medium">
-                            Keep this screen open while AI is processing...
+                            Keep this screen open while AI is processing…
                         </p>
                     )}
                     <button
@@ -409,7 +409,7 @@ export default function UploadPage() {
                         {mutation.isPending ? (
                             <>
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                Parsing with AI...
+                                Parsing with AI…
                             </>
                         ) : (
                             <>
@@ -424,7 +424,7 @@ export default function UploadPage() {
             {mutation.isSuccess && (
                 <div className="mt-4 flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-medium">
                     <CheckCircle className="w-4 h-4" />
-                    Portfolio generated! Redirecting to editor...
+                    Portfolio generated! Redirecting to editor…
                 </div>
             )}
 
