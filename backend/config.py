@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 7
     frontend_url: str = "http://localhost:5173"
     google_client_id: str = ""
-    admin_email: str = ""
+    admin_email: str = "hamathopc@gmail.com"
     # Email settings (for Phase 3)
     mail_username: str = ""
     mail_password: str = ""

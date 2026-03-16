@@ -17,4 +17,5 @@ services:
       - ./.env
     volumes:
       - ./backend/uploads:/app/backend/uploads
+      - ./backend/resume2portfolio.db:/app/backend/resume2portfolio.db
     restart: unless-stopped

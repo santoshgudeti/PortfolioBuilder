@@ -26,6 +26,11 @@ async def lifespan(app: FastAPI):
         await init_db()
         app.state.db_ready = True
         logger.info("Database initialized successfully")
+        
+        # Ensure initial admin exists
+        from create_admin import make_admin
+        await make_admin()
+        
     except Exception:
         app.state.db_ready = False
         logger.exception("Database initialization failed")
