@@ -6,7 +6,8 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, Depends, FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.middleware.proxy_headers import ProxyHeadersMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from loguru import logger
 from sqlalchemy import text
@@ -79,9 +80,10 @@ if not allowed_origins or "*" in allowed_origins:
             allowed_origins.append("http://localhost:3000")
 
 # Ensure we have at least one origin if allow_credentials is True
-if not allowed_origins and settings.env != "production":
+if not allowed_origins and not settings.is_production:
      allowed_origins = ["http://localhost:5173"]
 
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=["*"])
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 app.add_middleware(
