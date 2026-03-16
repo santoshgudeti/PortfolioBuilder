@@ -4,5 +4,5 @@ set -e
 echo "Running database migrations..."
 python -m alembic upgrade head
 
-echo "Starting FastAPI server..."
-exec uvicorn main:app --host 0.0.0.0 --port 8000
+# Starting FastAPI server (using PORT env var if available for cloud providers)
+exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
