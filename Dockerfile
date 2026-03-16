@@ -49,5 +49,8 @@ COPY --from=frontend-build /build/backend/static /app/backend/static
 # Expose backend port
 EXPOSE 8000
 
+# Make start script executable
+RUN chmod +x start.sh
+
 # Start app
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./start.sh"]
