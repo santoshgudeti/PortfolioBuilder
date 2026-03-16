@@ -7,8 +7,8 @@ const Navbar: React.FC = () => {
     const { theme, toggleTheme, user } = useAuthStore()
 
     return (
-        <div className="fixed top-8 inset-x-0 z-50 flex justify-center px-6 pointer-events-none">
-            <nav className="max-w-5xl w-full h-16 flex items-center justify-between px-6 pointer-events-auto" role="navigation" aria-label="Main navigation">
+        <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-6 pointer-events-none">
+            <nav className="max-w-5xl w-full bg-white/90 dark:bg-black/90 backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-sm rounded-xl h-12 flex items-center justify-between px-6 pointer-events-auto" role="navigation" aria-label="Main navigation">
                 <Link to="/" className="flex items-center gap-2 group outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg p-1" aria-label="PortfolioBuilder.AI Home">
                     <span className="text-xl font-black tracking-tighter text-gray-950 dark:text-white transition-opacity group-hover:opacity-80">
                         PortfolioBuilder<span className="text-brand-600 dark:text-brand-400">.AI</span>
