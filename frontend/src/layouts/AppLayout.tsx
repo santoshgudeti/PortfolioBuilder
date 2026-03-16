@@ -57,11 +57,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             </div>
                         ) : (
                             <div className="flex items-center justify-center flex-1">
-                                <img 
-                                    src={theme === 'dark' ? '/assets/branding/logo_dark.png' : '/assets/branding/logo_light.png'} 
-                                    alt="PortfolioBuilder.AI" 
-                                    className="h-36 w-auto object-contain"
-                                />
+                                <span className="text-lg font-black tracking-tighter text-gray-900 dark:text-white">
+                                    PortfolioBuilder<span className="text-brand-600 dark:text-brand-400">.AI</span>
+                                </span>
                             </div>
                         )}
                         {/* Desktop collapse button */}
@@ -212,11 +210,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         <Menu className="w-5 h-5" />
                     </button>
                     <div className="flex items-center justify-center">
-                        <img 
-                            src={theme === 'dark' ? '/assets/branding/logo_dark.png' : '/assets/branding/logo_light.png'} 
-                            alt="PortfolioBuilder.AI" 
-                            className="h-32 w-auto object-contain"
-                        />
+                        <span className="text-lg font-black tracking-tighter text-gray-900 dark:text-white">
+                            PortfolioBuilder<span className="text-brand-600 dark:text-brand-400">.AI</span>
+                        </span>
                     </div>
                 </header>
 

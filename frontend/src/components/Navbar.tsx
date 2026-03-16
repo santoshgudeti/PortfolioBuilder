@@ -8,13 +8,11 @@ const Navbar: React.FC = () => {
 
     return (
         <div className="fixed top-8 inset-x-0 z-50 flex justify-center px-6 pointer-events-none">
-            <nav className="max-w-5xl w-full h-48 flex items-center justify-between px-6 pointer-events-auto" role="navigation" aria-label="Main navigation">
-                <Link to="/" className="flex items-center outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg p-1" aria-label="PortfolioBuilder.AI Home">
-                    <img 
-                        src={theme === 'dark' ? '/assets/branding/logo_dark.png' : '/assets/branding/logo_light.png'} 
-                        alt="PortfolioBuilder.AI" 
-                        className="h-40 w-auto object-contain"
-                    />
+            <nav className="max-w-5xl w-full h-16 flex items-center justify-between px-6 pointer-events-auto" role="navigation" aria-label="Main navigation">
+                <Link to="/" className="flex items-center gap-2 group outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg p-1" aria-label="PortfolioBuilder.AI Home">
+                    <span className="text-xl font-black tracking-tighter text-gray-950 dark:text-white transition-opacity group-hover:opacity-80">
+                        PortfolioBuilder<span className="text-brand-600 dark:text-brand-400">.AI</span>
+                    </span>
                 </Link>
 
                 <div className="hidden md:flex items-center gap-8">
