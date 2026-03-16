@@ -75,7 +75,11 @@ export default function App() {
                 setInitialized(true)
             })
             .catch((err: any) => {
-                if (user) setAuth(null)
+                // Only clear if explicitly unauthorized
+                const status = err.response?.status
+                if (status === 401 || status === 403) {
+                    if (user) setAuth(null)
+                }
                 setInitialized(true)
             })
     }, [initTheme, setAuth, setInitialized])

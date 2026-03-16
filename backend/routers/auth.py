@@ -200,7 +200,7 @@ async def google_auth(
         user.refresh_token = refresh_token
         await db.commit()
         
-            # Set HttpOnly cookies
+        # Set HttpOnly cookies
         is_prod = settings.env == "production"
         response.set_cookie(
             key="access_token",

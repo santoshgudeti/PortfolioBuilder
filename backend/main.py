@@ -63,25 +63,35 @@ app.state.db_ready = False
 _raw_origins = settings.frontend_url or "http://localhost:5173"
 allowed_origins = [o.strip().rstrip("/") for o in _raw_origins.split(",") if o.strip()]
 
-if "*" in allowed_origins:
-    allowed_origins = ["*"]
-else:
-    if "http://localhost:5173" not in allowed_origins:
-        allowed_origins.append("http://localhost:5173")
-    if "http://localhost:3000" not in allowed_origins:
-        allowed_origins.append("http://localhost:3000")
+# In production, we MUST have specific origins for credentials (cookies) to work.
+if not allowed_origins or "*" in allowed_origins:
+    if settings.is_production:
+        logger.warning("CORS: Specific frontend_url not set in production. Cookies will likely be blocked.")
+        # Fallback to a wider but valid list if possible, or keep as is and warn
+        if "*" in allowed_origins:
+            # We must remove "*" because allow_credentials=True
+            allowed_origins = [o for o in allowed_origins if o != "*"]
+    else:
+        # Development fallbacks
+        if "http://localhost:5173" not in allowed_origins:
+            allowed_origins.append("http://localhost:5173")
+        if "http://localhost:3000" not in allowed_origins:
+            allowed_origins.append("http://localhost:3000")
 
-allow_credentials = "*" not in allowed_origins
+# Ensure we have at least one origin if allow_credentials is True
+if not allowed_origins and settings.env != "production":
+     allowed_origins = ["http://localhost:5173"]
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https://.*\.vercel\.app",
-    allow_credentials=allow_credentials,
+    allow_origin_regex=r"https://.*\.vercel\.app" if settings.is_production else None,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Set-Cookie"],
 )
 
 
