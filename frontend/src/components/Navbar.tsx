@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
                     <img 
                         src={theme === 'dark' ? '/assets/branding/logo_dark.png' : '/assets/branding/logo_light.png'} 
                         alt="PortfolioBuilder.AI" 
-                        className="h-7 w-auto object-contain"
+                        className="h-9 w-auto object-contain"
                     />
                 </Link>
 

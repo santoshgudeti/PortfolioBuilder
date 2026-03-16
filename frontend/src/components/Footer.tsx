@@ -11,12 +11,12 @@ const Footer: React.FC = () => {
                             <img 
                                 src="/assets/branding/logo_light.png" 
                                 alt="PortfolioBuilder.AI" 
-                                className="h-8 w-auto object-contain dark:hidden"
+                                className="h-10 w-auto object-contain dark:hidden"
                             />
                             <img 
                                 src="/assets/branding/logo_dark.png" 
                                 alt="PortfolioBuilder.AI" 
-                                className="h-8 w-auto object-contain hidden dark:block"
+                                className="h-10 w-auto object-contain hidden dark:block"
                             />
                         </Link>
                         <p className="text-gray-600 dark:text-gray-400 max-w-xs text-sm leading-relaxed text-pretty">
