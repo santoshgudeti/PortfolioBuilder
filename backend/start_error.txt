@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\Users\cogni\PortfolioBuilder\backend\test_start.py", line 5, in <module>
+    import main
+  File "C:\Users\cogni\PortfolioBuilder\backend\main.py", line 14, in <module>
+    from routers import admin, auth, portfolio, resume, stripe
+  File "C:\Users\cogni\PortfolioBuilder\backend\routers\stripe.py", line 5, in <module>
+    from utils.auth_utils import get_current_user
+ModuleNotFoundError: No module named 'utils.auth_utils'

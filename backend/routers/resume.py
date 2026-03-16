@@ -1,4 +1,5 @@
 import json
+from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status, Request
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,10 +12,10 @@ from services.parser import extract_text
 from services.groq_service import parse_resume_with_groq
 from services.portfolio_service import create_portfolio, update_portfolio
 from services.rustfs_service import rustfs_service
-from utils.auth import get_current_user, get_optional_user
+from utils.auth import get_current_user
 from utils.rate_limit import rate_limiter
 
-from typing import Optional
+
 
 router = APIRouter(prefix="/resume", tags=["Resume"])
 
@@ -28,14 +29,14 @@ async def upload_resume(
     tone: str = Form("professional"),
     mode: str = Form("replace"),
     db: AsyncSession = Depends(get_db),
-    current_user: Optional[User] = Depends(get_optional_user),
+    current_user: User = Depends(get_current_user),
 ):
     ip = request.client.host if request.client else 'unknown'
-    rate_limit_key = f"resume_upload:{current_user.id if current_user else 'guest'}:{ip}"
+    rate_limit_key = f"resume_upload:{current_user.id}:{ip}"
     
     rate_limiter.enforce(
         key=rate_limit_key,
-        limit=6 if current_user else 3,  # Stricter for guests
+        limit=6, 
         window_seconds=300,
         message="Too many upload attempts. Please wait a few minutes and try again.",
     )
@@ -59,10 +60,9 @@ async def upload_resume(
     resume_object_key = None
     if rustfs_service.s3_client:
         try:
-            resume_object_key = await rustfs_service.upload_file(file_bytes, file.filename, current_user.id if current_user else "guest")
+            resume_object_key = await rustfs_service.upload_file(file_bytes, file.filename, current_user.id)
         except Exception as e:
             logger.warning(f"Failed to upload to RustFS: {e}")
-            # Optionally fail the request, but we'll print and continue so parsing still works even if storage fails.
 
     # Extract text
     try:
@@ -91,16 +91,6 @@ async def upload_resume(
             await rustfs_service.delete_file(resume_object_key)
         raise HTTPException(status_code=502, detail=f"AI parsing failed: {str(e)}")
 
-    # If guest, just return the data (no saving to DB)
-    if not current_user:
-        return {
-            "message": "Guest parse successful",
-            "portfolio_id": None,
-            "slug": None,
-            "parsed_data": parsed_data,
-            "is_guest": True
-        }
-
     # Check if user already has a portfolio
     result = await db.execute(select(Portfolio).where(Portfolio.user_id == current_user.id))
     existing_portfolio = result.scalar_one_or_none()
@@ -111,7 +101,7 @@ async def upload_resume(
             # Deep merge: keep existing edited fields, only fill empty/null from new parse
             existing_data = json.loads(existing_portfolio.parsed_data) if existing_portfolio.parsed_data else {}
             new_data = json.loads(parsed_data) if isinstance(parsed_data, str) else parsed_data
-            merged = {**new_data}
+            merged: dict[str, Any] = {**new_data}
             for key, val in existing_data.items():
                 if val and val != "" and val != []:
                     if key == "skills" and isinstance(val, list) and isinstance(merged.get("skills", []), list):
@@ -168,5 +158,4 @@ async def upload_resume(
         "portfolio_id": portfolio.id,
         "slug": portfolio.slug,
         "parsed_data": parsed_data,
-        "is_guest": False
     }

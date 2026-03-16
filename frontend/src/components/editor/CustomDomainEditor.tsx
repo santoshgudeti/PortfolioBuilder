@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import { Globe, Loader2, CheckCircle2, Save } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { portfolioApi } from '@/api/portfolio'
+import { useAuthStore } from '@/store/authStore'
+import { Link } from 'react-router-dom'
+import { Lock } from 'lucide-react'
 
 interface CustomDomainEditorProps {
     currentDomain: string | null
@@ -34,6 +37,7 @@ export function CustomDomainEditor({ currentDomain, onUpdated }: CustomDomainEdi
     }
 
     const isChanged = domainInput !== (currentDomain || '')
+    const { user } = useAuthStore()
 
     return (
         <div className="card mt-4">

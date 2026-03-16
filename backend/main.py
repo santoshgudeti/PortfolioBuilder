@@ -65,6 +65,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com; connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com"
+    return response
+
 api_router = APIRouter(prefix="/api")
 api_router.include_router(auth.router)
 api_router.include_router(resume.router)
@@ -98,19 +108,21 @@ async def health(db: AsyncSession = Depends(get_db)):
         )
 
 
-frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+frontend_dist = os.path.join(os.path.dirname(__file__), "static")
 
 if os.path.isdir(frontend_dist):
     app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dist, "assets")), name="assets")
 
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_spa(full_path: str):
+        # Specific check for files (js, css, png etc)
         file_path = os.path.join(frontend_dist, full_path)
         if full_path and os.path.isfile(file_path):
             return FileResponse(file_path)
 
+        # Fallback to index.html for all other paths (SPA routing)
         index_path = os.path.join(frontend_dist, "index.html")
         if os.path.isfile(index_path):
             return FileResponse(index_path)
 
-        return JSONResponse(status_code=404, content={"detail": "Frontend not found! Did you build it?"})
+        return JSONResponse(status_code=404, content={"detail": "Frontend distribution not found in backend/static/"})

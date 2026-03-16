@@ -9,11 +9,9 @@ WORKDIR /build/frontend
 COPY frontend/package*.json ./
 RUN npm install
 
-# Build frontend into dist/
+# Build frontend (Vite config is set to output to ../backend/static)
 COPY frontend/ .
 COPY .env .env
-# Since the backend will serve the frontend from the exact same origin,
-# VITE_API_URL can just default to /api internally, but pass an empty build arg if needed.
 RUN npm run build
 
 # ==========================================
@@ -34,7 +32,7 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Install python dependencies inside the backend folder context
+# Install python dependencies
 WORKDIR /app/backend
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -42,14 +40,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend source
 COPY backend/ .
 
-# Copy built frontend assets to where the backend expects them
-# Important: FastAPI is looking for `../frontend/dist` relative to `main.py`
-# since we set workdir to `/app/backend`, `../frontend/dist` resolves to `/app/frontend/dist`
-COPY --from=frontend-build /build/frontend/dist /app/frontend/dist
+# Since Vite built the frontend into `../backend/static` during stage 1,
+# we need to grab that `static` folder from the frontend build context if it was local,
+# OR we simply copy the result of the build.
+# In our Dockerfile, `npm run build` created the directory `/build/backend/static` inside `frontend-build`.
+COPY --from=frontend-build /build/backend/static /app/backend/static
 
 # Expose backend port
 EXPOSE 8000
 
 # Start app
-# (Running uvicorn from the /app/backend directory so module imports work correctly)
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

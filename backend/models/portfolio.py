@@ -18,6 +18,9 @@ class Portfolio(Base):
     mode: Mapped[str] = mapped_column(String, default="light")
     primary_color: Mapped[str] = mapped_column(String, default="#6366f1")
     is_published: Mapped[bool] = mapped_column(Boolean, default=False)
+    moderation_status: Mapped[str] = mapped_column(String, default="pending") # pending, approved, flagged
+    moderation_score: Mapped[float] = mapped_column(Integer, default=0) # AI confidence score (0-100)
+    moderation_reason: Mapped[str] = mapped_column(String, nullable=True)
     resume_filename: Mapped[str] = mapped_column(String, nullable=True)
     resume_object_key: Mapped[str] = mapped_column(String, nullable=True)
     view_count: Mapped[int] = mapped_column(Integer, default=0)

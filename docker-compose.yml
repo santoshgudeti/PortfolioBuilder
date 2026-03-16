@@ -11,6 +11,7 @@ services:
     environment:
       # Pass through required configuration over API
       - FRONTEND_URL=http://localhost:8000
+      - ENV=production
     # Env file inside backend context overrides above if conflict
     env_file:
       - ./.env

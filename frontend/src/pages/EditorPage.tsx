@@ -17,7 +17,7 @@ export default function EditorPage() {
     const queryClient = useQueryClient()
     const { token } = useAuthStore()
     const {
-        parsedData, theme, templateId, mode, primaryColor, isPublished, isGuest,
+        parsedData, theme, templateId, mode, primaryColor, isPublished,
         slug, customDomain, setPortfolio, setTheme, setTemplateId,
         setMode, setPrimaryColor, setParsedData
     } = usePortfolioStore()
@@ -101,36 +101,7 @@ export default function EditorPage() {
         onError: () => toast.error('Action failed'),
     })
 
-    // Auto-promote guest portfolio when user logs in
-    useEffect(() => {
-        if (token && isGuest && localData && !saveMutation.isPending && !initializedRef.current) {
-            const promote = async () => {
-                try {
-                    const res = await portfolioApi.updateMyPortfolio({
-                        parsed_data: localData,
-                        theme,
-                        template_id: templateId,
-                        mode,
-                        primary_color: primaryColor,
-                    })
-                    setPortfolio({
-                        portfolioId: res.data.id,
-                        slug: res.data.slug,
-                        isGuest: false,
-                    })
-                    setSavedOnce(true)
-                    setIsDirty(false)
-                    queryClient.invalidateQueries({ queryKey: ['portfolio'] })
-                    toast.success('✨ Guest portfolio saved to your account!')
-                } catch (err: any) {
-                    console.error('Failed to promote guest portfolio:', err)
-                    // If it failed because they already have one, we might want to handle it,
-                    // but for now, we'll just let the user save manually if they want.
-                }
-            }
-            promote()
-        }
-    }, [token, isGuest, localData])
+
 
     const updateField = (field: keyof ParsedData, value: any) => {
         setLocalData(prev => prev ? { ...prev, [field]: value } : prev)
@@ -235,7 +206,6 @@ export default function EditorPage() {
                     <EditorHeader
                         slug={slug}
                         isPublished={isPublished}
-                        isGuest={isGuest}
                         isDirty={isDirty}
                         savedOnce={savedOnce}
                         isExportingPDF={isExportingPDF}

@@ -3,11 +3,13 @@ from functools import lru_cache
 
 
 class Settings(BaseSettings):
+    env: str = "development"
     groq_api_key: str = ""
     database_url: str = "sqlite+aiosqlite:///./resume2portfolio.db"
     secret_key: str  # No default — MUST be set in .env to prevent token forgery
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
+    refresh_token_expire_days: int = 7
     frontend_url: str = "http://localhost:5173"
     google_client_id: str = ""
     admin_email: str = ""
@@ -21,6 +23,8 @@ class Settings(BaseSettings):
     rustfs_access_key: str = ""
     rustfs_secret_key: str = ""
     rustfs_bucket_name: str = "user-resumes"
+
+
 
     class Config:
         env_file = ".env"

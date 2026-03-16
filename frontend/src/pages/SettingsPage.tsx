@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { usePortfolioStore } from '@/store/portfolioStore'
 import { authApi } from '@/api/auth'
+import { portfolioApi } from '@/api/portfolio'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import { User, Trash2, AlertTriangle, ArrowRight, Loader2, Download } from 'lucide-react'
@@ -31,19 +32,31 @@ export default function SettingsPage() {
         try {
             // Fetch everything we know about the user
             const profile = await authApi.me()
+            let portfolioData = null
+            
+            try {
+                const portfolioRes = await portfolioApi.getMyPortfolio()
+                portfolioData = portfolioRes.data
+            } catch (pErr) {
+                console.log("No portfolio found for export")
+            }
+
             const exportData = {
                 user: profile.data,
+                portfolio: portfolioData,
                 exported_at: new Date().toISOString(),
-                source: "FolioAI"
+                platform: "PortfolioBuilder.AI",
+                version: "1.0.0"
             }
 
             const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
             const url = window.URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = `folioai-data-export-${new Date().getTime()}.json`
+            a.download = `portfolioai-data-export-${new Date().getTime()}.json`
             a.click()
-            toast.success('Your data export has started.')
+            window.URL.revokeObjectURL(url)
+            toast.success('Your data export is ready and downloading.')
         } catch (err: any) {
             toast.error('Failed to export data.')
         }

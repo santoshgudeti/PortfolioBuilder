@@ -1,5 +1,5 @@
 import requests
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from loguru import logger
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,9 +20,17 @@ from schemas.user import (
     UserOut,
 )
 from services.rustfs_service import rustfs_service
-from utils.auth import create_access_token, get_current_user, hash_password, verify_password
+from utils.auth import (
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+    get_current_user,
+    hash_password,
+    verify_password,
+)
 from utils.rate_limit import rate_limiter
 
+settings = get_settings()
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
@@ -91,6 +99,7 @@ async def register(
 async def google_auth(
     data: GoogleAuth,
     request: Request,
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ):
     rate_limiter.enforce(
@@ -178,8 +187,39 @@ async def google_auth(
         if not user.is_active:
             raise HTTPException(status_code=403, detail="Account is deactivated")
 
-        token = create_access_token({"sub": user.id})
-        return Token(access_token=token, user=UserOut.model_validate(user))
+        access_token = create_access_token({"sub": user.id})
+        refresh_token = create_refresh_token({"sub": user.id})
+        
+        # Store refresh token in DB
+        user.refresh_token = refresh_token
+        await db.commit()
+        
+        # Set HttpOnly cookies
+        response.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=True,
+            max_age=settings.access_token_expire_minutes * 60,
+            expires=settings.access_token_expire_minutes * 60,
+            samesite="lax",
+            secure=settings.env == "production",
+        )
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
+            expires=settings.refresh_token_expire_days * 24 * 60 * 60,
+            samesite="lax",
+            secure=settings.env == "production",
+            path="/api/auth/refresh", # Only send to refresh endpoint for extra security
+        )
+        
+        return Token(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            user=UserOut.model_validate(user)
+        )
     except requests.RequestException as e:
         logger.error(f"Google auth request failed: {str(e)}")
         raise HTTPException(status_code=502, detail="Google authentication is temporarily unavailable")
@@ -194,6 +234,7 @@ async def google_auth(
 async def login(
     credentials: UserLogin,
     request: Request,
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ):
     rate_limiter.enforce(
@@ -206,20 +247,119 @@ async def login(
     result = await db.execute(select(User).where(User.email == credentials.email))
     user = result.scalar_one_or_none()
 
-    if not user:
-        raise HTTPException(status_code=401, detail="Account not found. Please sign up if you don't have an account.")
+    if not user or not verify_password(credentials.password, user.hashed_password or ""):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+        )
 
     if user.auth_provider == "google" and not user.hashed_password:
-        raise HTTPException(status_code=400, detail="Please use 'Continue with Google' to sign in")
-
-    if not verify_password(credentials.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+        )
 
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is deactivated")
 
-    token = create_access_token({"sub": user.id})
-    return Token(access_token=token, user=UserOut.model_validate(user))
+    access_token = create_access_token({"sub": user.id})
+    refresh_token = create_refresh_token({"sub": user.id})
+    
+    # Store refresh token in DB
+    user.refresh_token = refresh_token
+    await db.commit()
+    
+    # Set HttpOnly cookies
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        max_age=settings.access_token_expire_minutes * 60,
+        expires=settings.access_token_expire_minutes * 60,
+        samesite="lax",
+        secure=settings.env == "production",
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
+        expires=settings.refresh_token_expire_days * 24 * 60 * 60,
+        samesite="lax",
+        secure=settings.env == "production",
+        path="/api/auth/refresh",
+    )
+    
+    return Token(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user=UserOut.model_validate(user)
+    )
+
+
+@router.post("/refresh", response_model=Token)
+async def refresh_token(
+    request: Request,
+    response: Response,
+    db: AsyncSession = Depends(get_db),
+):
+    refresh_token = request.cookies.get("refresh_token")
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail="Refresh token missing")
+    
+    user_id = decode_token(refresh_token)
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+        
+    result = await db.execute(select(User).where(User.id == user_id, User.refresh_token == refresh_token))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Token revoked or user not found")
+        
+    # Rotate refresh token
+    new_access_token = create_access_token({"sub": user.id})
+    new_refresh_token = create_refresh_token({"sub": user.id})
+    
+    user.refresh_token = new_refresh_token
+    await db.commit()
+    
+    response.set_cookie(
+        key="access_token",
+        value=new_access_token,
+        httponly=True,
+        max_age=settings.access_token_expire_minutes * 60,
+        expires=settings.access_token_expire_minutes * 60,
+        samesite="lax",
+        secure=settings.env == "production",
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=new_refresh_token,
+        httponly=True,
+        max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
+        expires=settings.refresh_token_expire_days * 24 * 60 * 60,
+        samesite="lax",
+        secure=settings.env == "production",
+        path="/api/auth/refresh",
+    )
+    
+    return Token(
+        access_token=new_access_token,
+        refresh_token=new_refresh_token,
+        user=UserOut.model_validate(user)
+    )
+
+
+@router.post("/logout")
+async def logout(response: Response, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    # Invalidate refresh token in DB
+    current_user.refresh_token = None
+    await db.commit()
+    
+    response.delete_cookie(key="access_token")
+    response.delete_cookie(key="refresh_token", path="/api/auth/refresh")
+    return {"message": "Logged out successfully"}
 
 
 @router.get("/me", response_model=UserOut)

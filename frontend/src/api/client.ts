@@ -5,28 +5,63 @@ const API_URL = import.meta.env.VITE_API_URL || '/api'
 
 const apiClient = axios.create({
     baseURL: API_URL,
-    timeout: 60000, // 60s - increased for production AI parsing
+    timeout: 60000,
+    withCredentials: true,
 })
 
-// Attach JWT token to every request
-apiClient.interceptors.request.use((config) => {
-    const token = useAuthStore.getState().token
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-})
+// No need for Authorization header interceptor - handled by browser cookies
 
-// Handle 401 globally — but don't redirect if it's during an upload
-// (Vercel timeout can cause weird responses that shouldn't log the user out)
+// Flag to prevent multiple refresh calls simultaneously
+let isRefreshing = false
+let refreshSubscribers: ((token: any) => void)[] = []
+
+const subscribeTokenRefresh = (cb: (token: any) => void) => {
+    refreshSubscribers.push(cb)
+}
+
+const onRefreshed = (token: any) => {
+    refreshSubscribers.map((cb) => cb(token))
+    refreshSubscribers = []
+}
+
 apiClient.interceptors.response.use(
     (res) => res,
-    (error) => {
-        if (error.response?.status === 401) {
-            const isUploadRequest = error.config?.url?.includes('/resume/upload')
-            if (!isUploadRequest) {
-                // Only force logout on 401 for non-upload requests
+    async (error) => {
+        const originalRequest = error.config
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            const isUploadRequest = originalRequest.url?.includes('/resume/upload')
+            const isRefreshRequest = originalRequest.url?.includes('/auth/refresh')
+            const isLoginRequest = originalRequest.url?.includes('/auth/login')
+
+            if (isRefreshRequest || isLoginRequest) {
+                // If the refresh token itself is expired, logout
                 useAuthStore.getState().logout()
+                return Promise.reject(error)
+            }
+
+            if (!isUploadRequest) {
+                if (isRefreshing) {
+                    return new Promise((resolve) => {
+                        subscribeTokenRefresh(() => {
+                            resolve(apiClient(originalRequest))
+                        })
+                    })
+                }
+
+                originalRequest._retry = true
+                isRefreshing = true
+
+                try {
+                    await apiClient.post('/auth/refresh')
+                    isRefreshing = false
+                    onRefreshed(true)
+                    return apiClient(originalRequest)
+                } catch (refreshError) {
+                    isRefreshing = false
+                    useAuthStore.getState().logout()
+                    return Promise.reject(refreshError)
+                }
             }
         }
         return Promise.reject(error)

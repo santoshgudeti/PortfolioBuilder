@@ -27,9 +27,7 @@ export default function LoginPage() {
             setAuth(res.data.access_token, res.data.user)
             toast.success(`Welcome back, ${res.data.user.name}! 👋`)
             
-            // If we have guest data, go back to editor to save it
-            const hasGuestData = usePortfolioStore.getState().parsedData && usePortfolioStore.getState().isGuest
-            navigate(hasGuestData ? '/editor' : '/dashboard')
+            navigate('/dashboard')
         } catch (err: any) {
             const detail = err.response?.data?.detail || 'Login failed'
             // Detect unverified email error

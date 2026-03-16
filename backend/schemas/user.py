@@ -6,7 +6,11 @@ from pydantic import BaseModel, EmailStr, Field
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
-    password: str = Field(min_length=8)
+    password: str = Field(
+        min_length=8,
+        pattern=r"^(?=.*[0-9])(?=.*[!@#$%^&*])",
+        description="Password must contain at least one number and one special character"
+    )
     auth_provider: str = "email"
 
 
@@ -31,7 +35,8 @@ class UserOut(BaseModel):
 
 
 class Token(BaseModel):
-    access_token: str
+    access_token: Optional[str] = None
+    refresh_token: Optional[str] = None
     token_type: str = "bearer"
     user: UserOut
 

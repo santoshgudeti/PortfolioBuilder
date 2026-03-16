@@ -7,7 +7,6 @@ import {
 interface EditorHeaderProps {
     slug: string | null
     isPublished: boolean
-    isGuest?: boolean
     isDirty: boolean
     savedOnce: boolean
     isExportingPDF: boolean
@@ -23,7 +22,6 @@ interface EditorHeaderProps {
 export function EditorHeader({
     slug,
     isPublished,
-    isGuest,
     isDirty,
     savedOnce,
     isExportingPDF,
@@ -41,18 +39,16 @@ export function EditorHeader({
                 <div className="space-y-1">
                     <div className="flex items-center gap-3">
                         <h1 className="text-editor-title m-0">Editor</h1>
-                        <div className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${isGuest
-                            ? 'border-brand-200 bg-brand-50 text-brand-600'
-                            : isDirty
+                        <div className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${isDirty
                                 ? 'border-amber-200 bg-amber-50 text-amber-700 animate-pulse'
                                 : isPublished
                                     ? 'border-green-200 bg-green-50 text-green-700'
                                     : 'border-gray-200 bg-gray-50 text-gray-500'
                             }`}>
-                            {isGuest ? 'Guest' : isDirty ? 'Unsaved' : isPublished ? 'Live' : 'Draft'}
+                            {isDirty ? 'Unsaved' : isPublished ? 'Live' : 'Draft'}
                         </div>
                     </div>
-                    {slug && !isGuest ? (
+                    {slug ? (
                         <a href={`/u/${slug}`} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-brand-500 transition-colors text-[11px] flex items-center gap-1.5 font-bold uppercase tracking-widest group">
                             <Globe className="w-3 h-3 opacity-50 group-hover:opacity-100" />
                             portfoliobuilder.ai/u/{slug}
@@ -60,7 +56,7 @@ export function EditorHeader({
                         </a>
                     ) : (
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
-                            {isGuest ? 'Changes will not be persisted' : 'Workspace / Narrative Design'}
+                            Workspace / Narrative Design
                         </p>
                     )}
                 </div>
@@ -82,45 +78,33 @@ export function EditorHeader({
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        {isGuest ? (
-                            <Link
-                                to="/register"
-                                className="btn-primary !py-2.5 !px-5 text-[10px]"
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={onPublish}
+                                disabled={isPublishPending || isDirty}
+                                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isDirty 
+                                    ? 'opacity-30 cursor-not-allowed text-gray-400' 
+                                    : isPublished 
+                                        ? 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white' 
+                                        : 'bg-brand-500/10 text-brand-500 hover:bg-brand-500 hover:text-white'
+                                }`}
                             >
-                                <CheckCircle2 className="w-3.5 h-3.5" />
-                                Claim Identity
-                            </Link>
-                        ) : (
-                            <>
-                                <button
-                                    onClick={onPublish}
-                                    disabled={isPublishPending || isDirty}
-                                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isDirty 
-                                        ? 'opacity-30 cursor-not-allowed text-gray-400' 
-                                        : isPublished 
-                                            ? 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white' 
-                                            : 'bg-brand-500/10 text-brand-500 hover:bg-brand-500 hover:text-white'
-                                    }`}
-                                >
-                                    {isPublishPending ? <Loader2 className="w-3 h-3 animate-spin" /> : isPublished ? <EyeOff className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
-                                    {isPublished ? 'Go Offline' : 'Go Live'}
-                                </button>
-                                <button
-                                    onClick={onSave}
-                                    disabled={isSavePending}
-                                    className={`btn-primary !py-2.5 !px-5 text-[10px] ${isDirty ? 'shadow-glow-brand ring-4 ring-brand-500/10' : 'opacity-80'}`}
-                                >
-                                    {isSavePending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                                    {isSavePending ? 'Syncing...' : 'Sync Changes'}
-                                </button>
-                            </>
-                        )}
-                    </div>
+                                {isPublishPending ? <Loader2 className="w-3 h-3 animate-spin" /> : isPublished ? <EyeOff className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
+                                {isPublished ? 'Go Offline' : 'Go Live'}
+                            </button>
+                            <button
+                                onClick={onSave}
+                                disabled={isSavePending}
+                                className={`btn-primary !py-2.5 !px-5 text-[10px] ${isDirty ? 'shadow-glow-brand ring-4 ring-brand-500/10' : 'opacity-80'}`}
+                            >
+                                {isSavePending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                                {isSavePending ? 'Syncing...' : 'Sync Changes'}
+                            </button>
+                        </div>
                 </div>
             </div>
 
-            {isDirty && !isGuest && (
+            {isDirty && (
                 <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-widest animate-pulse">
                     <AlertCircle className="w-3 h-3" />
                     <span>Unsaved changes in workspace</span>

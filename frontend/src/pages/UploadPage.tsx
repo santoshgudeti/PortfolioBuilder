@@ -153,16 +153,13 @@ export default function UploadPage() {
             releaseWakeLock()
             setSelectedFile(null)
             setUploadError(null)
-            addLog(`Upload complete: portfolio_id=${data.portfolio_id} guest=${data.is_guest}`)
+            addLog(`Upload complete: portfolio_id=${data.portfolio_id}`)
             setParsedData(data.parsed_data)
             setPortfolio({
                 portfolioId: data.portfolio_id,
                 slug: data.slug,
-                isGuest: data.is_guest,
             })
-            if (!data.is_guest) {
-                queryClient.invalidateQueries({ queryKey: ['portfolio'] })
-            }
+            queryClient.invalidateQueries({ queryKey: ['portfolio'] })
             toast.success('Resume parsed successfully! Redirecting to editor...')
             setTimeout(() => navigate('/editor'), 1500)
         },

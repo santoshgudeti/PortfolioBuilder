@@ -12,7 +12,7 @@ from models.portfolio import Portfolio
 from models.page_view import PageView
 from schemas.portfolio import PortfolioUpdate, PortfolioOut, RegenerateRequest, SlugUpdate
 from services.portfolio_service import update_portfolio
-from services.groq_service import regenerate_field_with_groq
+from services.groq_service import regenerate_field_with_groq, analyze_portfolio_spam
 from utils.auth import get_current_user
 from utils.rate_limit import rate_limiter
 
@@ -93,7 +93,29 @@ async def publish_portfolio(
     portfolio = result.scalar_one_or_none()
     if not portfolio:
         raise HTTPException(status_code=404, detail="Portfolio not found")
-    portfolio = await update_portfolio(db, portfolio, {"is_published": True})
+    
+    # Auto-Moderation check before publishing
+    # We only run this if it's currently 'pending' or 'flagged' to avoid redundant calls
+    # but for simplicity, let's run it on every publish to catch updates.
+    analysis_data = {
+        "slug": portfolio.slug,
+        "name": portfolio.name if hasattr(portfolio, 'name') else "",
+        "parsed_data": json.loads(portfolio.parsed_data) if portfolio.parsed_data else {},
+    }
+    
+    analysis = await analyze_portfolio_spam(analysis_data)
+    
+    moderation_updates = {
+        "moderation_status": analysis.get("category", "pending"),
+        "moderation_score": int(analysis.get("confidence", 0) * 100),
+        "moderation_reason": analysis.get("reason"),
+    }
+    
+    # If it's pure spam/placeholder with high confidence, we might want to prevent publication
+    # For now, let's just mark it but allow publication so admins can see it in 'published' list
+    # and take action.
+    
+    portfolio = await update_portfolio(db, portfolio, {"is_published": True, **moderation_updates})
     return portfolio
 
 

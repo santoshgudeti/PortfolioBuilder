@@ -137,3 +137,58 @@ async def regenerate_field_with_groq(field: str, current_value: str, context: st
 
     return completion.choices[0].message.content.strip()
 
+
+async def check_health() -> bool:
+    """Verify Groq API connectivity with a minimal request."""
+    try:
+        client = AsyncGroq(api_key=settings.groq_api_key)
+        await client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": "ping"}],
+            max_tokens=5
+        )
+        return True
+    except Exception:
+        return False
+
+
+async def analyze_portfolio_spam(portfolio_data: dict) -> dict:
+    """Use AI to detect if a portfolio contains spam, or placeholder content."""
+    client = AsyncGroq(api_key=settings.groq_api_key)
+
+    prompt = """Analyze the following portfolio data for spam, placeholder content (like "foo", "bar", "test", "lorem ipsum"), or fake information.
+Determine if this is a legitimate professional portfolio or low-quality/test content.
+
+Return ONLY a valid JSON object with:
+{
+  "is_spam": boolean,
+  "confidence": number (0-1),
+  "reason": "string explaining the decision",
+  "category": "legitimate" | "placeholder" | "spam" | "low_quality"
+}
+
+Data to analyze:
+""" + json.dumps(portfolio_data, indent=2)
+
+    try:
+        completion = await client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "system", "content": "You are a professional content moderator for a portfolio hosting platform."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.1,
+            max_tokens=512,
+            response_format={"type": "json_object"}
+        )
+        
+        result = json.loads(completion.choices[0].message.content)
+        return result
+    except Exception as e:
+        return {
+            "is_spam": False,
+            "confidence": 0,
+            "reason": f"Analysis failed: {str(e)}",
+            "category": "unknown"
+        }
+

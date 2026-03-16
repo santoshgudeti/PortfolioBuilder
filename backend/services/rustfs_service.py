@@ -131,5 +131,23 @@ class RustFSService:
             print(f"Error generating presigned URL: {e}")
             return ""
 
+    async def check_health(self) -> bool:
+        """Verify RustFS connectivity by checking if the bucket is accessible."""
+        if not self.s3_client:
+            return False
+        
+        import asyncio
+        def _do_check():
+            try:
+                self.s3_client.head_bucket(Bucket=self.bucket_name)
+                return True
+            except Exception:
+                return False
+
+        try:
+            return await asyncio.to_thread(_do_check)
+        except Exception:
+            return False
+
 # Initialize global instance
 rustfs_service = RustFSService()

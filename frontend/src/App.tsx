@@ -21,6 +21,7 @@ import AdminPage from '@/pages/AdminPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import PrivacyPage from '@/pages/PrivacyPage'
 import TermsPage from '@/pages/TermsPage'
+
 import AppLayout from '@/layouts/AppLayout'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import CookieConsent from '@/components/CookieConsent'
@@ -134,18 +135,18 @@ export default function App() {
                             <Route path="/u/:slug" element={<PublicPortfolioPage />} />
                             <Route path="/verify-email" element={<VerifyEmailPage />} />
 
+
                             {/* Guest only */}
                             <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
                             <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
                             <Route path="/reset-password" element={<ResetPasswordPage />} />
                             <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
 
-                            {/* Protected */}
-                            {/* Public - available to guests for "Try before buy" */}
-                            <Route path="/upload" element={<AppLayout><UploadPage /></AppLayout>} />
-                            <Route path="/editor" element={<AppLayout><EditorPage /></AppLayout>} />
-
                             {/* Protected - only for logged in users */}
+                            <Route path="/upload" element={<ProtectedRoute><AppLayout><UploadPage /></AppLayout></ProtectedRoute>} />
+                            <Route path="/editor" element={<ProtectedRoute><AppLayout><EditorPage /></AppLayout></ProtectedRoute>} />
+
+                            {/* Dashboard & Management */}
                             <Route path="/dashboard" element={<ProtectedRoute><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
                             <Route path="/analytics" element={<ProtectedRoute><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
                             <Route path="/profile" element={<ProtectedRoute><AppLayout><ProfilePage /></AppLayout></ProtectedRoute>} />

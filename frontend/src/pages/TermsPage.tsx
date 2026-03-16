@@ -69,8 +69,13 @@ export default function TermsPage() {
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">5. Termination</h2>
-                            <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason, including without limitation if you breach the Terms.</p>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">5. Data Processing & Privacy</h2>
+                            <p>We process your data in accordance with our Privacy Policy. By using the service, you consent to the processing of your personal information (including resume data) by our AI models to provide the portfolio generation service.</p>
+                        </section>
+
+                        <section>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">6. Termination</h2>
+                            <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason, including without limitation if you breach the Terms. Upon termination, your right to use the service will immediately cease.</p>
                         </section>
                     </article>
                 </motion.div>

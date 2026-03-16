@@ -23,6 +23,8 @@ import {
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { useState } from 'react'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 // ───────────────────────────────────────
 // Brand Data
@@ -157,42 +159,7 @@ export default function LandingPage() {
                 <meta name="description" content="Upload your resume and let AI build a stunning portfolio website in 60 seconds. 15 premium templates, custom domains, dark mode, and analytics — all free." />
             </Helmet>
 
-            {/* ─── Navbar ───────────────────────────────── */}
-            <div className="fixed top-8 inset-x-0 z-50 flex justify-center px-6 pointer-events-none">
-                <nav className="max-w-5xl w-full bg-white/90 dark:bg-black/90 backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-sm rounded-xl h-14 flex items-center justify-between px-6 pointer-events-auto" role="navigation" aria-label="Main navigation">
-                    <Link to="/" className="flex items-center gap-2" aria-label="PortfolioBuilder.AI Home">
-                        <span className="text-lg font-bold tracking-tight text-gray-950 dark:text-white">
-                            PortfolioBuilder<span className="text-brand-500">.AI</span>
-                        </span>
-                    </Link>
-
-                    <div className="hidden md:flex items-center gap-8">
-                        {['Solutions', 'Features', 'Templates', 'FAQ'].map(item => (
-                            <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-500 transition-colors">
-                                {item}
-                            </a>
-                        ))}
-                    </div>
-
-                    <div className="flex items-center gap-2 sm:gap-4">
-                        <button onClick={toggleTheme} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors" aria-label="Toggle theme">
-                            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                        </button>
-                        {token ? (
-                            <Link to="/dashboard" className="btn-primary py-1.5 px-4 text-xs">Dashboard</Link>
-                        ) : (
-                            <>
-                                <Link to="/login" className="hidden sm:inline-flex text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white px-2">
-                                    Sign In
-                                </Link>
-                                <Link to="/register" className="btn-primary py-1.5 px-4 text-xs">
-                                    Start Free
-                                </Link>
-                            </>
-                        )}
-                    </div>
-                </nav>
-            </div>
+            <Navbar />
 
             {/* ─── Hero Section ─────────────────────────── */}
             <section className="relative pt-32 sm:pt-48 pb-20 sm:pb-32 px-4 sm:px-6 overflow-hidden">
@@ -492,50 +459,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* ─── Footer ─────────────────────────────────── */}
-            <footer className="py-24 px-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
-                        <div className="md:col-span-2">
-                            <Link to="/" className="inline-block mb-8">
-                                <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    PortfolioBuilder.AI
-                                </span>
-                            </Link>
-                            <p className="text-gray-600 dark:text-gray-400 max-w-xs text-sm leading-relaxed">
-                                The ultimate digital identity engine for modern professionals. Powered by AI, designed by experts.
-                            </p>
-                        </div>
-                        <div>
-                            <div className="text-xs font-semibold text-gray-500 dark:text-gray-500 uppercase tracking-wide mb-8">Product</div>
-                            <ul className="space-y-4">
-                                {['Features', 'Templates', 'API'].map(item => (
-                                    <li key={item}><a href="#" className="text-sm text-gray-600 dark:text-gray-400 hover:text-brand-500 transition-colors">{item}</a></li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <div className="text-xs font-semibold text-gray-500 dark:text-gray-500 uppercase tracking-wide mb-8">Legal</div>
-                            <ul className="space-y-4">
-                                {['Privacy', 'Terms', 'Cookies', 'Security'].map(item => (
-                                    <li key={item}><a href="#" className="text-sm text-gray-600 dark:text-gray-400 hover:text-brand-500 transition-colors">{item}</a></li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-8 pt-12 border-t border-gray-200 dark:border-gray-700">
-                        <div className="text-xs text-gray-500 dark:text-gray-500 space-y-2">
-                            <div>© {new Date().getFullYear()} PortfolioBuilder.AI. All rights reserved.</div>
-                            <div className="font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest text-[10px]">Built by HamathOPC Pvt Ltd</div>
-                        </div>
-                        <div className="flex gap-8">
-                            {['Twitter', 'LinkedIn', 'YouTube'].map(item => (
-                                <a key={item} href="#" className="text-xs text-gray-500 dark:text-gray-500 hover:text-brand-500 transition-colors">{item}</a>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     )
 }

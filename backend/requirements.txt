@@ -23,3 +23,5 @@ pypdf
 PyMuPDF
 python-docx
 fastapi-mail
+psutil
+

@@ -72,6 +72,9 @@ class PortfolioOut(BaseModel):
     mode: str
     primary_color: str
     is_published: bool
+    moderation_status: str
+    moderation_score: float
+    moderation_reason: Optional[str]
     resume_filename: Optional[str]
     resume_object_key: Optional[str] = None
     view_count: int = 0

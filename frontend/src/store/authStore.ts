@@ -7,6 +7,7 @@ interface User {
     email: string
     is_admin: boolean
     is_verified: boolean
+
     avatar_url: string | null
     auth_provider: string
 }
@@ -15,8 +16,8 @@ interface AuthState {
     token: string | null
     user: User | null
     theme: 'light' | 'dark'
-    setAuth: (token: string, user: User) => void
-    logout: () => void
+    setAuth: (token: string | null, user: User) => void
+    logout: () => Promise<void>
     setTheme: (theme: 'light' | 'dark') => void
     toggleTheme: () => void
     initTheme: () => void
@@ -31,7 +32,14 @@ export const useAuthStore = create<AuthState>()(
 
             setAuth: (token, user) => set({ token, user }),
 
-            logout: () => {
+            logout: async () => {
+                try {
+                    // Try to notify backend to clear cookie
+                    const { default: apiClient } = await import('@/api/client')
+                    await apiClient.post('/auth/logout')
+                } catch (e) {
+                    console.error("Logout cookie clear failed", e)
+                }
                 set({ token: null, user: null })
                 window.location.href = '/login'
             },

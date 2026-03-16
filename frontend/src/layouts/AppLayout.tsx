@@ -15,7 +15,8 @@ import {
     ChevronRight, 
     Shield, 
     Lock, 
-    LogIn 
+    LogIn,
+    Zap
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -116,6 +117,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                 </Link>
                             )
                         })}
+                        
                     </nav>
 
                     {/* Bottom actions */}
@@ -161,8 +163,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                 </div>
                                 {!collapsed && (
                                     <div className="flex-1">
-                                        <p className="text-xs font-semibold text-brand-500">Guest Session</p>
-                                        <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Register to save your work</p>
+                                        <p className="text-xs font-semibold text-gray-500">User Identity</p>
+                                        <p className="text-[11px] text-gray-400 font-medium">Account Workspace</p>
                                     </div>
                                 )}
                             </div>

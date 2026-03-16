@@ -1,16 +1,32 @@
 import json
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select, func, or_, delete
+from sqlalchemy import select, func, or_, delete, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from models.user import User
 from models.portfolio import Portfolio
 from models.page_view import PageView
+from models.audit_log import AuditLog
+from services.groq_service import check_health as check_groq_health, analyze_portfolio_spam
+import shutil
+import psutil
 from services.rustfs_service import rustfs_service
 from utils.auth import get_admin_user
-from datetime import datetime, timedelta, timezone
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
+
+
+async def log_admin_action(db: AsyncSession, admin_id: str, action: str, target_id: str | None = None, target_type: str | None = None, details: str | None = None):
+    log = AuditLog(
+        admin_id=admin_id,
+        action=action,
+        target_id=target_id,
+        target_type=target_type,
+        details=details
+    )
+    db.add(log)
+    await db.commit()
 
 
 @router.get("/stats")
@@ -128,7 +144,36 @@ async def verify_user(
         raise HTTPException(status_code=404, detail="User not found")
     user.is_verified = True
     await db.commit()
+    await log_admin_action(db, _.id, "VERIFY_USER", user_id, "user", f"Verified user {user.email}")
     return {"message": f"User {user.email} verified."}
+
+
+@router.patch("/users/{user_id}/toggle-admin")
+async def toggle_user_admin(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_admin_user),
+):
+    """Grant or revoke admin privileges."""
+    if user_id == admin.id:
+        raise HTTPException(status_code=400, detail="Cannot demote yourself.")
+    
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.is_admin = not user.is_admin
+    await db.commit()
+    await log_admin_action(
+        db, 
+        admin.id, 
+        "TOGGLE_ADMIN", 
+        user_id, 
+        "user", 
+        f"{'Promoted' if user.is_admin else 'Demoted'} user {user.email}"
+    )
+    return {"message": f"User {user.email} admin status: {user.is_admin}"}
 
 
 @router.patch("/users/{user_id}/toggle-active")
@@ -144,6 +189,14 @@ async def toggle_user_active(
         raise HTTPException(status_code=404, detail="User not found")
     user.is_active = not user.is_active
     await db.commit()
+    await log_admin_action(
+        db, 
+        _.id, 
+        "TOGGLE_ACTIVE", 
+        user_id, 
+        "user", 
+        f"{'Activated' if user.is_active else 'Suspended'} user {user.email}"
+    )
     return {"message": f"User {user.email} is now {'active' if user.is_active else 'deactivated'}."}
 
 
@@ -183,6 +236,7 @@ async def delete_user_admin(
     
     await db.delete(user)
     await db.commit()
+    await log_admin_action(db, _.id, "DELETE_USER", user_id, "user", f"Permanently deleted user {user.email}")
     return {"message": f"User {user.email} completely deleted."}
 
 
@@ -199,6 +253,7 @@ async def unpublish_portfolio(
         raise HTTPException(status_code=404, detail="Portfolio not found")
     portfolio.is_published = False
     await db.commit()
+    await log_admin_action(db, _.id, "UNPUBLISH_PORTFOLIO", portfolio_id, "portfolio", f"Force unpublished portfolio: {portfolio.slug}")
     return {"message": f"Portfolio '{portfolio.slug}' unpublished."}
 
 
@@ -224,4 +279,140 @@ async def delete_portfolio_admin(
     await db.execute(delete(PageView).where(PageView.portfolio_id == portfolio_id))
     await db.delete(portfolio)
     await db.commit()
+    await log_admin_action(db, _.id, "DELETE_PORTFOLIO", portfolio_id, "portfolio", f"Permanently deleted portfolio: {portfolio.slug}")
     return {"message": f"Portfolio '{portfolio.slug}' deleted."}
+
+
+@router.post("/portfolios/{portfolio_id}/analyze-spam")
+async def analyze_portfolio_for_spam_action(
+    portfolio_id: str,
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_admin_user),
+):
+    """Trigger AI analysis to check if a portfolio is spam."""
+    result = await db.execute(select(Portfolio).where(Portfolio.id == portfolio_id))
+    portfolio = result.scalar_one_or_none()
+    if not portfolio:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    
+    # Extract data for analysis
+    analysis_data = {
+        "slug": portfolio.slug,
+        "name": portfolio.name,
+        "bio": portfolio.bio,
+        "summary": portfolio.summary,
+        "experience": portfolio.experience,
+        "projects": portfolio.projects,
+        "skills": portfolio.skills,
+    }
+    
+    analysis = await analyze_portfolio_spam(analysis_data)
+    
+    # Log the action
+    await log_admin_action(
+        db, 
+        admin.id, 
+        "ANALYZE_SPAM", 
+        portfolio_id, 
+        "portfolio", 
+        f"AI Moderation: Category={analysis.get('category')} Confidence={analysis.get('confidence')}. Reason: {analysis.get('reason')}"
+    )
+    
+    return analysis
+
+
+@router.get("/logs")
+async def list_audit_logs(
+    limit: int = Query(50, le=100),
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user),
+):
+    """Retrieve recent administrative actions."""
+    # Optimization: join with User to get admin names
+    query = select(AuditLog, User.name.label("admin_name"))\
+        .outerjoin(User, AuditLog.admin_id == User.id)\
+        .order_by(desc(AuditLog.created_at))\
+        .limit(limit)
+    
+    result = await db.execute(query)
+    logs = []
+    for row, admin_name in result:
+        logs.append({
+            "id": row.id,
+            "admin_name": admin_name or "Unknown Admin",
+            "action": row.action,
+            "target_id": row.target_id,
+            "target_type": row.target_type,
+            "details": row.details,
+            "created_at": row.created_at
+        })
+    return logs
+
+
+@router.get("/system/health")
+async def get_system_health(
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user),
+):
+    """Comprehensive system health monitor for admins."""
+    from sqlalchemy import text
+    from datetime import datetime
+    import os
+
+    # 1. Database Health
+    db_status = "unhealthy"
+    try:
+        await db.execute(text("SELECT 1"))
+        db_status = "healthy"
+    except Exception:
+        pass
+
+    # 2. Groq AI Health
+    groq_status = "unhealthy"
+    try:
+        if await check_groq_health():
+            groq_status = "healthy"
+    except Exception:
+        pass
+
+    # 3. RustFS Health
+    rustfs_status = "unhealthy"
+    try:
+        if await rustfs_service.check_health():
+            rustfs_status = "healthy"
+    except Exception:
+        pass
+
+    # 4. Disk Usage (Internal Uploads)
+    upload_dir = os.path.join(os.getcwd(), "uploads")
+    disk_usage = {"total": 0, "used": 0, "free": 0, "percent": 0}
+    if os.path.exists(upload_dir):
+        usage = shutil.disk_usage(upload_dir)
+        disk_usage = {
+            "total": usage.total,
+            "used": usage.used,
+            "free": usage.free,
+            "percent": round((usage.used / usage.total) * 100, 2)
+        }
+
+    # 5. Memory Usage
+    memory = psutil.virtual_memory()
+    memory_usage = {
+        "total": memory.total,
+        "available": memory.available,
+        "percent": memory.percent
+    }
+
+    return {
+        "status": "ok" if all(s == "healthy" for s in [db_status, groq_status, rustfs_status]) else "degraded",
+        "timestamp": datetime.utcnow().isoformat(),
+        "services": {
+            "database": db_status,
+            "groq_ai": groq_status,
+            "storage_rustfs": rustfs_status
+        },
+        "resources": {
+            "disk": disk_usage,
+            "memory": memory_usage
+        }
+    }
