@@ -60,7 +60,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                 <img 
                                     src={theme === 'dark' ? '/assets/branding/logo_dark.png' : '/assets/branding/logo_light.png'} 
                                     alt="PortfolioBuilder.AI" 
-                                    className="h-12 w-auto object-contain"
+                                    className="h-36 w-auto object-contain"
                                 />
                             </div>
                         )}
@@ -215,7 +215,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         <img 
                             src={theme === 'dark' ? '/assets/branding/logo_dark.png' : '/assets/branding/logo_light.png'} 
                             alt="PortfolioBuilder.AI" 
-                            className="h-10 w-auto object-contain"
+                            className="h-32 w-auto object-contain"
                         />
                     </div>
                 </header>
