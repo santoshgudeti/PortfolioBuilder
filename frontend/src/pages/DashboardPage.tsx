@@ -73,7 +73,7 @@ export default function DashboardPage() {
 
             {/* Header */}
             <div className="mb-10">
-                <h1 className="uppercase tracking-tighter">
+                <h1 className="uppercase tracking-tight font-extrabold text-2xl sm:text-3xl text-gray-950 dark:text-white">
                     Welcome Back, {firstName}
                 </h1>
                 <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg font-medium">
@@ -96,7 +96,7 @@ export default function DashboardPage() {
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                             {hasPortfolio
-                                ? `Live at: portfoliobuilder.ai/u/${data.slug}`
+                                ? `Live at: portfolio.hamathopc.in/u/${data.slug}`
                                 : 'Upload your history to claim your URL'}
                         </p>
                     </div>

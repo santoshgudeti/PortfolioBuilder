@@ -155,7 +155,7 @@ export default function LandingPage() {
     return (
         <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-900 dark:text-white overflow-x-hidden selection:bg-brand-500/30">
             <Helmet>
-                <title>PortfolioBuilder.AI — AI Portfolio Builder | Stand Out Online</title>
+                <title>Portfolio Builder — AI Portfolio Builder | Stand Out Online</title>
                 <meta name="description" content="Upload your resume and let AI build a stunning portfolio website in 60 seconds. 15 premium templates, custom domains, dark mode, and analytics — all free." />
             </Helmet>
 
@@ -181,7 +181,7 @@ export default function LandingPage() {
                         </span>
                     </div>
 
-                    <h1 className="mb-8 max-w-5xl text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-gray-950 dark:text-white leading-[0.9] animate-slide-up text-balance">
+                    <h1 className="mb-8 max-w-5xl text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-950 dark:text-white leading-[1.1] animate-slide-up text-balance">
                         Your professional story,<br />
                         <span className="text-brand-500 bg-gradient-to-br from-brand-400 to-indigo-600 text-transparent bg-clip-text">Built by Intelligence.</span>
                     </h1>

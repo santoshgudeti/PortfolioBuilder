@@ -129,3 +129,51 @@ async def send_reset_email(email: str, user_name: str, token: str):
     except Exception as e:
         logger.error(f"❌ Failed to send password reset email to {email}: {type(e).__name__}: {e}")
         raise
+async def send_publish_notification_email(email: str, user_name: str, slug: str):
+    """Send a notification when a portfolio is published."""
+    settings = get_settings()
+    portfolio_url = f"https://portfolio.hamathopc.in/u/{slug}"
+
+    safe_name = html_escape(user_name)
+    html = f"""
+    <div style="font-family: 'Inter', Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 40px 20px; border: 1px solid #e5e7eb; border-radius: 16px; background-color: white;">
+        <h1 style="color: #6366f1; font-size: 24px; margin-bottom: 8px;">Portfolio Builder</h1>
+        <p style="font-size: 16px; color: #333; font-weight: 600;">Congratulations {safe_name}! 🚀</p>
+        <p style="font-size: 14px; color: #555; line-height: 1.6;">
+            Your professional portfolio is now live! You've taken a huge step in building your digital presence.
+        </p>
+        <div style="background-color: #f9fafb; border: 1px dashed #d1d5db; border-radius: 12px; padding: 16px; margin: 24px 0; text-align: center;">
+            <p style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; font-weight: bold;">Your Public URL</p>
+            <a href="{portfolio_url}" style="font-size: 16px; color: #6366f1; font-weight: 700; text-decoration: none; word-break: break-all;">
+                {portfolio_url}
+            </a>
+        </div>
+        <a href="{portfolio_url}" 
+           style="display: inline-block; width: 100%; text-align: center; background: linear-gradient(135deg, #6366f1, #8b5cf6); 
+                  color: white; padding: 14px 0; border-radius: 10px; text-decoration: none; 
+                  font-weight: 700; font-size: 14px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);">
+            ✨ View My Portfolio
+        </a>
+        <p style="font-size: 13px; color: #6b7280; line-height: 1.6; margin-top: 24px;">
+            Need to make changes? You can update your content or design anytime from your <a href="https://portfolio.hamathopc.in/dashboard" style="color: #6366f1; text-decoration: underline;">dashboard</a>.
+        </p>
+        <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #f3f4f6; text-align: center;">
+            <p style="font-size: 11px; color: #9ca3af; margin: 0;">Built by HamathOPC Pvt Ltd</p>
+        </div>
+    </div>
+    """
+
+    message = MessageSchema(
+        subject="🚀 Your professional portfolio is live!",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+
+    fm = FastMail(get_mail_config())
+    try:
+        await fm.send_message(message)
+        logger.info(f"✅ Publication notification email sent to {email}")
+    except Exception as e:
+        logger.error(f"❌ Failed to send publication notification to {email}: {type(e).__name__}: {e}")
+        # We don't raise here to avoid blocking the publish process if email fails

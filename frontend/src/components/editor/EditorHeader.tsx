@@ -38,7 +38,7 @@ export function EditorHeader({
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div className="space-y-1">
                     <div className="flex items-center gap-3">
-                        <h1 className="text-editor-title m-0">Portfolio Editor</h1>
+                        <h1 className="text-xl sm:text-2xl font-extrabold m-0 tracking-tight">Portfolio Editor</h1>
                         <div className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${isDirty
                                 ? 'border-amber-200 bg-amber-50 text-amber-700 animate-pulse'
                                 : isPublished
@@ -51,7 +51,7 @@ export function EditorHeader({
                     {slug ? (
                         <a href={`/u/${slug}`} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-brand-500 transition-colors text-[11px] flex items-center gap-1.5 font-bold uppercase tracking-widest group">
                             <Globe className="w-3 h-3 opacity-50 group-hover:opacity-100" />
-                            portfoliobuilder.ai/u/{slug}
+                            portfolio.hamathopc.in/u/{slug}
                             <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all" />
                         </a>
                     ) : (

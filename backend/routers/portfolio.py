@@ -13,6 +13,7 @@ from models.page_view import PageView
 from schemas.portfolio import PortfolioUpdate, PortfolioOut, RegenerateRequest, SlugUpdate
 from services.portfolio_service import update_portfolio
 from services.groq_service import regenerate_field_with_groq, analyze_portfolio_spam
+from services.email_service import send_publish_notification_email
 from utils.auth import get_current_user
 from utils.rate_limit import rate_limiter
 
@@ -116,6 +117,18 @@ async def publish_portfolio(
     # and take action.
     
     portfolio = await update_portfolio(db, portfolio, {"is_published": True, **moderation_updates})
+    
+    # Send email notification
+    try:
+        await send_publish_notification_email(
+            email=current_user.email,
+            user_name=current_user.name or "there",
+            slug=portfolio.slug
+        )
+    except Exception:
+        # Logistic failure should not block success response
+        pass
+
     return portfolio
 
 

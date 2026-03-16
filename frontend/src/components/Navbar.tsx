@@ -9,10 +9,12 @@ const Navbar: React.FC = () => {
     return (
         <div className="fixed top-8 inset-x-0 z-50 flex justify-center px-6 pointer-events-none">
             <nav className="max-w-5xl w-full bg-white/90 dark:bg-black/90 backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-sm rounded-xl h-14 flex items-center justify-between px-6 pointer-events-auto" role="navigation" aria-label="Main navigation">
-                <Link to="/" className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg p-1" aria-label="PortfolioBuilder.AI Home">
-                    <span className="text-lg font-bold tracking-tight text-gray-950 dark:text-white">
-                        PortfolioBuilder<span className="text-brand-500">.AI</span>
-                    </span>
+                <Link to="/" className="flex items-center outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg p-1" aria-label="PortfolioBuilder.AI Home">
+                    <img 
+                        src={theme === 'dark' ? '/assets/branding/logo_dark.png' : '/assets/branding/logo_light.png'} 
+                        alt="PortfolioBuilder.AI" 
+                        className="h-7 w-auto object-contain"
+                    />
                 </Link>
 
                 <div className="hidden md:flex items-center gap-8">

@@ -17,7 +17,7 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                         <User className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">About Me</h2>
+                        <h2 className="font-extrabold uppercase tracking-normal text-gray-900 dark:text-white leading-none">About Me</h2>
                         <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Your name, role, and links</p>
                     </div>
                 </div>
@@ -56,7 +56,7 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                         <PenTool className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Bio & Headline</h2>
+                        <h2 className="font-extrabold uppercase tracking-normal text-gray-900 dark:text-white leading-none">Bio & Headline</h2>
                         <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">A short tagline and summary</p>
                     </div>
                 </div>
@@ -114,7 +114,7 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                         <Cpu className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Skills</h2>
+                        <h2 className="font-extrabold uppercase tracking-normal text-gray-900 dark:text-white leading-none">Skills</h2>
                         <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">What you’re good at</p>
                     </div>
                 </div>
@@ -153,7 +153,7 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                         <FolderOpen className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Projects</h2>
+                        <h2 className="font-extrabold uppercase tracking-normal text-gray-900 dark:text-white leading-none">Projects</h2>
                         <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">List your best work ({localData.projects?.length || 0})</p>
                     </div>
                 </div>
@@ -228,7 +228,7 @@ export function ContentTab({ localData, updateField }: ContentTabProps) {
                         <History className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-black uppercase tracking-tight text-gray-900 dark:text-white leading-none">Experience</h2>
+                        <h2 className="font-extrabold uppercase tracking-normal text-gray-900 dark:text-white leading-none">Experience</h2>
                         <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">Your work history ({localData.experience?.length || 0})</p>
                     </div>
                 </div>
