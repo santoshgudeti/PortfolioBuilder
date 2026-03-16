@@ -31,26 +31,29 @@ import SplashCursor from '@/components/reactbits/SplashCursor'
 import { normalizeHostname } from '@/lib/domain'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-    const { user } = useAuthStore()
+    const { user, isInitialized } = useAuthStore()
+    if (!isInitialized) return null
     if (!user) return <Navigate to="/login" replace />
     return <>{children}</>
 }
 
 function GuestRoute({ children }: { children: React.ReactNode }) {
-    const { user } = useAuthStore()
+    const { user, isInitialized } = useAuthStore()
+    if (!isInitialized) return null
     if (user) return <Navigate to="/dashboard" replace />
     return <>{children}</>
 }
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
-    const { user } = useAuthStore()
+    const { user, isInitialized } = useAuthStore()
+    if (!isInitialized) return null
     if (!user) return <Navigate to="/login" replace />
     if (!user.is_admin) return <Navigate to="/dashboard" replace />
     return <>{children}</>
 }
 
 export default function App() {
-    const { initTheme, user, setAuth } = useAuthStore()
+    const { initTheme, user, setAuth, isInitialized, setInitialized } = useAuthStore()
     const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"
     const [showInteractiveEffects, setShowInteractiveEffects] = useState(() => {
         if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -66,15 +69,16 @@ export default function App() {
         initTheme()
 
         // Silently refresh user data on mount if we have a session
-        // to catch DB changes like is_admin or verification status.
-        // authApi.me() will succeed if cookies are valid.
         authApi.me()
-            .then((res: any) => setAuth(res.data))
-            .catch((err: any) => {
-                // Not logged in or session expired
-                if (user) setAuth(null) 
+            .then((res: any) => {
+                setAuth(res.data)
+                setInitialized(true)
             })
-    }, [initTheme, setAuth])
+            .catch((err: any) => {
+                if (user) setAuth(null)
+                setInitialized(true)
+            })
+    }, [initTheme, setAuth, setInitialized])
 
     useEffect(() => {
         if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
