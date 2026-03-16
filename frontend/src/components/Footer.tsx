@@ -8,16 +8,9 @@ const Footer: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
                     <div className="md:col-span-2">
                         <Link to="/" className="inline-block mb-8 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg">
-                            <img 
-                                src="/assets/branding/logo_light.png" 
-                                alt="PortfolioBuilder.AI" 
-                                className="h-60 w-auto object-contain dark:hidden"
-                            />
-                            <img 
-                                src="/assets/branding/logo_dark.png" 
-                                alt="PortfolioBuilder.AI" 
-                                className="h-60 w-auto object-contain hidden dark:block"
-                            />
+                            <span className="text-2xl font-black tracking-tighter text-gray-950 dark:text-white">
+                                PortfolioBuilder<span className="text-brand-600 dark:text-brand-400">.AI</span>
+                            </span>
                         </Link>
                         <p className="text-gray-600 dark:text-gray-400 max-w-xs text-sm leading-relaxed text-pretty">
                             The ultimate digital identity engine for modern professionals. Powered by AI, designed by experts.
