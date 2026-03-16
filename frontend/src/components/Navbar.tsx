@@ -21,6 +21,11 @@ const Navbar: React.FC = () => {
                             {item}
                         </a>
                     ))}
+                    {user?.is_admin && (
+                        <Link to="/admin" className="text-sm font-semibold text-purple-600 hover:text-purple-500 transition-colors flex items-center gap-1">
+                            Admin
+                        </Link>
+                    )}
 
                 </div>
 
