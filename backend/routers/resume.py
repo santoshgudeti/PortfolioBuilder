@@ -1,5 +1,5 @@
 import json
-from typing import Any, Optional
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status, Request
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,7 +7,6 @@ from sqlalchemy import select
 from database import get_db
 from models.user import User
 from models.portfolio import Portfolio
-from schemas.portfolio import PortfolioOut
 from services.parser import extract_text
 from services.groq_service import parse_resume_with_groq
 from services.portfolio_service import create_portfolio, update_portfolio
@@ -117,7 +116,9 @@ async def upload_resume(
                 {
                     "parsed_data": json.dumps(merged) if isinstance(merged, dict) else merged, 
                     "resume_filename": file.filename,
-                    "resume_object_key": resume_object_key if resume_object_key else existing_portfolio.resume_object_key
+                    "resume_object_key": resume_object_key if resume_object_key else existing_portfolio.resume_object_key,
+                    # Auto-publish on successful generation/update.
+                    "is_published": True,
                 },
             )
             parsed_data = merged
@@ -129,7 +130,9 @@ async def upload_resume(
                 {
                     "parsed_data": parsed_data, 
                     "resume_filename": file.filename,
-                    "resume_object_key": resume_object_key if resume_object_key else existing_portfolio.resume_object_key
+                    "resume_object_key": resume_object_key if resume_object_key else existing_portfolio.resume_object_key,
+                    # Auto-publish on successful generation/update.
+                    "is_published": True,
                 },
             )
 

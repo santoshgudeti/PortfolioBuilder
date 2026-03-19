@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import {
     Link2, FileDown, ExternalLink, ToggleRight, ToggleLeft, Eye,
-    EyeOff, Globe, Save, Loader2, AlertCircle, CheckCircle2, PenTool
+    Globe, Save, Loader2, AlertCircle, CheckCircle2, PenTool
 } from 'lucide-react'
 
 interface EditorHeaderProps {
@@ -13,9 +13,7 @@ interface EditorHeaderProps {
     showPreview: boolean
     onDownloadPDF: () => void
     onTogglePreview: () => void
-    onPublish: () => void
     onSave: () => void
-    isPublishPending: boolean
     isSavePending: boolean
 }
 
@@ -28,9 +26,7 @@ export function EditorHeader({
     showPreview,
     onDownloadPDF,
     onTogglePreview,
-    onPublish,
     onSave,
-    isPublishPending,
     isSavePending
 }: EditorHeaderProps) {
     return (
@@ -39,7 +35,7 @@ export function EditorHeader({
                 <div className="space-y-1">
                     <div className="flex items-center gap-3">
                         <h1 className="text-xl sm:text-2xl font-extrabold m-0 tracking-tight">Portfolio Editor</h1>
-                        <div className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${isDirty
+                        <div className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-[0.2em] border transition-[background-color,border-color,color] ${isDirty
                                 ? 'border-amber-200 bg-amber-50 text-amber-700 animate-pulse'
                                 : isPublished
                                     ? 'border-green-200 bg-green-50 text-green-700'
@@ -49,10 +45,10 @@ export function EditorHeader({
                         </div>
                     </div>
                     {slug ? (
-                        <a href={`/u/${slug}`} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-brand-500 transition-colors text-[11px] flex items-center gap-1.5 font-bold uppercase tracking-widest group">
+                        <a href={`/u/${slug}`} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400 transition-[color] text-[11px] flex items-center gap-1.5 font-medium">
                             <Globe className="w-3 h-3 opacity-50 group-hover:opacity-100" />
                             portfolio.hamathopc.in/u/{slug}
-                            <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all" />
+                            <ExternalLink className="w-2.5 h-2.5 opacity-70" />
                         </a>
                     ) : (
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
@@ -65,13 +61,13 @@ export function EditorHeader({
                     <div className="flex items-center gap-1 pr-2 mr-2 border-r border-gray-100 dark:border-white/10">
                         {slug && isPublished && (
                             <button onClick={onDownloadPDF} disabled={isExportingPDF}
-                                className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500 transition-all" title="Download as PDF">
+                                className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500 transition-[background-color,color]" title="Download as PDF" aria-label="Download as PDF">
                                 {isExportingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
                             </button>
                         )}
                         <button
                             onClick={onTogglePreview}
-                            className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all ${showPreview ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-brand-500/10 text-brand-500'}`}
+                            className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-[background-color,color] ${showPreview ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300' : 'bg-brand-500/10 text-brand-600 dark:text-brand-400'}`}
                             title={showPreview ? "Switch to Editor" : "Switch to Preview"}
                         >
                             {showPreview ? <PenTool className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -83,25 +79,12 @@ export function EditorHeader({
 
                         <div className="flex items-center gap-2">
                             <button
-                                onClick={onPublish}
-                                disabled={isPublishPending || isDirty}
-                                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isDirty 
-                                    ? 'opacity-30 cursor-not-allowed text-gray-400' 
-                                    : isPublished 
-                                        ? 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white' 
-                                        : 'bg-brand-500/10 text-brand-500 hover:bg-brand-500 hover:text-white'
-                                }`}
-                            >
-                                {isPublishPending ? <Loader2 className="w-3 h-3 animate-spin" /> : isPublished ? <EyeOff className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
-                                {isPublished ? 'Unpublish' : 'Publish Site'}
-                            </button>
-                            <button
                                 onClick={onSave}
                                 disabled={isSavePending}
                                 className={`btn-primary !py-2.5 !px-5 text-[10px] ${isDirty ? 'shadow-glow-brand ring-4 ring-brand-500/10' : 'opacity-80'}`}
                             >
                                 {isSavePending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                                {isSavePending ? 'Saving...' : 'Save Changes'}
+                                {isSavePending ? 'Saving…' : 'Save changes'}
                             </button>
                         </div>
                 </div>

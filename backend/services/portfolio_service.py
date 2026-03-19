@@ -3,7 +3,6 @@ import json
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from models.portfolio import Portfolio
-from schemas.portfolio import ParsedResumeData
 
 
 def generate_slug(name: str, user_id: str) -> str:
@@ -20,6 +19,8 @@ async def create_portfolio(
     user_id: str,
     parsed_data: dict,
     theme: str = "minimal",
+    template_id: str = "standard",
+    mode: str = "light",
     primary_color: str = "#6366f1",
     resume_filename: str = None,
     resume_object_key: str = None,
@@ -38,7 +39,10 @@ async def create_portfolio(
         slug=slug,
         parsed_data=json.dumps(parsed_data),
         theme=theme,
+        template_id=template_id,
+        mode=mode,
         primary_color=primary_color,
+        is_published=True,
         resume_filename=resume_filename,
         resume_object_key=resume_object_key,
     )

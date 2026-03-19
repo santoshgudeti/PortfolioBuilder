@@ -40,6 +40,16 @@ export default function EditorPage() {
         return () => window.removeEventListener('resize', handleResize)
     }, [])
 
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (!isDirty) return
+            e.preventDefault()
+            e.returnValue = ''
+        }
+        window.addEventListener('beforeunload', handleBeforeUnload)
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+    }, [isDirty])
+
     const { data: portfolioData, isLoading } = useQuery({
         queryKey: ['portfolio'],
         queryFn: () => portfolioApi.getMyPortfolio().then(r => r.data),
@@ -90,18 +100,6 @@ export default function EditorPage() {
         },
         onError: () => toast.error('Failed to save. Please try again.'),
     })
-
-    const publishMutation = useMutation({
-        mutationFn: () => isPublished ? portfolioApi.unpublish() : portfolioApi.publish(),
-        onSuccess: (res) => {
-            setPortfolio({ isPublished: res.data.is_published })
-            queryClient.invalidateQueries({ queryKey: ['portfolio'] })
-            toast.success(res.data.is_published ? '🌐 Portfolio published!' : 'Portfolio unpublished')
-        },
-        onError: () => toast.error('Action failed'),
-    })
-
-
 
     const updateField = (field: keyof ParsedData, value: any) => {
         setLocalData(prev => prev ? { ...prev, [field]: value } : prev)
@@ -209,11 +207,15 @@ export default function EditorPage() {
                 showPreview={showPreview}
                 onDownloadPDF={handleDownloadPDF}
                 onTogglePreview={() => setShowPreview(s => !s)}
-                onPublish={() => publishMutation.mutate()}
                 onSave={() => saveMutation.mutate()}
-                isPublishPending={publishMutation.isPending}
                 isSavePending={saveMutation.isPending}
             />
+
+            {savedOnce && slug && (
+                <div className="mb-6 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 dark:border-white/10 dark:bg-white/[0.03] dark:text-gray-200">
+                    Your portfolio is live at <a className="font-medium text-brand-600 dark:text-brand-400 hover:underline" href={`/u/${slug}`} target="_blank" rel="noopener noreferrer">/u/{slug}</a>.
+                </div>
+            )}
 
             <div className="flex-1 relative overflow-hidden">
                 {/* Editor Side */}

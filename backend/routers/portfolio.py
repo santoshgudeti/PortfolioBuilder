@@ -50,7 +50,7 @@ async def update_my_portfolio(
         
         # We need data to create it
         if not updates.parsed_data:
-             raise HTTPException(status_code=404, detail="Portfolio not found and no data provided to create it.")
+            raise HTTPException(status_code=404, detail="Portfolio not found and no data provided to create it.")
 
         portfolio = await create_portfolio(
             db,
@@ -80,6 +80,8 @@ async def update_my_portfolio(
             if existing_domain.scalar_one_or_none():
                 raise HTTPException(status_code=409, detail="This domain is already connected to another portfolio.")
         update_dict["custom_domain"] = custom_domain or None
+    # Auto-publish on any successful update.
+    update_dict["is_published"] = True
     portfolio = await update_portfolio(db, portfolio, update_dict)
     setattr(portfolio, 'avatar_url', current_user.avatar_url)
     return portfolio
