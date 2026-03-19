@@ -125,7 +125,8 @@ async def publish_portfolio(
         await send_publish_notification_email(
             email=current_user.email,
             user_name=current_user.name or "there",
-            slug=portfolio.slug
+            slug=portfolio.slug,
+            custom_domain=portfolio.custom_domain,
         )
     except Exception:
         # Logistic failure should not block success response
