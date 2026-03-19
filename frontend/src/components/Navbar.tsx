@@ -1,53 +1,76 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Sun, Moon } from 'lucide-react'
+import { Moon, Sun } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
+
+const NAV_ITEMS = [
+    { label: 'Product', href: '#product' },
+    { label: 'Workflow', href: '#workflow' },
+    { label: 'Templates', href: '#templates' },
+    { label: 'FAQ', href: '#faq' },
+]
 
 const Navbar: React.FC = () => {
     const { theme, toggleTheme, user } = useAuthStore()
 
     return (
-        <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-6 pointer-events-none">
-            <nav className="max-w-5xl w-full bg-white/90 dark:bg-black/90 backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-sm rounded-xl h-12 flex items-center justify-between px-6 pointer-events-auto" role="navigation" aria-label="Main navigation">
-                <Link to="/" className="flex items-center gap-2 group outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg p-1" aria-label="PortfolioBuilder.AI Home">
-                    <span className="text-xl font-black tracking-tighter text-gray-950 dark:text-white transition-opacity group-hover:opacity-80">
+        <header className="fixed inset-x-0 top-0 z-50 border-b border-stone-200/80 bg-stone-50/90 backdrop-blur dark:border-white/10 dark:bg-[#0b0e12]/90">
+            <nav
+                className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6"
+                role="navigation"
+                aria-label="Main navigation"
+            >
+                <Link
+                    to="/"
+                    className="rounded-md p-1 outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    aria-label="PortfolioBuilder home"
+                >
+                    <span className="font-space text-xl font-bold tracking-[-0.04em] text-stone-950 dark:text-white">
                         PortfolioBuilder<span className="text-brand-600 dark:text-brand-400">.AI</span>
                     </span>
                 </Link>
 
-                <div className="hidden md:flex items-center gap-8">
-                    {['Solutions', 'Features', 'Templates', 'FAQ'].map(item => (
-                        <a key={item} href={`/#${item.toLowerCase().replace(' ', '-')}`} className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white transition-[color,transform] focus-visible:text-brand-500 outline-none">
-                            {item}
+                <div className="hidden items-center gap-6 md:flex">
+                    {NAV_ITEMS.map((item) => (
+                        <a
+                            key={item.label}
+                            href={item.href}
+                            className="text-sm font-medium text-stone-600 transition-colors hover:text-stone-950 dark:text-stone-300 dark:hover:text-white"
+                        >
+                            {item.label}
                         </a>
                     ))}
-                    {user?.is_admin && (
-                        <Link to="/admin" className="text-sm font-semibold text-purple-600 hover:text-purple-500 transition-colors flex items-center gap-1">
-                            Admin
-                        </Link>
-                    )}
-
                 </div>
 
-                <div className="flex items-center gap-2 sm:gap-4">
-                    <button onClick={toggleTheme} className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-[background-color,transform] focus-visible:ring-2 focus-visible:ring-brand-500 active:scale-95 outline-none" aria-label="Toggle theme">
-                        {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                <div className="flex items-center gap-2 sm:gap-3">
+                    <button
+                        onClick={toggleTheme}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-stone-200 bg-white text-stone-700 transition-colors hover:bg-stone-100 dark:border-white/10 dark:bg-white/5 dark:text-stone-200 dark:hover:bg-white/10"
+                        aria-label="Toggle theme"
+                    >
+                        {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                     </button>
+
                     {user ? (
-                        <Link to="/dashboard" className="btn-primary py-1.5 px-4 text-xs">Dashboard</Link>
+                        <Link to="/dashboard" className="btn-primary px-4 py-2 text-sm">
+                            Dashboard
+                        </Link>
                     ) : (
                         <>
-                            <Link to="/login" className="hidden sm:inline-flex text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white px-2">
-                                Sign In
+                            <Link
+                                to="/login"
+                                className="hidden text-sm font-medium text-stone-600 transition-colors hover:text-stone-950 dark:text-stone-300 dark:hover:text-white sm:inline-flex"
+                            >
+                                Sign in
                             </Link>
-                            <Link to="/register" className="btn-primary py-1.5 px-4 text-xs">
-                                Start Free
+                            <Link to="/register" className="btn-primary px-4 py-2 text-sm">
+                                Start free
                             </Link>
                         </>
                     )}
                 </div>
             </nav>
-        </div>
+        </header>
     )
 }
 
