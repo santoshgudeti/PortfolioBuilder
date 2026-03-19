@@ -150,6 +150,11 @@ async def google_auth(
         from google.auth.transport.requests import Request as GoogleRequest
         from google.oauth2 import id_token as google_id_token
 
+        if (data.credential or "").count(".") != 2:
+            raise ValueError(
+                "Expected Google ID token credential, but received an OAuth access token or malformed credential"
+            )
+
         token_hint = (data.credential or "")[:10]
         logger.info(f"Verifying Google ID token: {token_hint}...")
 

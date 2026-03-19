@@ -53,7 +53,7 @@ class TokenData(BaseModel):
 
 
 class GoogleAuth(BaseModel):
-    credential: str  # Access token provided by Google
+    credential: str  # Google ID token credential returned by Google Identity Services
 
 
 class ProfileUpdate(BaseModel):
