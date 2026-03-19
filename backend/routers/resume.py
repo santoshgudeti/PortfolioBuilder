@@ -34,7 +34,7 @@ async def upload_resume(
     ip = request.client.host if request.client else 'unknown'
     rate_limit_key = f"resume_upload:{current_user.id}:{ip}"
     
-    rate_limiter.enforce(
+    await rate_limiter.enforce(
         key=rate_limit_key,
         limit=6, 
         window_seconds=300,

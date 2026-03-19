@@ -94,6 +94,96 @@ app.add_middleware(
     expose_headers=["Set-Cookie"],
 )
 
+def _is_unsafe_method(method: str) -> bool:
+    return method.upper() in {"POST", "PUT", "PATCH", "DELETE"}
+
+
+def _origin_allowed(origin: str | None) -> bool:
+    if not origin:
+        return False
+    origin = origin.rstrip("/")
+    if origin in allowed_origins:
+        return True
+    # When allow_origin_regex is configured (prod), accept vercel preview origins too.
+    if settings.is_production and origin.startswith("https://") and origin.endswith(".vercel.app"):
+        return True
+    return False
+
+
+def _default_csp(is_production: bool) -> str:
+    """
+    CSP applies when backend serves the SPA from `backend/static`.
+    Keep it reasonably strict, but compatible with Vite-built assets + Google Sign-In.
+    """
+    # Dev is more permissive to avoid blocking local tooling / HMR.
+    if not is_production:
+        return (
+            "default-src 'self'; "
+            "base-uri 'self'; "
+            "frame-ancestors 'none'; "
+            "object-src 'none'; "
+            "img-src 'self' data: blob: https:; "
+            "font-src 'self' https://fonts.gstatic.com data:; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com; "
+            "connect-src 'self' http: https: ws: wss: https://accounts.google.com https://oauth2.googleapis.com; "
+            "frame-src https://accounts.google.com;"
+        )
+
+    return (
+        "default-src 'self'; "
+        "base-uri 'self'; "
+        "frame-ancestors 'none'; "
+        "object-src 'none'; "
+        "img-src 'self' data: blob: https://*.googleusercontent.com; "
+        "font-src 'self' https://fonts.gstatic.com data:; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "script-src 'self' 'unsafe-inline' https://accounts.google.com; "
+        "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com; "
+        "frame-src https://accounts.google.com;"
+    )
+
+
+@app.middleware("http")
+async def csrf_protect_cookie_requests(request: Request, call_next):
+    """
+    Minimal CSRF mitigation for cookie-auth APIs:
+    - Only enforced for unsafe methods to /api/*
+    - Only enforced when a cookie session is present (access_token cookie)
+    - Allows Authorization: Bearer flows (Swagger/curl) without Origin/Referer
+    """
+    path = request.url.path or ""
+    method = request.method or "GET"
+
+    if path.startswith("/api/") and _is_unsafe_method(method):
+        has_cookie_session = bool(request.cookies.get("access_token"))
+        has_bearer = bool((request.headers.get("authorization") or "").lower().startswith("bearer "))
+
+        if has_cookie_session and not has_bearer:
+            origin = request.headers.get("origin")
+
+            # Some clients may omit Origin; try Referer as fallback.
+            if not origin:
+                referer = request.headers.get("referer")
+                if referer:
+                    try:
+                        origin = str(request.url.replace(path="", query="").replace(fragment=""))
+                        # Above is current backend origin; if referer exists we still validate it below.
+                        # We'll parse origin from referer using stdlib to avoid depending on request.url.
+                        from urllib.parse import urlparse
+                        parsed = urlparse(referer)
+                        origin = f"{parsed.scheme}://{parsed.netloc}" if parsed.scheme and parsed.netloc else None
+                    except Exception:
+                        origin = None
+
+            if not _origin_allowed(origin):
+                return JSONResponse(
+                    status_code=403,
+                    content={"detail": "CSRF protection: invalid origin"},
+                )
+
+    return await call_next(request)
+
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
@@ -109,8 +199,11 @@ async def add_process_time_header(request: Request, call_next):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
-        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com; connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com"
-        
+        csp = settings.content_security_policy.strip() or _default_csp(settings.is_production)
+        response.headers["Content-Security-Policy"] = csp
+
+        # Minimal request log for production debugging (PII-safe).
+        logger.info(f"{request.method} {request.url.path} -> {response.status_code} ({process_time:.3f}s)")
         return response
 
 

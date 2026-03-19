@@ -1,4 +1,3 @@
-import requests
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from loguru import logger
@@ -90,7 +89,7 @@ async def register(
     request: Request,
     db: AsyncSession = Depends(get_db),
 ):
-    rate_limiter.enforce(
+    await rate_limiter.enforce(
         key=_rate_key(request, "auth_register", user_data.email),
         limit=5,
         window_seconds=60,
@@ -133,7 +132,7 @@ async def google_auth(
     response: Response,
     db: AsyncSession = Depends(get_db),
 ):
-    rate_limiter.enforce(
+    await rate_limiter.enforce(
         key=_rate_key(request, "auth_google"),
         limit=20,
         window_seconds=60,
@@ -146,51 +145,28 @@ async def google_auth(
         raise HTTPException(status_code=503, detail="Google sign-in is not configured")
 
     try:
-        logger.info(f"Verifying Google access token: {data.credential[:10]}...")
-        token_response = requests.get(
-            "https://oauth2.googleapis.com/tokeninfo",
-            params={"access_token": data.credential},
-            timeout=10,
+        # `@react-oauth/google` typically provides a Google ID token JWT in `credential`.
+        # Verify signature, expiry, issuer, and audience against our client id.
+        from google.auth.transport.requests import Request as GoogleRequest
+        from google.oauth2 import id_token as google_id_token
+
+        token_hint = (data.credential or "")[:10]
+        logger.info(f"Verifying Google ID token: {token_hint}...")
+
+        idinfo = google_id_token.verify_oauth2_token(
+            data.credential,
+            GoogleRequest(),
+            audience=settings.google_client_id,
         )
-        if token_response.status_code != 200:
-            logger.error(f"Google tokeninfo failed: {token_response.text}")
-            raise ValueError("Invalid Google token")
 
-        token_info = token_response.json()
-        logger.debug(f"Token info received: {token_info}")
-        
-        token_audiences = {
-            token_info.get("aud"),
-            token_info.get("azp"),
-            token_info.get("issued_to"),
-        }
-        
-        # Log audiences for debugging in case of mismatch
-        logger.info(f"Token audiences: {token_audiences}")
-        logger.info(f"Target Client ID: {settings.google_client_id}")
+        email = idinfo.get("email")
+        if not email:
+            raise ValueError("Google token missing email")
 
-        if settings.google_client_id not in token_audiences:
-            logger.warning(f"Google token audience mismatch. Expected {settings.google_client_id}")
-            raise ValueError("Google token audience mismatch")
-
-        # Get profile info
-        profile_response = requests.get(
-            "https://www.googleapis.com/oauth2/v3/userinfo",
-            headers={"Authorization": f"Bearer {data.credential}"},
-            timeout=10,
-        )
-        if profile_response.status_code != 200:
-            logger.error(f"Google userinfo failed: {profile_response.text}")
-            raise ValueError("Failed to load Google profile")
-
-        idinfo = profile_response.json()
-        logger.info(f"Google profile loaded: {idinfo.get('email')}")
-        
-        if str(idinfo.get("email_verified", "")).lower() != "true":
+        if not idinfo.get("email_verified", False):
             raise ValueError("Google account email is not verified")
 
-        email = idinfo["email"]
-        name = idinfo.get("name", email.split("@")[0])
+        name = idinfo.get("name") or email.split("@")[0]
         avatar_url = idinfo.get("picture")
 
         result = await db.execute(select(User).where(User.email == email))
@@ -232,9 +208,6 @@ async def google_auth(
         set_auth_cookies(response, access_token, refresh_token, request, settings)
         
         return SessionOut(user=UserOut.model_validate(user))
-    except requests.RequestException as e:
-        logger.error(f"Google auth request failed: {str(e)}")
-        raise HTTPException(status_code=502, detail="Google authentication is temporarily unavailable")
     except HTTPException:
         raise
     except ValueError as e:
@@ -249,7 +222,7 @@ async def login(
     response: Response,
     db: AsyncSession = Depends(get_db),
 ):
-    rate_limiter.enforce(
+    await rate_limiter.enforce(
         key=_rate_key(request, "auth_login", credentials.email),
         limit=10,
         window_seconds=60,
@@ -429,7 +402,7 @@ async def resend_verification(
     request: Request,
     db: AsyncSession = Depends(get_db),
 ):
-    rate_limiter.enforce(
+    await rate_limiter.enforce(
         key=_rate_key(request, "auth_resend_verification", data.email),
         limit=3,
         window_seconds=300,
@@ -461,7 +434,7 @@ async def forgot_password(
     request: Request,
     db: AsyncSession = Depends(get_db),
 ):
-    rate_limiter.enforce(
+    await rate_limiter.enforce(
         key=_rate_key(request, "auth_forgot_password", data.email),
         limit=5,
         window_seconds=300,
@@ -491,7 +464,7 @@ async def reset_password(
     request: Request,
     db: AsyncSession = Depends(get_db),
 ):
-    rate_limiter.enforce(
+    await rate_limiter.enforce(
         key=_rate_key(request, "auth_reset_password"),
         limit=10,
         window_seconds=300,

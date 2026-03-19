@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     google_client_id: str = ""
     admin_email: str = ""
     admin_bootstrap_password: str = ""
+    # Optional override for Content-Security-Policy header (when backend serves SPA).
+    # If empty, backend will use a safe default policy based on environment.
+    content_security_policy: str = ""
+    # Optional: Redis URL for shared rate limiting across processes/instances.
+    # Example: redis://localhost:6379/0
+    redis_url: str = ""
     # Email settings (for Phase 3)
     mail_username: str = ""
     mail_password: str = ""

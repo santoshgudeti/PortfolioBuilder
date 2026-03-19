@@ -172,7 +172,7 @@ async def regenerate_field(
     current_user: User = Depends(get_current_user),
 ):
     """Use Groq AI to rewrite/improve a specific portfolio field."""
-    rate_limiter.enforce(
+    await rate_limiter.enforce(
         key=f"portfolio_regenerate:{current_user.id}:{request.client.host if request.client else 'unknown'}",
         limit=20,
         window_seconds=300,

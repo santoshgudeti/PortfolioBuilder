@@ -53,7 +53,7 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-    const { initTheme, user, setAuth, isInitialized, setInitialized } = useAuthStore()
+    const { initTheme, setAuth, setInitialized } = useAuthStore()
     const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"
     const [showInteractiveEffects, setShowInteractiveEffects] = useState(() => {
         if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -78,7 +78,7 @@ export default function App() {
                 // Only clear if explicitly unauthorized
                 const status = err.response?.status
                 if (status === 401 || status === 403) {
-                    if (user) setAuth(null)
+                    setAuth(null)
                 }
                 setInitialized(true)
             })

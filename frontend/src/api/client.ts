@@ -13,14 +13,14 @@ const apiClient = axios.create({
 
 // Flag to prevent multiple refresh calls simultaneously
 let isRefreshing = false
-let refreshSubscribers: ((token: any) => void)[] = []
+let refreshSubscribers: (() => void)[] = []
 
-const subscribeTokenRefresh = (cb: (token: any) => void) => {
+const subscribeTokenRefresh = (cb: () => void) => {
     refreshSubscribers.push(cb)
 }
 
-const onRefreshed = (token: any) => {
-    refreshSubscribers.map((cb) => cb(token))
+const onRefreshed = () => {
+    refreshSubscribers.forEach((cb) => cb())
     refreshSubscribers = []
 }
 
@@ -59,7 +59,7 @@ apiClient.interceptors.response.use(
                 try {
                     await apiClient.post('/auth/refresh')
                     isRefreshing = false
-                    onRefreshed(true)
+                    onRefreshed()
                     return apiClient(originalRequest)
                 } catch (refreshError) {
                     isRefreshing = false
