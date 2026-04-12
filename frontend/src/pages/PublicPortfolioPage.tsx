@@ -21,6 +21,11 @@ const MaterialAppTemplate = lazy(() => import('@/templates/MaterialAppTemplate')
 const CyberpunkTemplate = lazy(() => import('@/templates/CyberpunkTemplate'))
 const BauhausTemplate = lazy(() => import('@/templates/BauhausTemplate'))
 const BioLinkTemplate = lazy(() => import('@/templates/BioLinkTemplate'))
+const VercelTemplate = lazy(() => import('@/templates/VercelTemplate'))
+const StripeTemplate = lazy(() => import('@/templates/StripeTemplate'))
+const LinearTemplate = lazy(() => import('@/templates/LinearTemplate'))
+const SpotifyTemplate = lazy(() => import('@/templates/SpotifyTemplate'))
+const SpaceXTemplate = lazy(() => import('@/templates/SpaceXTemplate'))
 
 function hexToRgb(hex: string) {
     if (!hex || typeof hex !== 'string' || !hex.startsWith('#') || hex.length < 7) {
@@ -115,6 +120,11 @@ export default function PublicPortfolioPage({ previewData, previewTheme, preview
         if (templateId === 'cyberpunk') return <CyberpunkTemplate {...props} />
         if (templateId === 'bauhaus') return <BauhausTemplate {...props} />
         if (templateId === 'biolink') return <BioLinkTemplate {...props} />
+        if (templateId === 'vercel') return <VercelTemplate {...props} />
+        if (templateId === 'stripe') return <StripeTemplate {...props} />
+        if (templateId === 'linear') return <LinearTemplate {...props} />
+        if (templateId === 'spotify') return <SpotifyTemplate {...props} />
+        if (templateId === 'spacex') return <SpaceXTemplate {...props} />
         return <StandardTemplate {...props} />
     }
 

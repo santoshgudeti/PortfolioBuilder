@@ -1,65 +1,89 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+const FOOTER_LINKS = {
+    Product: [
+        { label: 'Features', href: '#features' },
+        { label: 'How it works', href: '#workflow' },
+        { label: 'Templates', href: '#templates' },
+        { label: 'FAQ', href: '#faq' },
+    ],
+    Company: [
+        { label: 'Sign in', to: '/login' },
+        { label: 'Create account', to: '/register' },
+        { label: 'Privacy', to: '/privacy' },
+        { label: 'Terms', to: '/terms' },
+    ],
+}
+
 const Footer: React.FC = () => {
     return (
-        <footer className="border-t border-stone-200 bg-stone-100/80 py-16 dark:border-white/10 dark:bg-[#10141a]">
-            <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
-                <div>
-                    <Link
-                        to="/"
-                        className="inline-block rounded-md p-1 outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                    >
-                        <span className="font-space text-2xl font-bold tracking-[-0.04em] text-stone-950 dark:text-white">
-                            PortfolioBuilder<span className="text-brand-600 dark:text-brand-400">.AI</span>
-                        </span>
-                    </Link>
-                    <p className="mt-4 max-w-md text-sm leading-7 text-stone-600 dark:text-stone-300">
-                        A resume-first portfolio builder for people who want something cleaner than a template dump and faster than building a site from scratch.
-                    </p>
-                </div>
+        <footer className="border-t border-zinc-200 bg-zinc-50 dark:border-white/[0.06] dark:bg-[#030303]">
+            <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+                <div className="grid gap-12 lg:grid-cols-[1.3fr_0.7fr_0.7fr]">
+                    {/* Brand column */}
+                    <div>
+                        <Link
+                            to="/"
+                            className="inline-block rounded-md p-1 outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                        >
+                            <span className="font-space text-xl font-bold tracking-[-0.04em] text-zinc-950 dark:text-white">
+                                Portfolio<span className="text-brand-500">Builder</span>
+                            </span>
+                        </Link>
+                        <p className="mt-4 max-w-sm text-sm leading-relaxed text-zinc-500 dark:text-zinc-500">
+                            Describe yourself or upload your resume. AI builds your portfolio. Publish on your unique URL within minutes. Free forever.
+                        </p>
+                    </div>
 
-                <div>
-                    <h2 className="font-space text-lg font-bold text-stone-950 dark:text-white">Explore</h2>
-                    <div className="mt-4 space-y-3 text-sm">
-                        <a href="#product" className="block text-stone-600 transition-colors hover:text-stone-950 dark:text-stone-300 dark:hover:text-white">
+                    {/* Product links */}
+                    <div>
+                        <h2 className="font-mono text-xs font-medium uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-600">
                             Product
-                        </a>
-                        <a href="#workflow" className="block text-stone-600 transition-colors hover:text-stone-950 dark:text-stone-300 dark:hover:text-white">
-                            Workflow
-                        </a>
-                        <a href="#templates" className="block text-stone-600 transition-colors hover:text-stone-950 dark:text-stone-300 dark:hover:text-white">
-                            Templates
-                        </a>
-                        <a href="#faq" className="block text-stone-600 transition-colors hover:text-stone-950 dark:text-stone-300 dark:hover:text-white">
-                            FAQ
-                        </a>
+                        </h2>
+                        <div className="mt-5 space-y-3 text-sm">
+                            {FOOTER_LINKS.Product.map((item) => (
+                                <a
+                                    key={item.label}
+                                    href={item.href}
+                                    className="block text-zinc-600 transition-colors hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white"
+                                >
+                                    {item.label}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Company links */}
+                    <div>
+                        <h2 className="font-mono text-xs font-medium uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-600">
+                            Company
+                        </h2>
+                        <div className="mt-5 space-y-3 text-sm">
+                            {FOOTER_LINKS.Company.map((item) => (
+                                <Link
+                                    key={item.label}
+                                    to={item.to!}
+                                    className="block text-zinc-600 transition-colors hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white"
+                                >
+                                    {item.label}
+                                </Link>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
-                <div>
-                    <h2 className="font-space text-lg font-bold text-stone-950 dark:text-white">Company</h2>
-                    <div className="mt-4 space-y-3 text-sm">
-                        <Link to="/login" className="block text-stone-600 transition-colors hover:text-stone-950 dark:text-stone-300 dark:hover:text-white">
-                            Sign in
-                        </Link>
-                        <Link to="/register" className="block text-stone-600 transition-colors hover:text-stone-950 dark:text-stone-300 dark:hover:text-white">
-                            Create account
-                        </Link>
-                        <Link to="/privacy" className="block text-stone-600 transition-colors hover:text-stone-950 dark:text-stone-300 dark:hover:text-white">
-                            Privacy
-                        </Link>
-                        <Link to="/terms" className="block text-stone-600 transition-colors hover:text-stone-950 dark:text-stone-300 dark:hover:text-white">
-                            Terms
-                        </Link>
-                    </div>
-                </div>
-            </div>
-
-            <div className="mx-auto mt-12 max-w-6xl border-t border-stone-200 px-4 pt-6 text-sm text-stone-500 dark:border-white/10 dark:text-stone-400 sm:px-6">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                {/* Bottom bar */}
+                <div className="mt-14 flex flex-col gap-3 border-t border-zinc-200 pt-6 text-xs text-zinc-400 dark:border-white/[0.06] dark:text-zinc-600 sm:flex-row sm:items-center sm:justify-between">
                     <span>&copy; {new Date().getFullYear()} PortfolioBuilder.AI</span>
-                    <span>Built by HamathOPC Pvt Ltd</span>
+                    <div className="flex gap-4">
+                        <Link to="/terms" className="hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors">
+                            Terms &amp; Conditions
+                        </Link>
+                        <Link to="/privacy" className="hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors">
+                            Privacy Policy
+                        </Link>
+                    </div>
                 </div>
             </div>
         </footer>
