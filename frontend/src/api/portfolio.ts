@@ -12,5 +12,7 @@ export const portfolioApi = {
         apiClient.post('/portfolio/me/regenerate', { field, current_value, context: context || '' }),
     checkSlug: (slug: string) => apiClient.get(`/portfolio/check-slug?slug=${slug}`),
     updateSlug: (slug: string) => apiClient.patch('/portfolio/me/slug', { slug }),
+    askCopilot: (slug: string, question: string) =>
+        apiClient.post(`/portfolio/public/${slug}/ask`, { question }),
 }
 

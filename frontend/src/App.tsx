@@ -17,6 +17,16 @@ const VerifyEmailPage = lazy(() => import('@/pages/VerifyEmailPage'))
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage'))
 const AnalyticsPage = lazy(() => import('@/pages/AnalyticsPage'))
+const BrandingPage = lazy(() => import('@/pages/BrandingPage'))
+const ContentGeneratorPage = lazy(() => import('@/pages/ContentGeneratorPage'))
+const DynamicPortfolioPage = lazy(() => import('@/pages/DynamicPortfolioPage'))
+const AchievementDiscoveryPage = lazy(() => import('@/pages/AchievementDiscoveryPage'))
+const AutoUpdatePage = lazy(() => import('@/pages/AutoUpdatePage'))
+const InterviewPrepPage = lazy(() => import('@/pages/InterviewPrepPage'))
+const RecruiterPage = lazy(() => import('@/pages/RecruiterPage'))
+const VideoPortfolioPage = lazy(() => import('@/pages/VideoPortfolioPage'))
+const JobMatchingPage = lazy(() => import('@/pages/JobMatchingPage'))
+const ResumeOptimizerPage = lazy(() => import('@/pages/ResumeOptimizerPage'))
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
 const AdminPage = lazy(() => import('@/pages/AdminPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
@@ -120,7 +130,6 @@ export default function App() {
     const appDomain = normalizeHostname(import.meta.env.VITE_APP_DOMAIN)
     const isCustomDomain = host !== 'localhost' &&
         host !== '127.0.0.1' &&
-        !host.includes('vercel.app') &&
         appDomain && host !== appDomain
 
     if (isCustomDomain) {
@@ -144,6 +153,7 @@ export default function App() {
                             <Routes>
                                 {/* Public */}
                                 <Route path="/" element={<LandingPage />} />
+                                <Route path="/talent" element={<RecruiterPage />} />
                                 <Route path="/u/:slug" element={<PublicPortfolioPage />} />
                                 <Route path="/verify-email" element={<VerifyEmailPage />} />
 
@@ -156,11 +166,20 @@ export default function App() {
 
                                 {/* Protected - only for logged in users */}
                                 <Route path="/upload" element={<ProtectedRoute><AppLayout><UploadPage /></AppLayout></ProtectedRoute>} />
+                                <Route path="/video-portfolio" element={<ProtectedRoute><AppLayout><VideoPortfolioPage /></AppLayout></ProtectedRoute>} />
                                 <Route path="/editor" element={<ProtectedRoute><AppLayout><EditorPage /></AppLayout></ProtectedRoute>} />
 
                                 {/* Dashboard & Management */}
                                 <Route path="/dashboard" element={<ProtectedRoute><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
                                 <Route path="/analytics" element={<ProtectedRoute><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
+                                <Route path="/auto-update" element={<ProtectedRoute><AppLayout><AutoUpdatePage /></AppLayout></ProtectedRoute>} />
+                                <Route path="/branding" element={<ProtectedRoute><AppLayout><BrandingPage /></AppLayout></ProtectedRoute>} />
+                                <Route path="/content" element={<ProtectedRoute><AppLayout><ContentGeneratorPage /></AppLayout></ProtectedRoute>} />
+                                <Route path="/dynamic-portfolio" element={<ProtectedRoute><AppLayout><DynamicPortfolioPage /></AppLayout></ProtectedRoute>} />
+                                <Route path="/achievements" element={<ProtectedRoute><AppLayout><AchievementDiscoveryPage /></AppLayout></ProtectedRoute>} />
+                                <Route path="/interview" element={<ProtectedRoute><AppLayout><InterviewPrepPage /></AppLayout></ProtectedRoute>} />
+                                <Route path="/jobs" element={<ProtectedRoute><AppLayout><JobMatchingPage /></AppLayout></ProtectedRoute>} />
+                                <Route path="/optimizer" element={<ProtectedRoute><AppLayout><ResumeOptimizerPage /></AppLayout></ProtectedRoute>} />
                                 <Route path="/profile" element={<ProtectedRoute><AppLayout><ProfilePage /></AppLayout></ProtectedRoute>} />
                                 <Route path="/settings" element={<ProtectedRoute><AppLayout><SettingsPage /></AppLayout></ProtectedRoute>} />
                                 <Route path="/admin" element={<AdminRoute><AppLayout><AdminPage /></AppLayout></AdminRoute>} />

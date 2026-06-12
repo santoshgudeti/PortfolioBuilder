@@ -26,3 +26,8 @@ fastapi-mail
 psutil
 redis
 
+# Testing
+pytest
+pytest-asyncio
+pytest-mock
+

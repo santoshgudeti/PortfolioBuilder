@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timezone
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status, Request
 from loguru import logger
@@ -8,7 +9,7 @@ from database import get_db
 from models.user import User
 from models.portfolio import Portfolio
 from services.parser import extract_text
-from services.groq_service import parse_resume_with_groq
+from services.groq_service import parse_resume_with_groq, extract_career_graph
 from services.portfolio_service import create_portfolio, update_portfolio
 from services.rustfs_service import rustfs_service
 from utils.auth import get_current_user
@@ -82,19 +83,33 @@ async def upload_resume(
             detail="No text found in the uploaded file. Please upload a text-based PDF or DOCX.",
         )
 
-    # Parse with Groq
-    try:
-        parsed_data = await parse_resume_with_groq(resume_text, tone=tone)
-    except Exception as e:
-        if resume_object_key:
-            await rustfs_service.delete_file(resume_object_key)
-        raise HTTPException(status_code=502, detail=f"AI parsing failed: {str(e)}")
+    # Parse with Groq (with auto-retry and caching — never throws)
+    parsed_data = await parse_resume_with_groq(resume_text, tone=tone)
+    ai_fallback = not parsed_data.get("name") and not parsed_data.get("skills")
+    if ai_fallback:
+        logger.warning(f"AI parsing returned fallback (empty) data for user {current_user.id}")
+
+    # Extract career knowledge graph (augments parsed data, doesn't replace it)
+    career_graph = await extract_career_graph(resume_text)
 
     # Check if user already has a portfolio
     result = await db.execute(select(Portfolio).where(Portfolio.user_id == current_user.id))
     existing_portfolio = result.scalar_one_or_none()
 
     if existing_portfolio:
+        # Snapshot current state to version_history before any mutation
+        try:
+            history = json.loads(existing_portfolio.version_history or "[]")
+            history.append({
+                "parsed_data": json.loads(existing_portfolio.parsed_data) if existing_portfolio.parsed_data else {},
+                "saved_at": datetime.now(timezone.utc).isoformat(),
+            })
+            # Keep max 10 most recent snapshots
+            existing_portfolio.version_history = json.dumps(history[-10:])
+            await db.flush()
+        except Exception:
+            logger.warning("Failed to snapshot portfolio version history")
+
         previous_resume_object_key = existing_portfolio.resume_object_key
         if mode == "merge":
             # Deep merge: keep existing edited fields, only fill empty/null from new parse
@@ -115,6 +130,7 @@ async def upload_resume(
                 existing_portfolio,
                 {
                     "parsed_data": json.dumps(merged) if isinstance(merged, dict) else merged, 
+                    "career_graph": career_graph,
                     "resume_filename": file.filename,
                     "resume_object_key": resume_object_key if resume_object_key else existing_portfolio.resume_object_key,
                     # Auto-publish on successful generation/update.
@@ -129,6 +145,7 @@ async def upload_resume(
                 existing_portfolio,
                 {
                     "parsed_data": parsed_data, 
+                    "career_graph": career_graph,
                     "resume_filename": file.filename,
                     "resume_object_key": resume_object_key if resume_object_key else existing_portfolio.resume_object_key,
                     # Auto-publish on successful generation/update.
@@ -152,13 +169,15 @@ async def upload_resume(
             db,
             user_id=current_user.id,
             parsed_data=parsed_data,
+            career_graph=career_graph,
             resume_filename=file.filename,
             resume_object_key=resume_object_key,
         )
 
     return {
-        "message": "Resume parsed successfully",
+        "message": "Resume parsed successfully" if not ai_fallback else "AI parsing was limited. You can edit the data manually in the editor.",
         "portfolio_id": portfolio.id,
         "slug": portfolio.slug,
         "parsed_data": parsed_data,
+        "ai_fallback": ai_fallback,
     }

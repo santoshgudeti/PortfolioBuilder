@@ -145,10 +145,9 @@ async def google_auth(
         raise HTTPException(status_code=503, detail="Google sign-in is not configured")
 
     try:
-        # `@react-oauth/google` typically provides a Google ID token JWT in `credential`.
-        # Verify signature, expiry, issuer, and audience against our client id.
         from google.auth.transport.requests import Request as GoogleRequest
         from google.oauth2 import id_token as google_id_token
+        from google.auth.exceptions import TransportError
 
         if (data.credential or "").count(".") != 2:
             raise ValueError(
@@ -158,11 +157,27 @@ async def google_auth(
         token_hint = (data.credential or "")[:10]
         logger.info(f"Verifying Google ID token: {token_hint}...")
 
-        idinfo = google_id_token.verify_oauth2_token(
-            data.credential,
-            GoogleRequest(),
-            audience=settings.google_client_id,
-        )
+        import time
+        last_error = None
+        for attempt in range(3):
+            try:
+                idinfo = google_id_token.verify_oauth2_token(
+                    data.credential,
+                    GoogleRequest(),
+                    audience=settings.google_client_id,
+                )
+                last_error = None
+                break
+            except TransportError as e:
+                last_error = e
+                if attempt < 2:
+                    wait = 2 ** attempt
+                    logger.warning(f"Google cert fetch failed (attempt {attempt + 1}/3), retrying in {wait}s: {e}")
+                    time.sleep(wait)
+                continue
+
+        if last_error:
+            raise last_error
 
         email = idinfo.get("email")
         if not email:

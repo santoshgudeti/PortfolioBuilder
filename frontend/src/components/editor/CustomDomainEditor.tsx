@@ -45,7 +45,7 @@ export function CustomDomainEditor({ currentDomain, onUpdated }: CustomDomainEdi
                 <Globe className="w-4 h-4" /> Use My Own Domain
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                Connect your own domain. Point a CNAME record from your domain to <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">yourapp.vercel.app</code>
+                Connect your own domain. Point a CNAME record from your domain to your deployment host.
             </p>
             <div className="flex items-center gap-2">
                 <div className="flex flex-1 items-center rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 overflow-hidden">

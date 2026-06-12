@@ -39,7 +39,7 @@ export default function UploadPage() {
 
     const [file, setFileState] = useState<File | null>(() => cachedSelectedFile)
     const [tone, setTone] = useState('professional')
-    const [mode, setMode] = useState<'replace' | 'merge'>('replace')
+    const [mode, setMode] = useState<'replace' | 'merge'>('merge')
     const [uploadError, setUploadError] = useState<string | null>(null)
     const [debugLog, setDebugLog] = useState<string[]>(() => {
         if (typeof window === 'undefined') return []

@@ -1,17 +1,8 @@
-import re
 import json
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from models.portfolio import Portfolio
-
-
-def generate_slug(name: str, user_id: str) -> str:
-    """Generate a URL-friendly slug from name."""
-    base = re.sub(r"[^a-zA-Z0-9\s]", "", name.lower())
-    base = re.sub(r"\s+", "-", base.strip())
-    # Append short user_id suffix to ensure uniqueness
-    suffix = user_id[:6]
-    return f"{base}-{suffix}" if base else f"user-{suffix}"
+from utils.slug import generate_slug
 
 
 async def create_portfolio(
@@ -24,6 +15,7 @@ async def create_portfolio(
     primary_color: str = "#6366f1",
     resume_filename: str = None,
     resume_object_key: str = None,
+    career_graph: dict = None,
 ) -> Portfolio:
     """Create a new portfolio record."""
     name = parsed_data.get("name", "user")
@@ -38,6 +30,7 @@ async def create_portfolio(
         user_id=user_id,
         slug=slug,
         parsed_data=json.dumps(parsed_data),
+        career_graph=json.dumps(career_graph) if career_graph else None,
         theme=theme,
         template_id=template_id,
         mode=mode,
@@ -64,7 +57,7 @@ async def update_portfolio(
             continue
         if value is None:
             continue
-        if key == "parsed_data" and isinstance(value, dict):
+        if isinstance(value, dict) and key in ("parsed_data", "career_graph"):
             setattr(portfolio, key, json.dumps(value))
         else:
             setattr(portfolio, key, value)

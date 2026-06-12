@@ -1,6 +1,8 @@
 import json
 from groq import AsyncGroq
+from loguru import logger
 from config import get_settings
+from services.cache import get_cached_parse, set_cached_parse
 
 settings = get_settings()
 
@@ -59,52 +61,173 @@ TONE_INSTRUCTIONS = {
 }
 
 
-async def parse_resume_with_groq(resume_text: str, tone: str = "professional") -> dict:
-    """Send resume text to Groq and return structured JSON."""
-    client = AsyncGroq(api_key=settings.groq_api_key)
-
-    tone_instruction = TONE_INSTRUCTIONS.get(tone, TONE_INSTRUCTIONS["professional"])
-    enhanced_prompt = SYSTEM_PROMPT + f"\n\nTone: {tone_instruction}"
-
-    completion = await client.chat.completions.create(
-        model="llama-3.1-8b-instant",  # 3-5x faster than 70b, still great for JSON parsing
-        messages=[
-            {"role": "system", "content": enhanced_prompt},
-            {"role": "user", "content": f"Parse this resume:\n\n{resume_text}"},
-        ],
-        temperature=0.3,
-        max_tokens=4096,
-    )
-
-    raw = completion.choices[0].message.content.strip()
-
-    # Strip markdown code blocks if present
+def _parse_json_response(raw: str) -> dict | None:
+    """Try to extract valid JSON from LLM response. Returns None on failure."""
+    raw = raw.strip()
     if raw.startswith("```"):
         raw = raw.split("```")[1]
         if raw.startswith("json"):
             raw = raw[4:]
         raw = raw.strip()
-
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
-        # Fallback: return minimal structure
-        return {
-            "name": "",
-            "title": "",
-            "email": "",
-            "phone": "",
-            "location": "",
-            "summary": resume_text[:500],
-            "tagline": "",
-            "skills": [],
-            "projects": [],
-            "experience": [],
-            "education": [],
-            "github": None,
-            "linkedin": None,
-            "website": None,
-        }
+        return None
+
+
+def _empty_fallback(resume_text: str) -> dict:
+    return {
+        "name": "",
+        "title": "",
+        "email": "",
+        "phone": "",
+        "location": "",
+        "summary": resume_text[:500],
+        "tagline": "",
+        "skills": [],
+        "projects": [],
+        "experience": [],
+        "education": [],
+        "github": None,
+        "linkedin": None,
+        "website": None,
+    }
+
+
+RETRY_TONES = ["professional", "startup", "creative"]
+
+
+async def _call_groq(client: AsyncGroq, prompt: str, resume_text: str, model: str = "llama-3.1-8b-instant") -> str | None:
+    """Make a single Groq API call. Returns raw text or None on failure."""
+    try:
+        completion = await client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": f"Parse this resume:\n\n{resume_text}"},
+            ],
+            temperature=0.3,
+            max_tokens=4096,
+        )
+        return completion.choices[0].message.content.strip()
+    except Exception as e:
+        logger.warning(f"Groq API call failed: {e}")
+        return None
+
+
+CAREER_GRAPH_PROMPT = """You are a career analysis AI. Analyze the resume text below and extract a career knowledge graph.
+
+Return ONLY a valid JSON object with exactly this schema (no markdown, no explanation):
+{
+  "skills": ["array of all individual skills mentioned, normalised"],
+  "technologies": ["array of specific tools, frameworks, languages, platforms"],
+  "industries": ["array of industries inferred from experience (e.g. Fintech, Healthcare, E-commerce)"],
+  "roles": ["array of role titles held, from most recent to oldest"],
+  "achievements": ["array of specific, measurable accomplishments inferred from the text. Convert vague statements into concrete achievements where possible."],
+  "strengths": ["array of inferred professional strengths (e.g. System Design, Team Leadership, Data Analysis)"],
+  "experience_years": "number (total years of professional experience, infer if not explicit)",
+  "top_skills": ["top 3-5 skills that best define this person"],
+  "career_level": "one of: entry | mid | senior | lead | executive",
+  "interests": ["array of inferred professional interests based on projects and skills"]
+}
+
+Rules:
+- Infer as much as possible from context. If the resume says 'Led migration' infer the achievement as 'Led migration of X reducing Y by Z%' even if metrics aren't explicit.
+- Extract technologies from both explicit skills sections and project/experience descriptions.
+- If information is truly not available, use empty arrays or reasonable defaults.
+- Return ONLY the JSON, no other text.
+"""
+
+
+async def extract_career_graph(resume_text: str) -> dict:
+    """Extract a career knowledge graph from resume text using Groq."""
+    cached = get_cached_parse(resume_text, "_career_graph")
+    if cached is not None:
+        logger.info("Cache hit for career graph")
+        return cached
+
+    client = AsyncGroq(api_key=settings.groq_api_key)
+    model = "llama-3.3-70b-versatile"
+
+    try:
+        completion = await client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": CAREER_GRAPH_PROMPT},
+                {"role": "user", "content": f"Analyze this resume:\n\n{resume_text}"},
+            ],
+            temperature=0.2,
+            max_tokens=2048,
+        )
+        raw = completion.choices[0].message.content.strip()
+        parsed = _parse_json_response(raw)
+
+        if parsed is not None:
+            set_cached_parse(resume_text, "_career_graph", parsed)
+            return parsed
+
+        logger.warning("Failed to parse career graph JSON from Groq response")
+    except Exception as e:
+        logger.warning(f"Career graph extraction failed: {e}")
+
+    return _empty_career_graph()
+
+
+def _empty_career_graph() -> dict:
+    return {
+        "skills": [],
+        "technologies": [],
+        "industries": [],
+        "roles": [],
+        "achievements": [],
+        "strengths": [],
+        "experience_years": 0,
+        "top_skills": [],
+        "career_level": "mid",
+        "interests": [],
+    }
+
+
+async def parse_resume_with_groq(resume_text: str, tone: str = "professional") -> dict:
+    """Send resume text to Groq and return structured JSON.
+
+    Features:
+    - Content-hash cache: identical resumes return instantly
+    - Auto-retry: on failure, retries with different tones before falling back
+    """
+    # Check cache first
+    cached = get_cached_parse(resume_text, tone)
+    if cached is not None:
+        logger.info("Cache hit for resume parse")
+        return cached
+
+    client = AsyncGroq(api_key=settings.groq_api_key)
+
+    # Try requested tone first, then fallback tones
+    tones_to_try = [tone] + [t for t in RETRY_TONES if t != tone]
+
+    last_error = None
+    for attempt_tone in tones_to_try:
+        tone_instruction = TONE_INSTRUCTIONS.get(attempt_tone, TONE_INSTRUCTIONS["professional"])
+        enhanced_prompt = SYSTEM_PROMPT + f"\n\nTone: {tone_instruction}"
+
+        raw = await _call_groq(client, enhanced_prompt, resume_text)
+        if raw is None:
+            last_error = "Groq API returned no response"
+            continue
+
+        parsed = _parse_json_response(raw)
+        if parsed is not None:
+            set_cached_parse(resume_text, tone, parsed)
+            return parsed
+
+        last_error = "Groq returned invalid JSON"
+        logger.warning(f"Failed to parse JSON with tone '{attempt_tone}', trying next tone")
+
+    # All attempts failed — return partial data instead of crashing
+    logger.error(f"All Groq parsing attempts failed: {last_error}")
+    fallback = _empty_fallback(resume_text)
+    return fallback
 
 
 REGENERATE_PROMPTS = {

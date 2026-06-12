@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet-async'
 import { Suspense, lazy } from 'react'
 import { normalizeHostname } from '@/lib/domain'
 import { getInitials } from '@/lib/utils'
+import PortfolioCopilot from '@/components/PortfolioCopilot'
 
 const StandardTemplate = lazy(() => import('@/templates/StandardTemplate'))
 const TechGridTemplate = lazy(() => import('@/templates/TechGridTemplate'))
@@ -55,7 +56,7 @@ export default function PublicPortfolioPage({ previewData, previewTheme, preview
 
     const hostname = normalizeHostname(window.location.hostname)
     const appDomain = normalizeHostname(import.meta.env.VITE_APP_DOMAIN)
-    const isCustomDomain = hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.includes('vercel.app') && hostname !== appDomain
+    const isCustomDomain = hostname !== 'localhost' && hostname !== '127.0.0.1' && hostname !== appDomain
 
     const { data: fetchedData, isLoading, isError } = useQuery({
         queryKey: isCustomDomain ? ['public-portfolio-domain', hostname] : ['public-portfolio', slug],
@@ -151,6 +152,9 @@ export default function PublicPortfolioPage({ previewData, previewTheme, preview
             <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-gray-950" />}>
                 {renderTemplate()}
             </Suspense>
+            {!isPreview && !isPdf && data?.slug && (
+                <PortfolioCopilot slug={data.slug} />
+            )}
         </>
     )
 }

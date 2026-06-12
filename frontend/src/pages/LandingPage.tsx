@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import {
     ArrowRight,
-    ArrowUpRight,
     BarChart3,
     CheckCircle2,
     ChevronRight,
@@ -41,14 +40,6 @@ const CREATOR_FEATURES = [
     'AI builds from your resume',
     'Live at your unique URL',
     'Edit anytime, history kept',
-    'Discovered by companies hiring now',
-]
-
-const COMPANY_FEATURES = [
-    'Live portfolios, not outdated resumes',
-    'See real work, not just descriptions',
-    'Contact directly through portfolio page',
-    'Free to browse, no account needed',
 ]
 
 type WorkflowStep = {
@@ -120,25 +111,13 @@ const AI_FEATURES: Feature[] = [
 
 const TEMPLATE_PRESETS = [
     { name: 'Standard', fit: 'Classic & Versatile', accent: 'bg-brand-500' },
-    { name: 'TechGrid', fit: 'Developers & Engineers', accent: 'bg-emerald-500' },
-    { name: 'Apple Desktop', fit: 'macOS-inspired Premium', accent: 'bg-zinc-400' },
-    { name: 'Glassmorphism', fit: 'Modern & Translucent', accent: 'bg-sky-400' },
+    { name: 'Linear', fit: 'Dark-mode Native', accent: 'bg-indigo-400' },
     { name: 'Corporate', fit: 'Professional & Enterprise', accent: 'bg-blue-600' },
+    { name: 'TechGrid', fit: 'Developers & Engineers', accent: 'bg-emerald-500' },
+    { name: 'Glassmorphism', fit: 'Modern & Translucent', accent: 'bg-sky-400' },
     { name: 'Cyberpunk', fit: 'Neon & Futuristic', accent: 'bg-fuchsia-500' },
     { name: 'Neobrutalism', fit: 'Bold & Raw', accent: 'bg-yellow-400' },
-    { name: 'Notion', fit: 'Minimal & Clean', accent: 'bg-zinc-600' },
-    { name: 'Bauhaus', fit: 'Geometric & Artistic', accent: 'bg-red-500' },
     { name: 'Terminal', fit: 'CLI & Hacker Aesthetic', accent: 'bg-green-500' },
-    { name: 'Split', fit: 'Two-column Layout', accent: 'bg-indigo-500' },
-    { name: 'Freelancer', fit: 'Services & Clients', accent: 'bg-amber-500' },
-    { name: 'Academic', fit: 'Research & Scholarly', accent: 'bg-teal-500' },
-    { name: 'Material App', fit: 'Material Design', accent: 'bg-orange-500' },
-    { name: 'BioLink', fit: 'Link-in-bio Style', accent: 'bg-rose-500' },
-    { name: 'Vercel', fit: 'Monochrome Precision', accent: 'bg-zinc-800' },
-    { name: 'Stripe', fit: 'Purple Elegance', accent: 'bg-violet-600' },
-    { name: 'Linear', fit: 'Dark-mode Native', accent: 'bg-indigo-400' },
-    { name: 'Spotify', fit: 'Immersive Dark', accent: 'bg-green-500' },
-    { name: 'SpaceX', fit: 'Cinematic & Industrial', accent: 'bg-neutral-700' },
 ]
 
 const ROLES = [
@@ -284,60 +263,29 @@ export default function LandingPage() {
                 {/* ════════ FOR CREATORS / FOR COMPANIES ════════ */}
                 <section id="features" className="py-20 sm:py-28">
                     <div className="mx-auto max-w-6xl px-4 sm:px-6">
-                        <div className="grid gap-6 lg:grid-cols-2">
-                            {/* Creators card */}
-                            <div className="rounded-2xl border border-zinc-200 bg-white p-8 dark:border-white/[0.08] dark:bg-white/[0.03] sm:p-10">
-                                <span className="section-label">◆ For creators</span>
-                                <h2 className="mt-4 font-space text-2xl font-bold tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-3xl">
-                                    Stop hiding your best work in a GitHub README.
-                                </h2>
-                                <p className="mt-4 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-                                    PortfolioBuilder turns what you've built into a portfolio that speaks for you. AI-generated, instantly live, yours forever.
-                                </p>
-                                <ul className="mt-6 space-y-3">
-                                    {CREATOR_FEATURES.map((feat) => (
-                                        <li key={feat} className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-300">
-                                            <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-emerald-500" />
-                                            {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <Link
-                                    to={primaryCta}
-                                    className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-zinc-950 transition-colors hover:text-brand-600 dark:text-white dark:hover:text-brand-400"
-                                >
-                                    Build for free
-                                    <ArrowRight className="h-4 w-4" />
-                                </Link>
-                            </div>
-
-                            {/* Companies card */}
-                            <div className="rounded-2xl border border-zinc-200 bg-white p-8 dark:border-white/[0.08] dark:bg-white/[0.03] sm:p-10">
-                                <span className="section-label">◇ For companies</span>
-                                <h2 className="mt-4 font-space text-2xl font-bold tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-3xl">
-                                    Find people who build, not people who write good CVs.
-                                </h2>
-                                <p className="mt-4 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-                                    Browse real portfolios. See actual projects. Contact creators directly — no middlemen, no fees.
-                                </p>
-                                <ul className="mt-6 space-y-3">
-                                    {COMPANY_FEATURES.map((feat) => (
-                                        <li key={feat} className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-300">
-                                            <div className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
-                                                <div className="h-2 w-2 rounded-full border-2 border-brand-500" />
-                                            </div>
-                                            {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <Link
-                                    to={primaryCta}
-                                    className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-zinc-950 transition-colors hover:text-brand-600 dark:text-white dark:hover:text-brand-400"
-                                >
-                                    Browse portfolios
-                                    <ArrowUpRight className="h-4 w-4" />
-                                </Link>
-                            </div>
+                        <div className="rounded-2xl border border-zinc-200 bg-white p-8 dark:border-white/[0.08] dark:bg-white/[0.03] sm:p-10">
+                            <span className="section-label">◆ For creators</span>
+                            <h2 className="mt-4 font-space text-2xl font-bold tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-3xl">
+                                Stop hiding your best work in a GitHub README.
+                            </h2>
+                            <p className="mt-4 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+                                PortfolioBuilder turns what you've built into a portfolio that speaks for you. AI-generated, instantly live, yours forever.
+                            </p>
+                            <ul className="mt-6 space-y-3">
+                                {CREATOR_FEATURES.map((feat) => (
+                                    <li key={feat} className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-300">
+                                        <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-emerald-500" />
+                                        {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link
+                                to={primaryCta}
+                                className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-zinc-950 transition-colors hover:text-brand-600 dark:text-white dark:hover:text-brand-400"
+                            >
+                                Build for free
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
                         </div>
                     </div>
                 </section>

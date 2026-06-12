@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import get_settings
 from database import get_db, init_db
-from routers import admin, auth, portfolio, resume
+from routers import achievements, admin, analytics_v2, auth, auto_update, branding, content, dynamic_portfolio, interview, jobs, optimizer, portfolio, recruiter, resume, video
 
 settings = get_settings()
 
@@ -87,7 +87,6 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https://.*\.vercel\.app" if settings.is_production else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -103,9 +102,6 @@ def _origin_allowed(origin: str | None) -> bool:
         return False
     origin = origin.rstrip("/")
     if origin in allowed_origins:
-        return True
-    # When allow_origin_regex is configured (prod), accept vercel preview origins too.
-    if settings.is_production and origin.startswith("https://") and origin.endswith(".vercel.app"):
         return True
     return False
 
@@ -227,6 +223,17 @@ api_router = APIRouter(prefix="/api")
 api_router.include_router(auth.router)
 api_router.include_router(resume.router)
 api_router.include_router(portfolio.router)
+api_router.include_router(achievements.router)
+api_router.include_router(analytics_v2.router)
+api_router.include_router(auto_update.router)
+api_router.include_router(branding.router)
+api_router.include_router(content.router)
+api_router.include_router(dynamic_portfolio.router)
+api_router.include_router(interview.router)
+api_router.include_router(jobs.router)
+api_router.include_router(optimizer.router)
+api_router.include_router(recruiter.router)
+api_router.include_router(video.router)
 api_router.include_router(admin.router)
 app.include_router(api_router)
 

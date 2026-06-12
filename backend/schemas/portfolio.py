@@ -79,6 +79,7 @@ class PortfolioOut(BaseModel):
     resume_object_key: Optional[str] = None
     view_count: int = 0
     hidden_sections: str = ""
+    career_graph: Optional[str] = None  # JSON string
     created_at: datetime
     updated_at: datetime
 

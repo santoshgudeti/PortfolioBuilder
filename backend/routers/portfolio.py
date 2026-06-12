@@ -10,9 +10,16 @@ from database import get_db
 from models.user import User
 from models.portfolio import Portfolio
 from models.page_view import PageView
+from pydantic import BaseModel
 from schemas.portfolio import PortfolioUpdate, PortfolioOut, RegenerateRequest, SlugUpdate
+
+
+class CopilotAskRequest(BaseModel):
+    question: str
 from services.portfolio_service import update_portfolio
 from services.groq_service import regenerate_field_with_groq, analyze_portfolio_spam
+from services.analytics_service import classify_visitor
+from services.copilot_service import answer_question
 from services.email_service import send_publish_notification_email
 from utils.auth import get_current_user
 from utils.rate_limit import rate_limiter
@@ -108,15 +115,23 @@ async def publish_portfolio(
     
     analysis = await analyze_portfolio_spam(analysis_data)
     
+    category = analysis.get("category", "pending")
+    confidence = analysis.get("confidence", 0)
+    
     moderation_updates = {
-        "moderation_status": analysis.get("category", "pending"),
-        "moderation_score": int(analysis.get("confidence", 0) * 100),
+        "moderation_status": category,
+        "moderation_score": int(confidence * 100),
         "moderation_reason": analysis.get("reason"),
     }
     
-    # If it's pure spam/placeholder with high confidence, we might want to prevent publication
-    # For now, let's just mark it but allow publication so admins can see it in 'published' list
-    # and take action.
+    # Enforce moderation: block spam/placeholder with high confidence
+    if category in ("spam", "placeholder") and confidence >= 0.7:
+        # Save moderation tags but don't publish
+        await update_portfolio(db, portfolio, {"is_published": False, **moderation_updates})
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Your portfolio was flagged as {category} content and cannot be published. Reason: {analysis.get('reason', 'Unknown')}. Contact support if you believe this is an error.",
+        )
     
     portfolio = await update_portfolio(db, portfolio, {"is_published": True, **moderation_updates})
     
@@ -207,10 +222,16 @@ async def get_public_portfolio(slug: str, request: Request, db: AsyncSession = D
     # Track individual page view for analytics
     referrer = request.headers.get("referer", "direct")
     user_agent = request.headers.get("user-agent", "")
+    forwarded = request.headers.get("x-forwarded-for", "")
+    ip_address = forwarded.split(",")[0].strip() if forwarded else request.client.host if request.client else None
+    visitor_type, intent_score = classify_visitor(user_agent, referrer)
     page_view = PageView(
         portfolio_id=portfolio.id,
         referrer=referrer,
         user_agent=user_agent,
+        ip_address=ip_address,
+        visitor_type=visitor_type,
+        intent_score=intent_score,
     )
     db.add(page_view)
     await db.commit()
@@ -230,6 +251,35 @@ async def get_public_portfolio(slug: str, request: Request, db: AsyncSession = D
     }
 
 
+@router.post("/public/{slug}/ask")
+async def ask_portfolio_copilot(
+    slug: str,
+    req: CopilotAskRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """Answer a visitor's question about the portfolio owner using AI."""
+    if not req.question.strip():
+        raise HTTPException(status_code=400, detail="Question cannot be empty")
+
+    result = await db.execute(
+        select(Portfolio)
+        .options(joinedload(Portfolio.user))
+        .where(Portfolio.slug == slug, Portfolio.is_published == True)
+    )
+    portfolio = result.scalar_one_or_none()
+    if not portfolio:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+
+    parsed_data = json.loads(portfolio.parsed_data) if portfolio.parsed_data else {}
+    career_graph = json.loads(portfolio.career_graph) if portfolio.career_graph else {}
+
+    try:
+        answer = await answer_question(req.question, parsed_data, career_graph)
+        return {"question": req.question, "answer": answer}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Failed to answer: {str(e)}")
+
+
 @router.get("/domain/{domain}")
 async def get_portfolio_by_domain(domain: str, request: Request, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
@@ -246,10 +296,16 @@ async def get_portfolio_by_domain(domain: str, request: Request, db: AsyncSessio
     # Track individual page view for analytics
     referrer = request.headers.get("referer", "direct")
     user_agent = request.headers.get("user-agent", "")
+    forwarded = request.headers.get("x-forwarded-for", "")
+    ip_address = forwarded.split(",")[0].strip() if forwarded else request.client.host if request.client else None
+    visitor_type, intent_score = classify_visitor(user_agent, referrer)
     page_view = PageView(
         portfolio_id=portfolio.id,
         referrer=referrer,
         user_agent=user_agent,
+        ip_address=ip_address,
+        visitor_type=visitor_type,
+        intent_score=intent_score,
     )
     db.add(page_view)
     await db.commit()
@@ -290,6 +346,24 @@ async def preview_portfolio(
         "view_count": portfolio.view_count or 0,
         "hidden_sections": portfolio.hidden_sections or "",
     }
+
+
+@router.get("/me/career-graph")
+async def get_career_graph(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Return the AI Career Knowledge Graph for the current user's portfolio."""
+    result = await db.execute(select(Portfolio).where(Portfolio.user_id == current_user.id))
+    portfolio = result.scalar_one_or_none()
+    if not portfolio or not portfolio.career_graph:
+        raise HTTPException(status_code=404, detail="Career graph not found. Upload a resume first.")
+
+    try:
+        return json.loads(portfolio.career_graph)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Career graph data is corrupted.")
+
 
 @router.get("/check-slug")
 async def check_slug_availability(

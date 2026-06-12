@@ -17,35 +17,18 @@ interface ThemeTabProps {
 
 const TEMPLATE_CATEGORIES = [
     {
-        name: 'Professional & Classic',
+        name: 'Core Templates',
         items: [
             { id: 'standard', label: 'Standard Layout' },
-            { id: 'corporate', label: 'Corporate / HR' },
-            { id: 'student', label: 'Academic / Student' },
-            { id: 'tech', label: 'Tech Grid' },
-            { id: 'freelancer', label: 'Creative Freelancer' },
-        ]
-    },
-    {
-        name: 'Modern & UI Trends',
-        items: [
-            { id: 'split', label: 'Split Screen' },
-            { id: 'terminal', label: 'Terminal / Retro' },
-            { id: 'neobrutalism', label: 'Neobrutalism' },
+            { id: 'linear', label: 'Linear (Dark-first)' },
+            { id: 'corporate', label: 'Corporate' },
+            { id: 'techgrid', label: 'TechGrid' },
             { id: 'glassmorphism', label: 'Glassmorphism' },
-            { id: 'notion', label: 'Notion Minimalist' },
+            { id: 'cyberpunk', label: 'Cyberpunk' },
+            { id: 'neobrutalism', label: 'Neobrutalism' },
+            { id: 'terminal', label: 'Terminal' },
         ]
     },
-    {
-        name: 'Advanced & Immersive',
-        items: [
-            { id: 'apple', label: 'Apple Desktop (macOS)' },
-            { id: 'material', label: 'Material App' },
-            { id: 'cyberpunk', label: 'Cyberpunk / Synthwave' },
-            { id: 'bauhaus', label: 'Swiss / Bauhaus' },
-            { id: 'biolink', label: 'Bio-Link Mobile' },
-        ]
-    }
 ]
 
 const COLORS = ['#6366f1', '#0ea5e9', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6']

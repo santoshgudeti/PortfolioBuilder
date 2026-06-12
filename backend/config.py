@@ -39,11 +39,8 @@ class Settings(BaseSettings):
 
     @property
     def is_production(self) -> bool:
-        import os
         return (
-            self.env.lower() == "production" or 
-            os.getenv("RAILWAY_ENVIRONMENT") is not None or
-            "railway.app" in self.database_url or
+            self.env.lower() == "production" or
             "postgres" in self.database_url.lower()
         )
 
