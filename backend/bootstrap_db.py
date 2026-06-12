@@ -30,7 +30,6 @@ def bootstrap_database() -> None:
         command.stamp(alembic_config, "head")
         return
 
-    asyncio.run(init_db())
     command.upgrade(alembic_config, "head")
 
 
