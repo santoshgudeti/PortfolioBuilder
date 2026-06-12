@@ -6,6 +6,9 @@ settings = get_settings()
 
 # Handle SSL for PostgreSQL (especially Neon.tech)
 db_url = settings.database_url
+# Ensure async driver for PostgreSQL
+if db_url.startswith("postgresql://") and "+asyncpg" not in db_url:
+    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 connect_args = {}
 
 if "postgresql" in db_url:
