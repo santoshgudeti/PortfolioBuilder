@@ -60,18 +60,22 @@ async def _ensure_model_columns():
                     await conn.execute(sa_text(sql.strip()))
 
 
-def bootstrap_database() -> None:
-    tables = asyncio.run(_existing_tables())
+async def _bootstrap() -> None:
+    tables = await _existing_tables()
     app_tables = {"users", "portfolios", "page_views", "audit_logs"}
     alembic_config = _alembic_config()
 
     if not tables or tables.issubset({"alembic_version"}) or not (tables & app_tables):
-        asyncio.run(init_db())
+        await init_db()
         command.stamp(alembic_config, "head")
         return
 
     command.upgrade(alembic_config, "head")
-    asyncio.run(_ensure_model_columns())
+    await _ensure_model_columns()
+
+
+def bootstrap_database() -> None:
+    asyncio.run(_bootstrap())
 
 
 if __name__ == "__main__":
