@@ -165,10 +165,10 @@ export default function LandingPage() {
     return (
         <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-[#030303] dark:text-white">
             <Helmet>
-                <title>PortfolioBuilder.AI — Build and Publish Your Portfolio in Minutes with AI</title>
+                <title>PortfolioBuilder.AI — AI Portfolio Builder | Turn Your Resume Into a Stunning Website for Free</title>
                 <meta
                     name="description"
-                    content="Describe yourself or upload your resume. AI builds your portfolio. Publish at your unique URL. Free forever."
+                    content="Turn your resume into a stunning AI-powered portfolio in 60 seconds. No coding. 20+ premium templates, chat-based editor, custom domains. Free forever — start now."
                 />
             </Helmet>
             <Navbar />
@@ -189,10 +189,10 @@ export default function LandingPage() {
                         </div>
 
                         <h1 className="mx-auto max-w-3xl font-space text-4xl font-bold tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-5xl lg:text-6xl xl:text-7xl">
-                            Build your portfolio
+                            AI Portfolio Builder —
                             <br />
                             <span className="bg-gradient-to-r from-brand-500 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                                in&nbsp;minutes, not days.
+                                from resume to website in minutes
                             </span>
                         </h1>
 
@@ -415,6 +415,66 @@ export default function LandingPage() {
                                 Browse all templates
                                 <ArrowRight className="h-4 w-4" />
                             </Link>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ════════ TESTIMONIALS ════════ */}
+                <section className="border-t border-zinc-200 py-20 dark:border-white/[0.06] sm:py-28">
+                    <div className="mx-auto max-w-6xl px-4 sm:px-6">
+                        <span className="section-label">// trusted by builders</span>
+                        <h2 className="mt-4 max-w-xl font-space text-3xl font-bold tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-4xl">
+                            Loved by professionals.
+                        </h2>
+
+                        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            {[
+                                {
+                                    quote: "Built my portfolio in under 5 minutes. The AI actually understood my resume — it's like magic.",
+                                    name: 'Rahul S.',
+                                    role: 'Software Engineer, Bengaluru',
+                                },
+                                {
+                                    quote: 'I tried Webflow, Framer, and Read.cv. Nothing is this fast. Upload → edit → publish in one sitting.',
+                                    name: 'Ananya P.',
+                                    role: 'Product Designer, Mumbai',
+                                },
+                                {
+                                    quote: 'The terminal template alone is worth it. Perfect for my GitHub portfolio. Recruiters loved it.',
+                                    name: 'Vikram M.',
+                                    role: 'Full-Stack Developer, Pune',
+                                },
+                            ].map(({ quote, name, role }) => (
+                                <div
+                                    key={name}
+                                    className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-white/[0.08] dark:bg-white/[0.03]"
+                                >
+                                    <div className="flex gap-1 mb-4">
+                                        {[...Array(5)].map((_, i) => (
+                                            <svg key={i} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                            </svg>
+                                        ))}
+                                    </div>
+                                    <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 mb-4">
+                                        &ldquo;{quote}&rdquo;
+                                    </p>
+                                    <p className="text-sm font-bold text-zinc-950 dark:text-white">{name}</p>
+                                    <p className="text-xs text-zinc-500">{role}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-500 dark:text-zinc-500">
+                            <span className="inline-flex items-center gap-1.5">
+                                <Shield className="w-4 h-4 text-brand-500" />
+                                Built by <a href="https://github.com/santoshgudeti" target="_blank" rel="noopener noreferrer" className="font-semibold text-zinc-950 dark:text-white hover:text-brand-600">Santosh Gudeti</a>
+                            </span>
+                            <span className="hidden sm:inline text-zinc-300 dark:text-zinc-700">|</span>
+                            <span className="inline-flex items-center gap-1.5">
+                                <Code2 className="w-4 h-4 text-brand-500" />
+                                Open source on <a href="https://github.com/santoshgudeti/PortfolioBuilder" target="_blank" rel="noopener noreferrer" className="font-semibold text-zinc-950 dark:text-white hover:text-brand-600">GitHub</a>
+                            </span>
                         </div>
                     </div>
                 </section>

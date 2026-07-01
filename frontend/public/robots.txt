@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://portfolio.hamathopc.in/sitemap.xml
