@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from schemas.portfolio import PortfolioUpdate, PortfolioOut, RegenerateRequest, SlugUpdate
 
 
+
 class CopilotAskRequest(BaseModel):
     question: str
 from services.portfolio_service import update_portfolio
@@ -206,34 +207,51 @@ async def regenerate_field(
         raise HTTPException(status_code=502, detail=f"AI generation failed: {str(e)}")
 
 
+async def _optional_admin_user(request: Request, db: AsyncSession = Depends(get_db)) -> User | None:
+    try:
+        user = await get_current_user(request, db)
+        if user.is_admin:
+            return user
+    except Exception:
+        pass
+    return None
+
+
 @router.get("/public/{slug}")
-async def get_public_portfolio(slug: str, request: Request, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(
-        select(Portfolio)
-        .options(joinedload(Portfolio.user))
-        .where(Portfolio.slug == slug, Portfolio.is_published == True)
-    )
+async def get_public_portfolio(
+    slug: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    admin_user: User | None = Depends(_optional_admin_user),
+):
+    query = select(Portfolio).options(joinedload(Portfolio.user)).where(Portfolio.slug == slug)
+    if not admin_user:
+        query = query.where(Portfolio.is_published == True)
+
+    result = await db.execute(query)
     portfolio = result.scalar_one_or_none()
     if not portfolio:
-        raise HTTPException(status_code=404, detail="Portfolio not found or not published")
+        detail = "Portfolio not found" if admin_user else "Portfolio not found or not published"
+        raise HTTPException(status_code=404, detail=detail)
 
-    portfolio.view_count = (portfolio.view_count or 0) + 1
+    if not admin_user:
+        portfolio.view_count = (portfolio.view_count or 0) + 1
 
-    # Track individual page view for analytics
-    referrer = request.headers.get("referer", "direct")
-    user_agent = request.headers.get("user-agent", "")
-    forwarded = request.headers.get("x-forwarded-for", "")
-    ip_address = forwarded.split(",")[0].strip() if forwarded else request.client.host if request.client else None
-    visitor_type, intent_score = classify_visitor(user_agent, referrer)
-    page_view = PageView(
-        portfolio_id=portfolio.id,
-        referrer=referrer,
-        user_agent=user_agent,
-        ip_address=ip_address,
-        visitor_type=visitor_type,
-        intent_score=intent_score,
-    )
-    db.add(page_view)
+        referrer = request.headers.get("referer", "direct")
+        user_agent = request.headers.get("user-agent", "")
+        forwarded = request.headers.get("x-forwarded-for", "")
+        ip_address = forwarded.split(",")[0].strip() if forwarded else request.client.host if request.client else None
+        visitor_type, intent_score = classify_visitor(user_agent, referrer)
+        page_view = PageView(
+            portfolio_id=portfolio.id,
+            referrer=referrer,
+            user_agent=user_agent,
+            ip_address=ip_address,
+            visitor_type=visitor_type,
+            intent_score=intent_score,
+        )
+        db.add(page_view)
+
     await db.commit()
 
     return {
