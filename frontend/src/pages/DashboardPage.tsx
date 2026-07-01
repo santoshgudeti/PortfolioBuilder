@@ -198,178 +198,178 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-                <Link to="/upload" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <div className="flex items-start justify-between gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
+                <Link to="/upload" className="card p-4 sm:p-5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-gray-950 dark:text-white">Upload resume</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Generate or update your portfolio from your latest resume.</p>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Upload resume</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">Generate or update your portfolio from your latest resume.</p>
                         </div>
-                        <Upload className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                        <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     </div>
-                    <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                        Continue <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                        Continue <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                     </div>
                 </Link>
 
-                <Link to="/editor" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <div className="flex items-start justify-between gap-4">
+                <Link to="/editor" className="card p-4 sm:p-5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-gray-950 dark:text-white">Edit and design</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Adjust content, template, colors, and sections.</p>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Edit and design</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">Adjust content, template, colors, and sections.</p>
                         </div>
-                        <Edit3 className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                        <Edit3 className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     </div>
-                    <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                        Open editor <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                        Open editor <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                     </div>
                 </Link>
 
-                <Link to="/branding" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <div className="flex items-start justify-between gap-4">
+                <Link to="/branding" className="card p-4 sm:p-5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-gray-950 dark:text-white">AI Branding</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Generate LinkedIn bio, Twitter profile, speaker intro, and more.</p>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">AI Branding</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">Generate LinkedIn bio, Twitter profile, speaker intro, and more.</p>
                         </div>
-                        <Sparkles className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                        <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     </div>
-                    <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                        Generate <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                        Generate <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                     </div>
                 </Link>
 
-                <Link to="/content" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <div className="flex items-start justify-between gap-4">
+                <Link to="/content" className="card p-4 sm:p-5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-gray-950 dark:text-white">Content Generator</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Create LinkedIn posts, Twitter threads, case studies, and more.</p>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Content Generator</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">Create LinkedIn posts, Twitter threads, case studies, and more.</p>
                         </div>
-                        <FileText className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                        <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     </div>
-                    <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                        Create <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                        Create <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                     </div>
                 </Link>
 
-                <Link to="/auto-update" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <div className="flex items-start justify-between gap-4">
+                <Link to="/auto-update" className="card p-4 sm:p-5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-gray-950 dark:text-white">Auto Updates</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Import GitHub repos and Medium posts into your portfolio.</p>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Auto Updates</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">Import GitHub repos and Medium posts into your portfolio.</p>
                         </div>
-                        <RefreshCw className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                        <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     </div>
-                    <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                        Sync <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                        Sync <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                     </div>
                 </Link>
 
-                <Link to="/video-portfolio" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <div className="flex items-start justify-between gap-4">
+                <Link to="/video-portfolio" className="card p-4 sm:p-5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-gray-950 dark:text-white">Video Portfolio</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Generate AI-powered video scripts and storyboards.</p>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Video Portfolio</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">Generate AI-powered video scripts and storyboards.</p>
                         </div>
-                        <Video className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                        <Video className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     </div>
-                    <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                        Create <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                        Create <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                     </div>
                 </Link>
 
-                <Link to="/optimizer" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <div className="flex items-start justify-between gap-4">
+                <Link to="/optimizer" className="card p-4 sm:p-5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-gray-950 dark:text-white">Resume Optimizer</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">ATS score, keyword gaps, and actionable improvements.</p>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Resume Optimizer</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">ATS score, keyword gaps, and actionable improvements.</p>
                         </div>
-                        <Target className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                        <Target className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     </div>
-                    <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                        Analyze <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                        Analyze <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                     </div>
                 </Link>
 
-                <Link to="/dynamic-portfolio" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <div className="flex items-start justify-between gap-4">
+                <Link to="/dynamic-portfolio" className="card p-4 sm:p-5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-gray-950 dark:text-white">Dynamic Portfolios</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Generate role-specific versions from your data.</p>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Dynamic Portfolios</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">Generate role-specific versions from your data.</p>
                         </div>
-                        <Layers className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                        <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     </div>
-                    <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                        Tailor <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                        Tailor <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                     </div>
                 </Link>
 
-                <Link to="/achievements" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <div className="flex items-start justify-between gap-4">
+                <Link to="/achievements" className="card p-4 sm:p-5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-gray-950 dark:text-white">Achievement Discovery</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Find vague descriptions and add impact metrics.</p>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Achievement Discovery</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">Find vague descriptions and add impact metrics.</p>
                         </div>
-                        <Lightbulb className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                        <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     </div>
-                    <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                        Discover <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                        Discover <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                     </div>
                 </Link>
 
-                <Link to="/interview" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <div className="flex items-start justify-between gap-4">
+                <Link to="/interview" className="card p-4 sm:p-5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-gray-950 dark:text-white">Interview Prep</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Practice with AI-generated questions from your portfolio.</p>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Interview Prep</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">Practice with AI-generated questions from your portfolio.</p>
                         </div>
-                        <Brain className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                        <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     </div>
-                    <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                        Practice <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                        Practice <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                     </div>
                 </Link>
 
-                <Link to="/jobs" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <div className="flex items-start justify-between gap-4">
+                <Link to="/jobs" className="card p-4 sm:p-5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-gray-950 dark:text-white">Job Matching</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Find roles that match your skills with AI-powered analysis.</p>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Job Matching</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">Find roles that match your skills with AI-powered analysis.</p>
                         </div>
-                        <Briefcase className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                        <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     </div>
-                    <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                        Match <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                        Match <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                     </div>
                 </Link>
 
                 {hasPortfolio && (
-                    <a href="/talent" target="_blank" rel="noopener noreferrer" className="card p-6 hover:shadow-md">
-                        <div className="flex items-start justify-between gap-4">
+                    <a href="/talent" target="_blank" rel="noopener noreferrer" className="card p-4 sm:p-5 hover:shadow-md">
+                        <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
-                                <h3 className="text-base font-semibold text-gray-950 dark:text-white">Talent Discovery</h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">See how recruiters find you — view the public talent search.</p>
+                                <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Talent Discovery</h3>
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">See how recruiters find you — view the public talent search.</p>
                             </div>
-                            <UserCheck className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                            <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                         </div>
-                        <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                            Open <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                        <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                            Open <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                         </div>
                     </a>
                 )}
 
                 {hasPortfolio && (
-                    <a href={`/u/${data?.slug}`} target="_blank" rel="noopener noreferrer" className="card p-6 hover:shadow-md">
-                        <div className="flex items-start justify-between gap-4">
+                    <a href={`/u/${data?.slug}`} target="_blank" rel="noopener noreferrer" className="card p-4 sm:p-5 hover:shadow-md">
+                        <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
-                                <h3 className="text-base font-semibold text-gray-950 dark:text-white">Preview public link</h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                                <h3 className="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">Preview public link</h3>
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">
                                     Open your portfolio in a new tab.
                                 </p>
                             </div>
-                            <Eye className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                            <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                         </div>
-                        <div className="mt-4 text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                            Open <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                        <div className="mt-3 text-xs sm:text-sm font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                            Open <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                         </div>
                     </a>
                 )}
