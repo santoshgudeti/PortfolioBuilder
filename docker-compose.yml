@@ -5,6 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api}
+        VITE_APP_DOMAIN: ${VITE_APP_DOMAIN:-}
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
     container_name: folioai-web
     ports:
       - "8000:8000"
@@ -17,5 +21,4 @@ services:
       - ./.env
     volumes:
       - ./backend/uploads:/app/backend/uploads
-      - ./backend/resume2portfolio.db:/app/backend/resume2portfolio.db
     restart: unless-stopped

@@ -88,24 +88,16 @@ async def run_async_migrations() -> None:
     await connectable.dispose()
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode."""
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = None
+    """Run migrations in 'online' mode.
 
-    if loop is None:
-        asyncio.run(run_async_migrations())
-    else:
-        # Already inside a running event loop (e.g. called from bootstrap_db).
-        # Create a separate loop so asyncio.run() isn't called recursively.
-        new_loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(new_loop)
-        try:
-            new_loop.run_until_complete(run_async_migrations())
-        finally:
-            new_loop.close()
-            asyncio.set_event_loop(loop)
+    asyncio only tracks one running loop per thread, so this must never be
+    called from a thread that already has a loop running (e.g. directly from
+    an async function under asyncio.run()) — asyncio.run() here would raise
+    "Cannot run the event loop while another loop is running". Callers that
+    need to invoke Alembic from async code (see bootstrap_db.py) must do so
+    via asyncio.to_thread() to give this a clean thread to own.
+    """
+    asyncio.run(run_async_migrations())
 
 if context.is_offline_mode():
     run_migrations_offline()

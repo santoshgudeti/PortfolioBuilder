@@ -1,0 +1,30 @@
+# Version control
+.git
+.gitignore
+
+# Env files / secrets — never bake these into an image layer
+.env
+.env.*
+!**/.env.example
+
+# Python
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+**/.cache/
+backend/*.db
+
+# Node
+node_modules
+frontend/node_modules
+frontend/dist
+backend/static
+
+# Runtime data (mounted as volumes, not baked into the image)
+backend/uploads
+
+# Editor / misc
+.vscode
+*.log
+error.log
+error_ascii.txt

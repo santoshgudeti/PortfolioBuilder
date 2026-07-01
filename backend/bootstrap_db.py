@@ -67,10 +67,14 @@ async def _bootstrap() -> None:
 
     if not tables or tables.issubset({"alembic_version"}) or not (tables & app_tables):
         await init_db()
-        command.stamp(alembic_config, "head")
+        # Alembic's env.py manages its own event loop (via asyncio.run) for
+        # the async DB driver, so it can't be called from a thread that
+        # already has one running (this coroutine, under asyncio.run(_bootstrap)).
+        # Running it in a worker thread gives it a clean thread to own.
+        await asyncio.to_thread(command.stamp, alembic_config, "head")
         return
 
-    command.upgrade(alembic_config, "head")
+    await asyncio.to_thread(command.upgrade, alembic_config, "head")
     await _ensure_model_columns()
 
 
