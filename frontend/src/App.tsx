@@ -62,9 +62,10 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
     return <>{children}</>
 }
 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
+
 export default function App() {
     const { initTheme, setAuth, setInitialized } = useAuthStore()
-    const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"
     const [showInteractiveEffects, setShowInteractiveEffects] = useState(() => {
         if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
             return true
@@ -144,67 +145,75 @@ export default function App() {
         )
     }
 
+    const isGoogleConfigured = GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID'
+
+    const appContent = (
+        <ErrorBoundary>
+            <BrowserRouter>
+                <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" /></div>}>
+                    <Routes>
+                        {/* Public */}
+                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/talent" element={<RecruiterPage />} />
+                        <Route path="/u/:slug" element={<PublicPortfolioPage />} />
+                        <Route path="/verify-email" element={<VerifyEmailPage />} />
+
+
+                        {/* Guest only */}
+                        <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+                        <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
+                        <Route path="/reset-password" element={<ResetPasswordPage />} />
+                        <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+
+                        {/* Protected - only for logged in users */}
+                        <Route path="/upload" element={<ProtectedRoute><AppLayout><UploadPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/video-portfolio" element={<ProtectedRoute><AppLayout><VideoPortfolioPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/editor" element={<ProtectedRoute><AppLayout><EditorPage /></AppLayout></ProtectedRoute>} />
+
+                        {/* Dashboard & Management */}
+                        <Route path="/dashboard" element={<ProtectedRoute><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/analytics" element={<ProtectedRoute><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/auto-update" element={<ProtectedRoute><AppLayout><AutoUpdatePage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/branding" element={<ProtectedRoute><AppLayout><BrandingPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/content" element={<ProtectedRoute><AppLayout><ContentGeneratorPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/dynamic-portfolio" element={<ProtectedRoute><AppLayout><DynamicPortfolioPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/achievements" element={<ProtectedRoute><AppLayout><AchievementDiscoveryPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/interview" element={<ProtectedRoute><AppLayout><InterviewPrepPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/jobs" element={<ProtectedRoute><AppLayout><JobMatchingPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/optimizer" element={<ProtectedRoute><AppLayout><ResumeOptimizerPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/profile" element={<ProtectedRoute><AppLayout><ProfilePage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/settings" element={<ProtectedRoute><AppLayout><SettingsPage /></AppLayout></ProtectedRoute>} />
+                        <Route path="/admin" element={<AdminRoute><AppLayout><AdminPage /></AppLayout></AdminRoute>} />
+
+                        {/* 404 */}
+                        <Route path="/privacy" element={<PrivacyPage />} />
+                        <Route path="/terms" element={<TermsPage />} />
+                        <Route path="*" element={<NotFoundPage />} />
+                    </Routes>
+                </Suspense>
+                <CookieConsent />
+                {showInteractiveEffects ? (
+                    <>
+                        <ClickSpark
+                            sparkColor='#6366f1'
+                            sparkSize={6}
+                            sparkCount={12}
+                            duration={0.5}
+                        />
+                        <SplashCursor />
+                    </>
+                ) : null}
+            </BrowserRouter>
+        </ErrorBoundary>
+    )
+
     return (
         <HelmetProvider>
-            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                <ErrorBoundary>
-                    <BrowserRouter>
-                        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" /></div>}>
-                            <Routes>
-                                {/* Public */}
-                                <Route path="/" element={<LandingPage />} />
-                                <Route path="/talent" element={<RecruiterPage />} />
-                                <Route path="/u/:slug" element={<PublicPortfolioPage />} />
-                                <Route path="/verify-email" element={<VerifyEmailPage />} />
-
-
-                                {/* Guest only */}
-                                <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
-                                <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
-                                <Route path="/reset-password" element={<ResetPasswordPage />} />
-                                <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
-
-                                {/* Protected - only for logged in users */}
-                                <Route path="/upload" element={<ProtectedRoute><AppLayout><UploadPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/video-portfolio" element={<ProtectedRoute><AppLayout><VideoPortfolioPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/editor" element={<ProtectedRoute><AppLayout><EditorPage /></AppLayout></ProtectedRoute>} />
-
-                                {/* Dashboard & Management */}
-                                <Route path="/dashboard" element={<ProtectedRoute><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/analytics" element={<ProtectedRoute><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/auto-update" element={<ProtectedRoute><AppLayout><AutoUpdatePage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/branding" element={<ProtectedRoute><AppLayout><BrandingPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/content" element={<ProtectedRoute><AppLayout><ContentGeneratorPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/dynamic-portfolio" element={<ProtectedRoute><AppLayout><DynamicPortfolioPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/achievements" element={<ProtectedRoute><AppLayout><AchievementDiscoveryPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/interview" element={<ProtectedRoute><AppLayout><InterviewPrepPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/jobs" element={<ProtectedRoute><AppLayout><JobMatchingPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/optimizer" element={<ProtectedRoute><AppLayout><ResumeOptimizerPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/profile" element={<ProtectedRoute><AppLayout><ProfilePage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/settings" element={<ProtectedRoute><AppLayout><SettingsPage /></AppLayout></ProtectedRoute>} />
-                                <Route path="/admin" element={<AdminRoute><AppLayout><AdminPage /></AppLayout></AdminRoute>} />
-
-                                {/* 404 */}
-                                <Route path="/privacy" element={<PrivacyPage />} />
-                                <Route path="/terms" element={<TermsPage />} />
-                                <Route path="*" element={<NotFoundPage />} />
-                            </Routes>
-                        </Suspense>
-                        <CookieConsent />
-                        {showInteractiveEffects ? (
-                            <>
-                                <ClickSpark
-                                    sparkColor='#6366f1'
-                                    sparkSize={6}
-                                    sparkCount={12}
-                                    duration={0.5}
-                                />
-                                <SplashCursor />
-                            </>
-                        ) : null}
-                    </BrowserRouter>
-                </ErrorBoundary>
-            </GoogleOAuthProvider>
+            {isGoogleConfigured ? (
+                <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID!}>
+                    {appContent}
+                </GoogleOAuthProvider>
+            ) : appContent}
         </HelmetProvider>
     )
 }

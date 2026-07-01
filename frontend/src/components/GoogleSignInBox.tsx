@@ -21,6 +21,8 @@ function getGoogleButtonText(text: string): 'signin_with' | 'signup_with' | 'con
     return 'continue_with'
 }
 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
+
 export default function GoogleSignInBox({ text = 'Continue with Google' }: Props) {
     const [isLoading, setIsLoading] = useState(false)
     const { setAuth } = useAuthStore()
@@ -44,6 +46,14 @@ export default function GoogleSignInBox({ text = 'Continue with Google' }: Props
         } finally {
             setIsLoading(false)
         }
+    }
+
+    if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
+        return (
+            <div className="w-full h-[44px] flex items-center justify-center rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111] text-gray-500 dark:text-gray-400 shadow-sm text-sm px-4">
+                Google Sign-In is not configured
+            </div>
+        )
     }
 
     if (isLoading) {
