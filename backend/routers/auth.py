@@ -63,6 +63,10 @@ from utils.rate_limit import rate_limiter
 settings = get_settings()
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+# Precomputed bcrypt hash used to equalize timing when a login is attempted
+# against an email that has no user (or no password) in the database.
+DUMMY_PASSWORD_HASH = hash_password("dummy-password-for-timing-safety")
+
 
 def _rate_key(request: Request, action: str, identity: str = "") -> str:
     ip = request.client.host if request.client else "unknown"
@@ -157,14 +161,15 @@ async def google_auth(
         token_hint = (data.credential or "")[:10]
         logger.info(f"Verifying Google ID token: {token_hint}...")
 
-        import time
+        import asyncio
         last_error = None
         for attempt in range(3):
             try:
-                idinfo = google_id_token.verify_oauth2_token(
+                idinfo = await asyncio.to_thread(
+                    google_id_token.verify_oauth2_token,
                     data.credential,
                     GoogleRequest(),
-                    audience=settings.google_client_id,
+                    settings.google_client_id,
                 )
                 last_error = None
                 break
@@ -173,7 +178,7 @@ async def google_auth(
                 if attempt < 2:
                     wait = 2 ** attempt
                     logger.warning(f"Google cert fetch failed (attempt {attempt + 1}/3), retrying in {wait}s: {e}")
-                    time.sleep(wait)
+                    await asyncio.sleep(wait)
                 continue
 
         if last_error:
@@ -252,7 +257,14 @@ async def login(
     result = await db.execute(select(User).where(User.email == credentials.email))
     user = result.scalar_one_or_none()
 
-    if not user or not verify_password(credentials.password, user.hashed_password or ""):
+    # Always run verify_password (even for a nonexistent user, against a dummy hash)
+    # so response time doesn't leak whether an email is registered.
+    password_ok = verify_password(
+        credentials.password,
+        (user.hashed_password if user else None) or DUMMY_PASSWORD_HASH,
+    )
+
+    if not user or not password_ok:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
