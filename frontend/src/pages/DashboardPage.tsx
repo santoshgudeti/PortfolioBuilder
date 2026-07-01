@@ -198,7 +198,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
                 <Link to="/upload" className="card p-6 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500">
                     <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">

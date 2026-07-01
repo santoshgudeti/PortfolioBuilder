@@ -176,8 +176,8 @@ export default function LandingPage() {
                 {/* ════════ HERO ════════ */}
                 <section className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
                     {/* Background glow orbs */}
-                    <div className="glow-orb glow-orb-indigo absolute -top-40 right-1/4 h-[500px] w-[500px]" />
-                    <div className="glow-orb glow-orb-blue absolute top-20 -left-40 h-[400px] w-[400px] opacity-10" />
+                    <div className="glow-orb glow-orb-indigo absolute -top-40 right-1/4 h-[500px] w-[500px] max-sm:hidden" />
+                    <div className="glow-orb glow-orb-blue absolute top-20 -left-40 h-[400px] w-[400px] opacity-10 max-md:hidden" />
                     <div className="pointer-events-none absolute inset-0 bg-grid opacity-[0.03] dark:opacity-[0.04]" />
 
                     <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6">
@@ -224,9 +224,9 @@ export default function LandingPage() {
                     {/* ── URL Claim Pill ── */}
                     <div className="relative mx-auto mt-14 max-w-xl px-4 sm:px-6">
                         <div className="rounded-2xl border border-zinc-200 bg-white/80 px-5 py-4 backdrop-blur-lg dark:border-white/[0.08] dark:bg-white/[0.03]">
-                            <div className="flex items-center justify-between gap-4">
+                            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:gap-4">
                                 <div className="flex items-center gap-3 text-sm">
-                                    <Globe className="h-4 w-4 text-brand-500" />
+                                    <Globe className="h-4 w-4 text-brand-500 flex-shrink-0" />
                                     <span className="text-zinc-500 dark:text-zinc-400">portfoliobuilder.ai/</span>
                                     <span className="font-bold text-zinc-950 dark:text-white">yourname</span>
                                 </div>
@@ -243,7 +243,7 @@ export default function LandingPage() {
 
                 {/* ════════ STATS BAND ════════ */}
                 <section className="border-y border-zinc-200 bg-zinc-100/50 dark:border-white/[0.06] dark:bg-white/[0.02]">
-                    <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px sm:grid-cols-4">
+                    <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px sm:grid-cols-3 md:grid-cols-4">
                         {STATS.map((stat) => (
                             <div
                                 key={stat.label}
@@ -298,7 +298,7 @@ export default function LandingPage() {
                             Three steps. That's it.
                         </h2>
 
-                        <div className="mt-14 grid gap-6 md:grid-cols-3">
+                        <div className="mt-14 grid gap-6 sm:grid-cols-2 md:grid-cols-3">
                             {WORKFLOW.map(({ step, title, body, icon: Icon }) => (
                                 <div
                                     key={step}
@@ -388,18 +388,18 @@ export default function LandingPage() {
                             Don't start from a blank page. Pick a template, then let the AI make it yours. Handcrafted designs — editorial, cinematic, minimal, bold.
                         </p>
 
-                        <div className="mt-12 grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+                        <div className="mt-12 grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                             {TEMPLATE_PRESETS.map((t) => (
                                 <div
                                     key={t.name}
-                                    className="group flex items-center gap-4 rounded-2xl border border-zinc-200 bg-white px-6 py-5 transition-all hover:border-zinc-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:border-white/[0.15]"
+                                    className="group flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white px-4 py-4 transition-all hover:border-zinc-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:border-white/[0.15] sm:gap-4 sm:px-5 sm:py-5"
                                 >
                                     <span className={`h-3 w-3 flex-shrink-0 rounded-full ${t.accent}`} />
-                                    <div>
-                                        <h3 className="font-space text-base font-bold text-zinc-950 dark:text-white">
+                                    <div className="min-w-0">
+                                        <h3 className="font-space text-sm font-bold text-zinc-950 dark:text-white sm:text-base">
                                             {t.name}
                                         </h3>
-                                        <p className="text-xs text-zinc-500 dark:text-zinc-500">
+                                        <p className="truncate text-xs text-zinc-500 dark:text-zinc-500">
                                             {t.fit}
                                         </p>
                                     </div>
@@ -435,9 +435,9 @@ export default function LandingPage() {
                                 >
                                     <button
                                         onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                                        className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
+                                        className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left sm:gap-4 sm:px-6 sm:py-5"
                                     >
-                                        <span className="font-space text-base font-bold text-zinc-950 dark:text-white">
+                                        <span className="font-space text-sm font-bold text-zinc-950 dark:text-white sm:text-base">
                                             {question}
                                         </span>
                                         <ChevronRight
@@ -447,7 +447,7 @@ export default function LandingPage() {
                                         />
                                     </button>
                                     {openFaq === i && (
-                                        <div className="px-6 pb-5 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+                                        <div className="px-4 pb-4 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400 sm:px-6 sm:pb-5">
                                             {answer}
                                         </div>
                                     )}
@@ -460,10 +460,10 @@ export default function LandingPage() {
                 {/* ════════ FINAL CTA ════════ */}
                 <section className="py-20 sm:py-28">
                     <div className="mx-auto max-w-6xl px-4 sm:px-6">
-                        <div className="relative overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-950 px-8 py-16 text-center dark:border-white/[0.08] sm:px-16 sm:py-20">
+                        <div className="relative overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-950 px-6 py-14 text-center dark:border-white/[0.08] sm:px-16 sm:py-20">
                             {/* Glow behind */}
                             <div className="pointer-events-none absolute inset-0">
-                                <div className="absolute left-1/2 top-0 h-60 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-500/20 blur-[100px]" />
+                                <div className="absolute left-1/2 top-0 h-40 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-500/20 blur-[80px] sm:h-60 sm:w-96 sm:blur-[100px]" />
                             </div>
 
                             <div className="relative">

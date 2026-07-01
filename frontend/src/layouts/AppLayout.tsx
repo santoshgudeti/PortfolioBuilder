@@ -38,7 +38,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [collapsed, setCollapsed] = useState(false)
 
     return (
-        <div className="flex min-h-[100dvh] bg-gray-50 dark:bg-gray-950 lg:h-[100dvh]">
+        <div className="flex min-h-[100dvh] bg-gray-50 dark:bg-gray-950">
             {/* Sidebar */}
             <aside className={`
                 fixed inset-y-0 left-0 z-50 bg-white dark:bg-black border-r border-gray-200 dark:border-white/10
